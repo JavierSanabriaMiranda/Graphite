@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 100vw;
+  min-height: 100vh;
+  /* Quitamos el flex y el centrado */
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}

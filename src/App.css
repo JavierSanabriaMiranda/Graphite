@@ -1,0 +1,60 @@
+/* 1. Contenedor principal que envuelve Menú + Editor */
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 100% de la altura de la ventana */
+  width: 100vw;  /* 100% del ancho de la ventana */
+  overflow: hidden; /* Evita scrolls extraños en el contenedor padre */
+}
+
+/* 2. Barra de menú (fija arriba) */
+.menu-bar {
+  padding: 10px;
+  background: #f4f4f4;
+  display: flex;
+  flex-wrap: wrap; /* Por si añades muchos botones, que bajen de línea */
+  gap: 8px;
+  border-bottom: 1px solid #ccc;
+  flex-shrink: 0; /* Impide que el menú se encoja */
+}
+
+/* 3. El área de escritura (Tiptap) */
+.tiptap {
+  flex-grow: 1; /* Ocupa todo el espacio restante */
+  padding: 40px; /* Más aire para que parezca una página real */
+  outline: none;
+  overflow-y: auto; /* Permite scroll solo dentro del editor si el texto es largo */
+  background-color: white;
+  
+  /* Centrado opcional: para que parezca un folio A4 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilos de texto dentro del editor para que no se vea "pegado" */
+.tiptap p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* Botones del menú */
+.menu-bar button {
+  padding: 5px 10px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+}
+
+.menu-bar button.is-active {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+/* Selector de fuente y tipo de texto */
+.menu-bar select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
