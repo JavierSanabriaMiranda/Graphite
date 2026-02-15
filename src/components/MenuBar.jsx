@@ -1,20 +1,19 @@
+import { useEditorState } from '@tiptap/react';
+import { menuBarStateSelector } from './menuBarStateSelector';
+
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
-  // Función para determinar qué título está activo en el dropdown
-  const getTextType = () => {
-    if (editor.isActive('heading', { level: 1 })) return 'h1';
-    if (editor.isActive('heading', { level: 2 })) return 'h2';
-    if (editor.isActive('heading', { level: 3 })) return 'h3';
-    return 'p'; // Párrafo por defecto
-  };
+  const state = useEditorState({
+    editor,
+    selector: menuBarStateSelector,
+  });
 
   return (
     <div className="menu-bar">
-      
-      {/* 1. Desplegable de Tipo de Texto */}
+      {/* Select de Tipo de Texto */}
       <select 
-        value={getTextType()} 
+        value={state.currentTextType} 
         onChange={(e) => {
           const val = e.target.value;
           if (val === 'p') editor.chain().focus().setParagraph().run();
@@ -27,12 +26,12 @@ const MenuBar = ({ editor }) => {
         <option value="h3">Título 3</option>
       </select>
 
-      {/* 2. Desplegable de Fuentes */}
+      {/* Select de Fuentes */}
       <select 
+        value={state.currentFont}
         onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}
-        // Nota: Para que el value sea dinámico aquí, necesitarías una lógica similar a getTextType
       >
-        <option value="Inter">Inter (Predeterminada)</option>
+        <option value="Inter">Inter</option>
         <option value="Arial">Arial</option>
         <option value="Courier New">Courier New</option>
         <option value="Georgia">Georgia</option>
@@ -41,22 +40,25 @@ const MenuBar = ({ editor }) => {
 
       <div className="divider" />
 
-      {/* 3. Botones de Formato (Se mantienen como botones por usabilidad) */}
+      {/* Botones de Formato con isActive() nativo */}
       <button 
+        type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
-        className={editor.isActive('bold') ? 'is-active' : ''}
+        className={state.isBold ? 'is-active' : ''}
       >
         <b>B</b>
       </button>
       <button 
+        type="button"
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={editor.isActive('italic') ? 'is-active' : ''}
+        className={state.isItalic ? 'is-active' : ''}
       >
         <i>I</i>
       </button>
       <button 
+        type="button"
         onClick={() => editor.chain().focus().toggleUnderline().run()}
-        className={editor.isActive('underline') ? 'is-active' : ''}
+        className={state.isUnderline ? 'is-active' : ''}
       >
         <u>U</u>
       </button>
