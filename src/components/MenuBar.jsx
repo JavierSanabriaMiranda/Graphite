@@ -1,6 +1,7 @@
 import { useEditorState } from '@tiptap/react';
 import { menuBarStateSelector } from './menuBarStateSelector';
 import ChangeThemeButton from './ChangeThemeButton';
+import ColorPicker from './ColorPicker';
 
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
@@ -49,7 +50,7 @@ const MenuBar = ({ editor }) => {
       </select>
 
       {/* Divisor Visual */}
-      <div className="w-px h-6 bg-gray-200 dark:bg-zinc-700 mx-1" /> {/* Divisor */}
+      <div className="w-px h-6 bg-gray-400 dark:bg-zinc-700 mx-1" /> {/* Divisor */}
 
       {/* Botones de Formato con isActive() nativo */}
       <button 
@@ -73,8 +74,14 @@ const MenuBar = ({ editor }) => {
       >
         <u>U</u>
       </button>
-      
-      <ChangeThemeButton />
+
+      <div className="w-px h-6 bg-gray-400 dark:bg-zinc-700 mx-1" /> {/* Divisor */}
+
+      <ColorPicker editor={editor} />
+
+      <div className='ml-auto'>
+        <ChangeThemeButton />
+      </div> 
     </div>
   );
 };
