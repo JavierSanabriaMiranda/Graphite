@@ -1,12 +1,10 @@
-body {
-  margin: 0;
-  padding: 0;
-  min-width: 100vw;
-  min-height: 100vh;
-  /* Quitamos el flex y el centrado */
-}
+/* src/index.css */
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+@variant dark (&:where(.dark, .dark *));
+
+/* Solo dejamos el #root para asegurar que el fondo cubra todo */
 #root {
-  width: 100%;
-  height: 100%;
+  @apply min-h-screen bg-gray-100 dark:bg-zinc-950 transition-colors duration-300;
 }
