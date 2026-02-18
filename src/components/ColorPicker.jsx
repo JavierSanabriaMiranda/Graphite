@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEditorState } from '@tiptap/react';
 
 const ColorPicker = ({ editor }) => {
     if (!editor) return null;
@@ -11,18 +12,22 @@ const ColorPicker = ({ editor }) => {
         { name: 'Púrpura', color: '#a855f7' },
     ];
 
+    const currentColor = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.getAttributes('textStyle').color,
+    });
+
     const [menuOpen, setMenuOpen] = useState(false);
-    const currentColor = editor.getAttributes('textStyle').color || '#000000';
 
     return (
         <div className="relative inline-block">
             {/* Botón Principal (Disparador) */}
             <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 p-2 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
+                className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
             >
                 <div 
-                    className="w-6 h-6 border border-black/10 rounded-full" 
+                    className={`w-6 h-6 border border-black/10 rounded-full ${!currentColor ? 'bg-checkerboard' : ''}`} 
                     style={{ backgroundColor: currentColor }}
                 />
             </button>
@@ -30,7 +35,7 @@ const ColorPicker = ({ editor }) => {
             {/* Menú Desplegable */}
             {menuOpen && (
                 <div 
-                    className="absolute z-20 mt-2 p-2 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
+                    className="absolute z-20 mt-2 p-2 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Contenedor Horizontal de Presets */}

@@ -1,4 +1,4 @@
-export function menuBarStateSelector(ctx) {
+export function colorPickerStateSelector(ctx) {
   const { editor } = ctx;
 
   return {

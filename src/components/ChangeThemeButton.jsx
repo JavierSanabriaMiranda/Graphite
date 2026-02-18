@@ -22,12 +22,11 @@ const ChangeThemeButton = () => {
         <button 
             type="button"
             onClick={() => setIsDark(!isDark)} 
-            className="flex items-center justify-center w-9 h-9 rounded-lg border 
+            className="flex items-center justify-center w-9 h-9 rounded-lg 
                        transition-all duration-300 cursor-pointer
-                       bg-white dark:bg-zinc-800 
-                       border-gray-200 dark:border-zinc-700
-                       hover:bg-gray-50 dark:hover:bg-zinc-700
-                       text-xl shadow-sm"
+                       bg-main-bg
+                       hover:bg-gray-200 dark:hover:bg-zinc-700
+                       text-xl"
             title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}>
             {isDark ? '☀️' : '🌙'}
         </button>
