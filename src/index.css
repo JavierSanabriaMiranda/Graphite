@@ -9,6 +9,15 @@
   @apply min-h-screen bg-gray-100 dark:bg-zinc-950 transition-colors duration-300;
 }
 
+
+/* Se define este estilo para que el texto fuerte (strong) herede el color del texto normal, 
+evitando que se cambie el color del texto al ponerlo bold */
+@layer base {
+  .prose strong {
+    color: inherit !important;
+  }
+}
+
 @layer base {
   :root {
     --color-app-bg: #f6f7f8;
