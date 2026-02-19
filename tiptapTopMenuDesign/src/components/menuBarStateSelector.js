@@ -8,6 +8,7 @@ export function menuBarStateSelector(ctx) {
     isUnderline: editor.isActive('underline'),
     isStrike: editor.isActive('strike'),
     isCode: editor.isActive('code'),
+    isBulletList: ctx.editor.isActive('bulletList'),
     
     // Tipos de bloque (Títulos y Párrafo)
     currentTextType: editor.isActive('heading', { level: 1 }) ? 'h1' 

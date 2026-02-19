@@ -82,3 +82,36 @@ evitando que se cambie el color del texto al ponerlo bold */
 .prose code::after {
   content: "" !important;
 }
+
+/* Bulleted lists style */
+
+/* Cambia el color de todos los puntos de las listas */
+.tiptap li::marker {
+  color: black;
+  font-weight: bold;
+}
+
+/* Color para modo oscuro (cuando el ancestro tiene la clase .dark) */
+.dark .tiptap li::marker{
+  @apply text-white;
+}
+
+.tiptap ul li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.tiptap ul {
+  list-style-type: disc;
+  @apply ml-6;
+}
+
+/* Estilos para sublistas profundidad 2 */
+.tiptap ul ul {
+  list-style-type: circle;
+}
+
+/* Estilos para sublistas profundidad 3 */
+.tiptap ul ul ul {
+  list-style-type: square;
+}
