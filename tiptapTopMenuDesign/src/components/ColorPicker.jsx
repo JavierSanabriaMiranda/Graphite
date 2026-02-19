@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
+import DropdownArrow from './DropdownArrow';
+import {useClickOutside} from '../hooks/useClickOutside';
 
 const ColorPicker = ({ editor }) => {
     if (!editor) return null;
@@ -19,22 +21,27 @@ const ColorPicker = ({ editor }) => {
 
     const [menuOpen, setMenuOpen] = useState(false);
 
+    const menuRef = useClickOutside(() => {
+        setMenuOpen(false);
+    });
+
     return (
-        <div className="relative inline-block">
+        <div className="relative inline-block" ref={menuRef}>
             {/* Botón Principal (Disparador) */}
             <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
             >
-                <div 
-                    className={`w-6 h-6 border border-black/10 rounded-full ${!currentColor ? 'bg-checkerboard' : ''}`} 
+                <div
+                    className={`w-6 h-6 border border-black/10 rounded-full ${!currentColor ? 'bg-checkerboard' : ''}`}
                     style={{ backgroundColor: currentColor }}
                 />
+                <DropdownArrow menuOpen={menuOpen} defaultRotateAngle={0} />
             </button>
 
             {/* Menú Desplegable */}
             {menuOpen && (
-                <div 
+                <div
                     className="absolute z-20 mt-2 p-2 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -47,11 +54,10 @@ const ColorPicker = ({ editor }) => {
                                     editor.chain().focus().setColor(color).run();
                                     setMenuOpen(false); // Opcional: cerrar al elegir
                                 }}
-                                className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-95 ${
-                                    editor.isActive('textStyle', { color })
+                                className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-95 ${editor.isActive('textStyle', { color })
                                         ? 'ring-2 ring-blue-500 border-white'
                                         : 'border-transparent'
-                                }`}
+                                    }`}
                                 style={{ backgroundColor: color }}
                                 title={name}
                             />
@@ -71,7 +77,7 @@ const ColorPicker = ({ editor }) => {
                                 className="absolute inset-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer"
                             />
                         </div>
-                        
+
                         <button
                             onClick={() => {
                                 editor.chain().focus().unsetColor().run();

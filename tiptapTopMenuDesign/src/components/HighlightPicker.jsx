@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
+import DropdownArrow from './DropdownArrow';
+import {useClickOutside} from '../hooks/useClickOutside';
 
 const HighlightPicker = ({ editor }) => {
     if (!editor) return null;
@@ -19,10 +21,12 @@ const HighlightPicker = ({ editor }) => {
 
     const [menuOpen, setMenuOpen] = useState(false);
 
-    
+    const menuRef = useClickOutside(() => {
+        setMenuOpen(false);
+    });
 
     return (
-        <div className="relative inline-block">
+        <div className="relative inline-block" ref={menuRef}>
             {/* Botón Principal (Disparador) */}
             <button
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -30,10 +34,11 @@ const HighlightPicker = ({ editor }) => {
             >
                 <div className="w-6 h-6 rounded-full border border-black/10 overflow-hidden relative">
                         <div 
-                            className={`absolute inset-0 opacity-60 ${!currentColor ? 'bg-checkerboard' : ''}`} 
+                            className={`absolute inset-0 opacity-70 ${!currentColor ? 'bg-checkerboard' : ''}`} 
                             style={{ backgroundColor: currentColor }}
                         />
                 </div>
+                <DropdownArrow menuOpen={menuOpen} defaultRotateAngle={0} />
             </button>
 
             {/* Menú Desplegable */}

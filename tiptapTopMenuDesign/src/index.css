@@ -21,6 +21,7 @@ evitando que se cambie el color del texto al ponerlo bold */
 @layer base {
   :root {
     --color-app-bg: #f6f7f8;
+    --color-primary: #136dec;
   }
 
   .dark {
@@ -31,8 +32,7 @@ evitando que se cambie el color del texto al ponerlo bold */
 /* 2. Registramos esas variables en el motor de Tailwind v4 */
 @theme {
   --color-main-bg: var(--color-app-bg);
-  --color-main-text: var(--color-app-text);
-  --color-accent: var(--color-brand);
+  --color-primary: var(--color-primary);
 }
 
 @layer utilities {

@@ -15,12 +15,14 @@ const MenuBar = ({ editor }) => {
   const getBtnClass = (isActive) => `
     px-3 py-1.5 rounded transition-all duration-200 text-sm font-medium
     ${isActive 
-      ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
+      ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 transition-colors' 
       : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700'}
   `;
 
+  const getDivisor = () => <div className="w-px h-6 bg-gray-300 dark:bg-zinc-700 mx-1" />; // Divisor
+
   return (
-    <div className="flex flex-wrap items-center gap-2 p-2 bg-main-bg border-b border-gray-200 dark:border-zinc-800 shrink-0">
+    <div className="flex flex-wrap items-center gap-2 p-2 bg-main-bg border-b border-gray-300 dark:border-zinc-700 shrink-0">
       {/* Select de Tipo de Texto */}
       <select 
         value={state.currentTextType} 
@@ -51,7 +53,7 @@ const MenuBar = ({ editor }) => {
       </select>
 
       {/* Divisor Visual */}
-      <div className="w-px h-6 bg-gray-400 dark:bg-zinc-700 mx-1" /> {/* Divisor */}
+      {getDivisor()}
 
       {/* Botones de Formato con isActive() nativo */}
       <button 
@@ -101,7 +103,7 @@ const MenuBar = ({ editor }) => {
       </svg>
       </button>
 
-      <div className="w-px h-6 bg-gray-400 dark:bg-zinc-700 mx-1" /> {/* Divisor */}
+      {getDivisor()}
 
       <ColorPicker editor={editor} />
       <HighlightPicker editor={editor} />
