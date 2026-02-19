@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
 
-const ColorPicker = ({ editor }) => {
+const HighlightPicker = ({ editor }) => {
     if (!editor) return null;
 
     const presets = [
@@ -14,10 +14,12 @@ const ColorPicker = ({ editor }) => {
 
     const currentColor = useEditorState({
         editor,
-        selector: (ctx) => ctx.editor.getAttributes('textStyle').color,
+        selector: (ctx) => ctx.editor.getAttributes('highlight').color,
     });
 
     const [menuOpen, setMenuOpen] = useState(false);
+
+    
 
     return (
         <div className="relative inline-block">
@@ -26,10 +28,12 @@ const ColorPicker = ({ editor }) => {
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
             >
-                <div 
-                    className={`w-6 h-6 border border-black/10 rounded-full ${!currentColor ? 'bg-checkerboard' : ''}`} 
-                    style={{ backgroundColor: currentColor }}
-                />
+                <div className="w-6 h-6 rounded-full border border-black/10 overflow-hidden relative">
+                        <div 
+                            className={`absolute inset-0 opacity-60 ${!currentColor ? 'bg-checkerboard' : ''}`} 
+                            style={{ backgroundColor: currentColor }}
+                        />
+                </div>
             </button>
 
             {/* Menú Desplegable */}
@@ -44,11 +48,11 @@ const ColorPicker = ({ editor }) => {
                             <button
                                 key={color}
                                 onClick={() => {
-                                    editor.chain().focus().setColor(color).run();
+                                    editor.chain().focus().setHighlight({color: color}).run();
                                     setMenuOpen(false); // Opcional: cerrar al elegir
                                 }}
-                                className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-95 ${
-                                    editor.isActive('textStyle', { color })
+                                className={`w-6 h-6 rounded-full opacity-60 border transition-all hover:scale-110 active:scale-95 ${
+                                    editor.isActive('highlight', { color })
                                         ? 'ring-2 ring-blue-500 border-white'
                                         : 'border-transparent'
                                 }`}
@@ -64,17 +68,21 @@ const ColorPicker = ({ editor }) => {
                     {/* Selector Personalizado a la derecha */}
                     <div className="flex items-center gap-2">
                         <div className="relative w-8 h-8 overflow-hidden border border-gray-300 dark:border-zinc-500 rounded-md shadow-sm">
+                            <div 
+                                    className="absolute inset-0 opacity-60 pointer-events-none" 
+                                    style={{ backgroundColor: currentColor || 'transparent' }}
+                                />
                             <input
-                                type="color"
-                                onInput={e => editor.chain().focus().setColor(e.target.value).run()}
-                                value={currentColor}
-                                className="absolute inset-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer"
-                            />
+                                    type="color"
+                                    onInput={e => editor.chain().focus().setHighlight({ color: e.target.value }).run()}
+                                    value={currentColor || '#eab308'}
+                                    className="absolute inset-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer opacity-0"
+                                />
                         </div>
                         
                         <button
                             onClick={() => {
-                                editor.chain().focus().unsetColor().run();
+                                editor.chain().focus().unsetHighlight().run();
                                 setMenuOpen(false);
                             }}
                             className="p-1 text-[10px] uppercase tracking-wider font-bold text-gray-400 hover:text-red-500 transition-colors"
@@ -88,4 +96,4 @@ const ColorPicker = ({ editor }) => {
     );
 };
 
-export default ColorPicker;
+export default HighlightPicker;

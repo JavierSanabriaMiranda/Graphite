@@ -2,6 +2,7 @@ import { useEditorState } from '@tiptap/react';
 import { menuBarStateSelector } from './menuBarStateSelector';
 import ChangeThemeButton from './ChangeThemeButton';
 import ColorPicker from './ColorPicker';
+import HighlightPicker from './HighlightPicker';
 
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
@@ -78,6 +79,7 @@ const MenuBar = ({ editor }) => {
       <div className="w-px h-6 bg-gray-400 dark:bg-zinc-700 mx-1" /> {/* Divisor */}
 
       <ColorPicker editor={editor} />
+      <HighlightPicker editor={editor} />
 
       <div className='ml-auto'>
         <ChangeThemeButton />

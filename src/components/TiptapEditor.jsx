@@ -5,6 +5,7 @@ import { TextStyle } from '@tiptap/extension-text-style' // Entre llaves
 import { FontFamily } from '@tiptap/extension-font-family' // Entre llaves
 import { Color } from '@tiptap/extension-color'
 
+import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
 
@@ -21,6 +22,7 @@ const TiptapEditor = () => {
         emptyEditorClass: 'is-editor-empty',
       }),
       Color,
+      Highlight.configure({ multicolor: true }),
     ],
     content: '<p>Contenido inicial...</p>',
     editorProps: {
