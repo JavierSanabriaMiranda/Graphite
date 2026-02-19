@@ -76,6 +76,31 @@ const MenuBar = ({ editor }) => {
         <u>U</u>
       </button>
 
+      <button 
+        type="button"
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+        className={getBtnClass(state.isStrike)}
+      >
+        <s className="decoration-2">S</s>
+      </button>
+
+      <button 
+        type="button"
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        className={getBtnClass(state.isCode)}
+      >
+        <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        strokeWidth={2} 
+        stroke="currentColor" 
+        className="w-5 h-5"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+      </svg>
+      </button>
+
       <div className="w-px h-6 bg-gray-400 dark:bg-zinc-700 mx-1" /> {/* Divisor */}
 
       <ColorPicker editor={editor} />

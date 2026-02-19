@@ -24,7 +24,7 @@ evitando que se cambie el color del texto al ponerlo bold */
   }
 
   .dark {
-    --color-app-bg: #101822; 
+    --color-app-bg: #101822;
   }
 }
 
@@ -36,26 +36,49 @@ evitando que se cambie el color del texto al ponerlo bold */
 }
 
 @layer utilities {
+
   /* Patrón de tablero de ajedrez para transparencia */
   .bg-checkerboard {
     /* Colores base para el patrón */
-    --check-1: rgba(0, 0, 0, 0.2); /* Gris claro transparente */
+    --check-1: rgba(0, 0, 0, 0.2);
+    /* Gris claro transparente */
     --check-2: transparent;
 
-    background-image: conic-gradient(
-      var(--check-1) 90deg,
-      var(--check-2) 90deg 180deg,
-      var(--check-1) 180deg 270deg,
-      var(--check-2) 270deg
-    );
-    background-size: 11px 11px; /* Tamaño de la cuadrícula */
+    background-image: conic-gradient(var(--check-1) 90deg,
+        var(--check-2) 90deg 180deg,
+        var(--check-1) 180deg 270deg,
+        var(--check-2) 270deg);
+    background-size: 11px 11px;
+    /* Tamaño de la cuadrícula */
     background-position: center;
-    background-color: white; /* Fondo base para modo claro */
+    background-color: white;
+    /* Fondo base para modo claro */
   }
 
   /* Ajuste opcional para modo oscuro si quieres que el fondo sea más oscuro */
   .dark .bg-checkerboard {
-     background-color: rgba(255, 255, 255, 0.9); /* Fondo base sutil para oscuro */
-     --check-1: rgba(0, 0, 0, 0.2); /* Cuadros un poco más oscuros */
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Fondo base sutil para oscuro */
+    --check-1: rgba(0, 0, 0, 0.2);
+    /* Cuadros un poco más oscuros */
   }
+}
+
+/* 1. Estilo base para el código (Rojo por defecto) */
+.tiptap code {
+  @apply bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono text-sm;
+  color: #ef4444; /* Este es el color si no hay nada más */
+}
+
+/* 2. REGLA MAESTRA PARA LA HERENCIA (Estructura: span > code) */
+/* Si el code es descendiente de cualquier cosa que tenga un style de color, 
+   FORZAMOS que use el color de ese ancestro. */
+.tiptap [style*="color"] code {
+  color: inherit !important;
+}
+
+/* 3. Limpieza de backticks (las comillas `` que pone prose) */
+.prose code::before,
+.prose code::after {
+  content: "" !important;
 }
