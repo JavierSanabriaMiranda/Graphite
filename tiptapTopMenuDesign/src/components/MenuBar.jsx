@@ -5,6 +5,7 @@ import ColorPicker from './ColorPicker';
 import HighlightPicker from './HighlightPicker';
 import AlignmentSelector from './AlignmentSelector';
 import BulletSelector from './BulletSelector';
+import TodoList from './TodoList';
 
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
@@ -116,6 +117,8 @@ const MenuBar = ({ editor }) => {
 
       {/* Botón de Bulleted List */}
       <BulletSelector editor={editor} />
+
+      <TodoList editor={editor} />
 
       <div className='ml-auto'>
         <ChangeThemeButton />

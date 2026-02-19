@@ -7,6 +7,8 @@ import { Color } from '@tiptap/extension-color'
 import Code from '@tiptap/extension-code'
 import TextAlign from '@tiptap/extension-text-align'
 import BulletList from '@tiptap/extension-bullet-list';
+import TaskList from '@tiptap/extension-task-list'
+import TaskItem from '@tiptap/extension-task-item'
 
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -35,6 +37,10 @@ const TiptapEditor = () => {
             },
           }
         },
+      }),
+      TaskList,
+      TaskItem.configure({
+        nested: true, // Permite anidar tareas dentro de otras
       }),
       Color,
       Highlight.configure({ multicolor: true }),

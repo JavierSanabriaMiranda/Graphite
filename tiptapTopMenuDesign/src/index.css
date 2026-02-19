@@ -115,3 +115,78 @@ evitando que se cambie el color del texto al ponerlo bold */
 
 .tiptap ul[data-list-style="square"], 
 .tiptap ul[data-list-style="square"] ul { list-style-type: square !important; }
+
+/* Todo List Style */
+
+/* 1. Contenedor de la lista */
+.tiptap ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+/* 2. Cada fila de la tarea */
+.tiptap ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start; /* Alinea arriba para tareas de varias líneas */
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+/* 3. El Checkbox (Input oculto pero funcional) */
+.tiptap ul[data-type="taskList"] input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  @apply flex-shrink-0 cursor-pointer transition-all duration-200;
+  
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.4rem; /* Alineación manual con el texto */
+  
+  /* Borde y fondo en modo claro */
+  border: 2px solid #37352f; 
+  border-radius: 3px;
+  background-color: transparent;
+  position: relative;
+}
+
+/* 4. Checkbox en Modo Oscuro */
+.dark .tiptap ul[data-type="taskList"] input[type="checkbox"] {
+  border-color: white;
+}
+
+/* 5. Estado MARCADO (Checked) */
+.tiptap ul[data-type="taskList"] input[type="checkbox"]:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* 6. El símbolo de Check (Blanco) */
+.tiptap ul[data-type="taskList"] input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 3.5px;
+  top: 0.5px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+/* 7. El Texto de la tarea (Notion Style) */
+.tiptap ul[data-type="taskList"] li > div {
+  @apply flex-1 min-w-0;
+}
+
+.tiptap ul[data-type="taskList"] li p {
+  margin: 0 !important; /* Quitar márgenes internos del párrafo */
+  @apply transition-all duration-300;
+}
+
+/* 8. Estilo cuando está completado: Tachado y Gris */
+.tiptap li[data-checked="true"] > div > p {
+  @apply text-gray-400 dark:text-zinc-500;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
