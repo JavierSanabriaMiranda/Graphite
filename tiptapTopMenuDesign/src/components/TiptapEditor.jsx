@@ -5,6 +5,7 @@ import { TextStyle } from '@tiptap/extension-text-style' // Entre llaves
 import { FontFamily } from '@tiptap/extension-font-family' // Entre llaves
 import { Color } from '@tiptap/extension-color'
 import Code from '@tiptap/extension-code'
+import TextAlign from '@tiptap/extension-text-align'
 
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -20,6 +21,9 @@ const TiptapEditor = () => {
       Underline,
       TextStyle,
       FontFamily,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'], // Especifica dónde se puede alinear
+      }),
       Placeholder.configure({
         placeholder: 'Escribe algo increíble...',
         // Esta clase se aplica solo al párrafo vacío
