@@ -66,8 +66,10 @@ evitando que se cambie el color del texto al ponerlo bold */
 
 /* 1. Estilo base para el código (Rojo por defecto) */
 .tiptap code {
-  @apply bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono text-sm;
+  @apply bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono;
   color: #ef4444; /* Este es el color si no hay nada más */
+  font-size: 0.95em; /* Tamaño ligeramente menor para el código */
+  font-weight: inherit; /* Hereda el peso del texto normal */
 }
 
 /* 2. REGLA MAESTRA PARA LA HERENCIA (Estructura: span > code) */

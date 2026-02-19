@@ -1,11 +1,21 @@
+import { useEditorState } from '@tiptap/react';
+
 const TodoList = ({editor}) => {
     if (!editor) return null;
+
+    const isTodoListActive = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.isActive('taskList'),
+    });
 
     return (
         <button
             type="button"
             onClick={() => editor.chain().focus().toggleTaskList().run()}
-            className="text-black dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-700 p-2 rounded-lg transition-colors"
+            className={` p-2 rounded-lg transition-colors ${
+                isTodoListActive 
+                ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-md' 
+                : 'text-black dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
             title="Lista de tareas"
         >
             <svg
