@@ -6,6 +6,7 @@ import { FontFamily } from '@tiptap/extension-font-family' // Entre llaves
 import { Color } from '@tiptap/extension-color'
 import Code from '@tiptap/extension-code'
 import TextAlign from '@tiptap/extension-text-align'
+import BulletList from '@tiptap/extension-bullet-list';
 
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -24,10 +25,16 @@ const TiptapEditor = () => {
       TextAlign.configure({
         types: ['heading', 'paragraph'], // Especifica dónde se puede alinear
       }),
-      Placeholder.configure({
-        placeholder: 'Escribe algo increíble...',
-        // Esta clase se aplica solo al párrafo vacío
-        emptyEditorClass: 'is-editor-empty',
+      BulletList.extend({
+        addAttributes() {
+          return {
+            listStyle: {
+              default: 'default', // La mezcla que ya hicimos
+              parseHTML: element => element.getAttribute('data-list-style'),
+              renderHTML: attributes => ({ 'data-list-style': attributes.listStyle }),
+            },
+          }
+        },
       }),
       Color,
       Highlight.configure({ multicolor: true }),
@@ -38,6 +45,11 @@ const TiptapEditor = () => {
         HTMLAttributes: {
           class: 'rounded-md bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 font-mono text-sm',
         },
+      }),
+      Placeholder.configure({
+        placeholder: 'Escribe algo increíble...',
+        // Esta clase se aplica solo al párrafo vacío
+        emptyEditorClass: 'is-editor-empty',
       }),
     ],
     content: '<p>Contenido inicial...</p>',
