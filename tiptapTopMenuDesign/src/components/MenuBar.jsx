@@ -5,6 +5,7 @@ import ColorPicker from './ColorPicker';
 import HighlightPicker from './HighlightPicker';
 import AlignmentSelector from './AlignmentSelector';
 import BulletSelector from './BulletSelector';
+import NumberedListSelector from './NumberedListSelector';
 import TodoList from './TodoList';
 
 const MenuBar = ({ editor }) => {
@@ -117,6 +118,8 @@ const MenuBar = ({ editor }) => {
 
       {/* Botón de Bulleted List */}
       <BulletSelector editor={editor} />
+
+      <NumberedListSelector editor={editor} />
 
       <TodoList editor={editor} />
 

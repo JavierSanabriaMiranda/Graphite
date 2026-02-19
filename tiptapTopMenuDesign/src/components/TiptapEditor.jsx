@@ -7,6 +7,7 @@ import { Color } from '@tiptap/extension-color'
 import Code from '@tiptap/extension-code'
 import TextAlign from '@tiptap/extension-text-align'
 import BulletList from '@tiptap/extension-bullet-list';
+import OrderedList from '@tiptap/extension-ordered-list';
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 
@@ -31,7 +32,18 @@ const TiptapEditor = () => {
         addAttributes() {
           return {
             listStyle: {
-              default: 'default', // La mezcla que ya hicimos
+              default: 'default', // El estilo por defecto
+              parseHTML: element => element.getAttribute('data-list-style'),
+              renderHTML: attributes => ({ 'data-list-style': attributes.listStyle }),
+            },
+          }
+        },
+      }),
+      OrderedList.extend({
+        addAttributes() {
+          return {
+            listStyle: {
+              default: 'default', // El estilo por defecto
               parseHTML: element => element.getAttribute('data-list-style'),
               renderHTML: attributes => ({ 'data-list-style': attributes.listStyle }),
             },

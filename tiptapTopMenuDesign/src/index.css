@@ -116,6 +116,93 @@ evitando que se cambie el color del texto al ponerlo bold */
 .tiptap ul[data-list-style="square"], 
 .tiptap ul[data-list-style="square"] ul { list-style-type: square !important; }
 
+/* Numbered lists style */
+
+/* 1. Contenedor principal de la lista */
+.tiptap ol {
+  list-style-type: none !important;
+  counter-reset: list-counter;
+  /* my-4 añade espacio arriba/abajo de la lista entera */
+  /* space-y-2 añade espacio entre los li del mismo nivel */
+  @apply ml-0 my-4 space-y-2; 
+}
+
+/* 2. El elemento de la lista (li) */
+.tiptap ol li {
+  counter-increment: list-counter;
+  display: flex;
+  flex-wrap: wrap; /* PERMITE que la sublista baje a la siguiente línea */
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+/* 3. El número/letra (::before) */
+.tiptap ol li::before {
+  @apply font-medium text-black dark:text-white min-w-[1.5rem] text-right;
+  line-height: inherit;
+  flex-shrink: 0;
+}
+
+/* 4. El contenedor del texto */
+/* Forzamos que el texto ocupe el espacio restante para que la sublista baje */
+.tiptap ol li > div, 
+.tiptap ol li > p {
+  flex: 1; 
+  min-width: 0;
+  margin: 0 !important;
+}
+
+/* 5. LISTAS ANIDADAS (Subniveles) */
+.tiptap li > ol {
+  flex-basis: 100%; /* Ocupa todo el ancho para bajar de línea */
+  
+  /* MARGEN SUPERIOR: Igual al space-y-2 de los li (0.5rem) */
+  margin-top: 0 !important; 
+  
+  /* MARGEN IZQUIERDO: Para que no se alinee con el número superior */
+  /* sino que tenga su propia sangría */
+  margin-left: 1.2rem !important; 
+  
+  margin-bottom: 0 !important; /* Evita espacios dobles al final */
+}
+
+/* --- FORMATOS DE CONTENIDO (Igual que antes) --- */
+/* --- OPCIÓN 1: MIX (1 -> a -> i) --- */
+
+/* Nivel 1: El reset ya lo hace el .tiptap ol general con list-counter */
+.tiptap ol[data-list-style="mix"] li::before { 
+  content: counter(list-counter) ". "; 
+}
+
+/* Nivel 2: Reset del contador de letras */
+.tiptap ol[data-list-style="mix"] ol { 
+  counter-reset: alpha-counter; 
+}
+.tiptap ol[data-list-style="mix"] ol > li {
+  counter-increment: alpha-counter;
+}
+.tiptap ol[data-list-style="mix"] ol > li::before { 
+  content: counter(alpha-counter, lower-alpha) ". "; 
+}
+
+/* Nivel 3: Reset del contador romano (ESTO ES LO QUE FALTABA) */
+.tiptap ol[data-list-style="mix"] ol ol { 
+  counter-reset: roman-counter; 
+}
+.tiptap ol[data-list-style="mix"] ol ol > li {
+  counter-increment: roman-counter;
+}
+.tiptap ol[data-list-style="mix"] ol ol > li::before { 
+  content: counter(roman-counter, lower-roman) ". "; 
+}
+
+.tiptap ol[data-list-style="default"] { counter-reset: section; }
+.tiptap ol[data-list-style="default"] li { counter-increment: section; }
+.tiptap ol[data-list-style="default"] li::before { content: counters(section, ".") ". "; }
+
+.tiptap ol[data-list-style="alpha"] li::before { content: counter(list-counter, lower-alpha) ". "; }
+.tiptap ol[data-list-style="roman"] li::before { content: counter(list-counter, lower-roman) ". "; }
+
 /* Todo List Style */
 
 /* 1. Contenedor de la lista */
