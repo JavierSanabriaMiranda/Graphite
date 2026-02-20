@@ -3,10 +3,15 @@ import { useEditorState } from '@tiptap/react';
 import DropdownArrow from './DropdownArrow';
 import { useClickOutside } from '../hooks/useClickOutside';
 
+/**
+ * Tool that allows to select the bullet style for the bullet list.
+ * 
+ * @param {Object} editor - The editor instance 
+ */
 const BulletSelector = ({ editor }) => {
     if (!editor) return null;
 
-    // Definimos los iconos para cada variante
+    // Icons for the different bullet styles
     const options = [
         { 
             id: 'default', 
@@ -43,7 +48,6 @@ const BulletSelector = ({ editor }) => {
         { 
             id: 'square', 
             name: 'Squares', 
-            // Cuadrados más pequeños y con más espacio entre ellos (y=4, y=12, y=20)
             icon: (
                 <g fill="currentColor">
                     <rect x="2" y="3.5" width="4.5" height="4.5" />
@@ -60,7 +64,6 @@ const BulletSelector = ({ editor }) => {
         { 
             id: 'mix', 
             name: 'Mix', 
-            // Estructura escalonada: Punto -> Círculo -> Cuadrado
             icon: (
                 <g stroke="currentColor" strokeLinecap="round">
                     {/* Nivel 1: Disco */}
@@ -105,7 +108,7 @@ const BulletSelector = ({ editor }) => {
 
     return (
         <div className="relative inline-block" ref={menuRef}>
-            {/* Botón Disparador Principal */}
+            {/* Main button */}
             <button
                 type="button"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -117,13 +120,13 @@ const BulletSelector = ({ editor }) => {
                 title="Lista de viñetas"
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {/* Mostramos el icono de la opción seleccionada o el por defecto */}
+                    {/* Shows the default or the selected option icon */}
                     {options.find(o => o.id === currentStyle)?.icon || options[0].icon}
                 </svg>
                 <DropdownArrow menuOpen={menuOpen} defaultRotateAngle={0} />
             </button>
 
-            {/* Menú Desplegable Horizontal */}
+            {/* Selection menu */}
             {menuOpen && (
                 <div className="absolute z-30 mt-2 p-1.5 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-2xl flex items-center gap-1 animate-in fade-in zoom-in duration-150">
                     {options.map((opt) => (

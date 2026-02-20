@@ -1,3 +1,12 @@
+
+/**
+ * Dropdown arrow component that rotates based on the open/closed state of the dropdown menu
+ * 
+ * @param {boolean} menuOpen - Whether the dropdown menu is currently open
+ * @param {number} defaultRotateAngle - The default rotation angle of the arrow when the menu is closed (in degrees, e.g., -90, 0, 90, 180)
+ * @param {number} rotateAngle - The final angle of the arrow when the menu is open (in degrees, e.g., -90, 0, 90, 180) 
+ * @returns 
+ */
 const DropdownArrow = ({ menuOpen, defaultRotateAngle = -90, rotateAngle = 180 }) => {
 
     const rotations = {

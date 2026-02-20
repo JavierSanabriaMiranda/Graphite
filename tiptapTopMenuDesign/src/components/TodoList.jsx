@@ -1,5 +1,10 @@
 import { useEditorState } from '@tiptap/react';
 
+/**
+ * Todo list button component for toggling task lists in the editor.
+ * 
+ * @param {Object} editor - The editor instance
+ */
 const TodoList = ({editor}) => {
     if (!editor) return null;
 
@@ -26,7 +31,7 @@ const TodoList = ({editor}) => {
                 stroke="currentColor"
                 className="w-5 h-5"
             >
-                {/* FILA 1: Tarea terminada (Solo el tick) */}
+                {/* ROW 1: Tick for finished task */}
                 <path
                     d="M3 8l2.5 2.5L9 5.5"
                     strokeLinecap="round"
@@ -35,7 +40,7 @@ const TodoList = ({editor}) => {
                 />
                 <line x1="14" y1="8.5" x2="21" y2="8.5" strokeLinecap="round" opacity="0.6" />
 
-                {/* FILA 2: Tarea pendiente (Cuadrado vacío ahora más pequeño) */}
+                {/* ROW 2: Pending task */}
                 <rect x="3.75" y="14.75" width="4.5" height="4.5" rx="1.2" />
                 <line x1="14" y1="17.5" x2="19" y2="17.5" strokeLinecap="round" />
             </svg>

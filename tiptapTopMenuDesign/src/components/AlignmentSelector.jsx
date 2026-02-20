@@ -3,6 +3,11 @@ import { useEditorState } from '@tiptap/react';
 import DropdownArrow from './DropdownArrow';
 import { useClickOutside } from '../hooks/useClickOutside';
 
+/**
+ * Tool that allows to select the text alignment.
+ * 
+ * @param {Object} editor - The editor instance 
+ */
 const AlignmentSelector = ({ editor }) => {
     if (!editor) return null;
 
@@ -29,7 +34,7 @@ const AlignmentSelector = ({ editor }) => {
         },
     ];
 
-    // Detectamos la alineación actual
+    // Detect current alignment state
     const currentAlign = useEditorState({
         editor,
         selector: (ctx) => {
@@ -50,7 +55,7 @@ const AlignmentSelector = ({ editor }) => {
 
     return (
         <div className="relative inline-block" ref={menuRef}>
-            {/* Botón Principal */}
+            {/* Main button */}
             <button
                 type="button"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -73,7 +78,7 @@ const AlignmentSelector = ({ editor }) => {
                 <DropdownArrow menuOpen={menuOpen} defaultRotateAngle={0} />
             </button>
 
-            {/* Menú Desplegable */}
+            {/* Selection menu */}
             {menuOpen && (
                 <div
                     className="absolute z-20 mt-2 p-1.5 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-1 animate-in fade-in zoom-in duration-150"

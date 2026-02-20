@@ -3,6 +3,11 @@ import { useEditorState } from '@tiptap/react';
 import DropdownArrow from './DropdownArrow';
 import { useClickOutside } from '../hooks/useClickOutside';
 
+/**
+ * NumberedListSelector component for selecting different ordered list styles in the editor.
+ * 
+ * @param {Object} editor - The editor instance 
+ */
 const NumberedListSelector = ({ editor }) => {
     if (!editor) return null;
 

@@ -1,23 +1,16 @@
-/* src/index.css */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @variant dark (&:where(.dark, .dark *));
 
-/* Solo dejamos el #root para asegurar que el fondo cubra todo */
-#root {
-  @apply min-h-screen bg-gray-100 dark:bg-zinc-950 transition-colors duration-300;
-}
-
-
-/* Se define este estilo para que el texto fuerte (strong) herede el color del texto normal, 
-evitando que se cambie el color del texto al ponerlo bold */
+/* Style defined for the strong texto to inherit the normal text color */
 @layer base {
   .prose strong {
     color: inherit !important;
   }
 }
 
+/* Defining variables CSS for both light and dark themes */
 @layer base {
   :root {
     --color-app-bg: #f6f7f8;
@@ -29,7 +22,7 @@ evitando que se cambie el color del texto al ponerlo bold */
   }
 }
 
-/* 2. Registramos esas variables en el motor de Tailwind v4 */
+/* Register themes variables on the Tailwind v4 engine */
 @theme {
   --color-main-bg: var(--color-app-bg);
   --color-primary: var(--color-primary);
@@ -37,63 +30,71 @@ evitando que se cambie el color del texto al ponerlo bold */
 
 @layer utilities {
 
-  /* Patrón de tablero de ajedrez para transparencia */
+  /* Chess pattern */
   .bg-checkerboard {
-    /* Colores base para el patrón */
+    /* Base colors for the pattern */
     --check-1: rgba(0, 0, 0, 0.2);
-    /* Gris claro transparente */
     --check-2: transparent;
 
     background-image: conic-gradient(var(--check-1) 90deg,
         var(--check-2) 90deg 180deg,
         var(--check-1) 180deg 270deg,
         var(--check-2) 270deg);
+    /* Size of the squares */
     background-size: 11px 11px;
-    /* Tamaño de la cuadrícula */
+    
     background-position: center;
+    /* Base background for light theme */
     background-color: white;
-    /* Fondo base para modo claro */
   }
 
-  /* Ajuste opcional para modo oscuro si quieres que el fondo sea más oscuro */
+  /* Adjustment for dark theme */
   .dark .bg-checkerboard {
     background-color: rgba(255, 255, 255, 0.9);
-    /* Fondo base sutil para oscuro */
     --check-1: rgba(0, 0, 0, 0.2);
-    /* Cuadros un poco más oscuros */
   }
 }
 
-/* 1. Estilo base para el código (Rojo por defecto) */
-.tiptap code {
-  @apply bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono;
-  color: #ef4444; /* Este es el color si no hay nada más */
-  font-size: 0.95em; /* Tamaño ligeramente menor para el código */
-  font-weight: inherit; /* Hereda el peso del texto normal */
+/* To ensure the background covers all the screen */
+#root {
+  @apply min-h-screen transition-colors duration-300;
 }
 
-/* 2. REGLA MAESTRA PARA LA HERENCIA (Estructura: span > code) */
-/* Si el code es descendiente de cualquier cosa que tenga un style de color, 
-   FORZAMOS que use el color de ese ancestro. */
+/* ====================
+Code style
+==================== */
+
+/* Base style for code */
+.tiptap code {
+  @apply bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono;
+  color: #ef4444; /* Default color */
+  font-size: 0.95em; /* Smaller size for code */
+  font-weight: inherit; 
+}
+
+/* Inherit essencial rule for code when span > code */
+/* Force the code to use the color of it's parent */
 .tiptap [style*="color"] code {
   color: inherit !important;
 }
 
-/* 3. Limpieza de backticks (las comillas `` que pone prose) */
+/* Removing backticks (` `) */
 .prose code::before,
 .prose code::after {
   content: "" !important;
 }
 
-/* Bulleted lists style */
+/* ====================
+Bulleted list style
+==================== */
 
-/* Cambia el color de todos los puntos de las listas */
+/* Changes the color of the bulleted points of the list (light theme) */
 .tiptap li::marker {
   color: black;
   font-weight: bold;
 }
 
-/* Color para modo oscuro (cuando el ancestro tiene la clase .dark) */
+/* Changes the color of the bulleted points of the list (dark theme) */
 .dark .tiptap li::marker{
   @apply text-white;
 }
@@ -102,13 +103,13 @@ evitando que se cambie el color del texto al ponerlo bold */
   position: relative;
   padding-left: 1rem;
 }
-
-/* 1. Estilo Combinado (Default - lo que ya teníamos) */
+/* CUSTOM BULLETED POINTS PATTERNS */
+/* Mix style (combines disc with circle and square) */
 .tiptap ul[data-list-style="default"] { list-style-type: disc !important; }
 .tiptap ul[data-list-style="default"] ul { list-style-type: circle !important; }
 .tiptap ul[data-list-style="default"] ul ul { list-style-type: square !important; }
 
-/* 2. Estilos Fijos (Fuerzan a todos los niveles) */
+/* Static styles (all leves the same bulleted point) */
 .tiptap ul[data-list-style="disc"], 
 .tiptap ul[data-list-style="disc"] ul { list-style-type: disc !important; }
 
@@ -118,35 +119,40 @@ evitando que se cambie el color del texto al ponerlo bold */
 .tiptap ul[data-list-style="square"], 
 .tiptap ul[data-list-style="square"] ul { list-style-type: square !important; }
 
-/* Numbered lists style */
+/* ====================
+Numbered list style
+==================== */
 
-/* 1. Contenedor principal de la lista */
+/* Main container */
 .tiptap ol {
   list-style-type: none !important;
   counter-reset: list-counter;
-  /* my-4 añade espacio arriba/abajo de la lista entera */
-  /* space-y-2 añade espacio entre los li del mismo nivel */
+  /* my-4 adds space on top and bottom of the whole list */
+  /* space-y-2 adds space between same level li */
   @apply ml-0 my-4 space-y-2; 
 }
 
-/* 2. El elemento de la lista (li) */
+/* List item (li) */
 .tiptap ol li {
   counter-increment: list-counter;
   display: flex;
-  flex-wrap: wrap; /* PERMITE que la sublista baje a la siguiente línea */
+  flex-wrap: wrap; /* Allows sublevels to skip to next line */
   align-items: baseline;
   gap: 0.5rem;
 }
 
-/* 3. El número/letra (::before) */
+/* Number/letter */
 .tiptap ol li::before {
-  @apply font-medium text-black dark:text-white min-w-[1.5rem] text-right;
+  @apply font-medium text-black min-w-[1.5rem] text-right;
   line-height: inherit;
   flex-shrink: 0;
 }
 
-/* 4. El contenedor del texto */
-/* Forzamos que el texto ocupe el espacio restante para que la sublista baje */
+.dark .tiptap ol li::before {
+  color: white;
+}
+
+/* Text container */
 .tiptap ol li > div, 
 .tiptap ol li > p {
   flex: 1; 
@@ -154,29 +160,20 @@ evitando que se cambie el color del texto al ponerlo bold */
   margin: 0 !important;
 }
 
-/* 5. LISTAS ANIDADAS (Subniveles) */
+/* Sublevels of the list */
 .tiptap li > ol {
-  flex-basis: 100%; /* Ocupa todo el ancho para bajar de línea */
-  
-  /* MARGEN SUPERIOR: Igual al space-y-2 de los li (0.5rem) */
+  flex-basis: 100%;
   margin-top: 0 !important; 
-  
-  /* MARGEN IZQUIERDO: Para que no se alinee con el número superior */
-  /* sino que tenga su propia sangría */
   margin-left: 1.2rem !important; 
-  
-  margin-bottom: 0 !important; /* Evita espacios dobles al final */
+  margin-bottom: 0 !important;
 }
 
-/* --- FORMATOS DE CONTENIDO (Igual que antes) --- */
-/* --- OPCIÓN 1: MIX (1 -> a -> i) --- */
+/* --- CUSTOM NUMBERING FORMAT --- */
 
-/* Nivel 1: El reset ya lo hace el .tiptap ol general con list-counter */
+/* Mix style (combines numbers with letters and with roman number) */
 .tiptap ol[data-list-style="mix"] li::before { 
   content: counter(list-counter) ". "; 
 }
-
-/* Nivel 2: Reset del contador de letras */
 .tiptap ol[data-list-style="mix"] ol { 
   counter-reset: alpha-counter; 
 }
@@ -186,8 +183,6 @@ evitando que se cambie el color del texto al ponerlo bold */
 .tiptap ol[data-list-style="mix"] ol > li::before { 
   content: counter(alpha-counter, lower-alpha) ". "; 
 }
-
-/* Nivel 3: Reset del contador romano (ESTO ES LO QUE FALTABA) */
 .tiptap ol[data-list-style="mix"] ol ol { 
   counter-reset: roman-counter; 
 }
@@ -198,6 +193,7 @@ evitando que se cambie el color del texto al ponerlo bold */
   content: counter(roman-counter, lower-roman) ". "; 
 }
 
+/* Static style (all the list the same type) */
 .tiptap ol[data-list-style="default"] { counter-reset: section; }
 .tiptap ol[data-list-style="default"] li { counter-increment: section; }
 .tiptap ol[data-list-style="default"] li::before { content: counters(section, ".") ". "; }
@@ -205,24 +201,26 @@ evitando que se cambie el color del texto al ponerlo bold */
 .tiptap ol[data-list-style="alpha"] li::before { content: counter(list-counter, lower-alpha) ". "; }
 .tiptap ol[data-list-style="roman"] li::before { content: counter(list-counter, lower-roman) ". "; }
 
-/* Todo List Style */
+/* ====================
+To-do list style
+==================== */
 
-/* 1. Contenedor de la lista */
+/* List container */
 .tiptap ul[data-type="taskList"] {
   list-style: none;
   padding: 0;
   margin: 1rem 0;
 }
 
-/* 2. Cada fila de la tarea */
+/* Rows of the list */
 .tiptap ul[data-type="taskList"] li {
   display: flex;
-  align-items: flex-start; /* Alinea arriba para tareas de varias líneas */
+  align-items: flex-start;
   gap: 0.75rem;
   margin-bottom: 0.4rem;
 }
 
-/* 3. El Checkbox (Input oculto pero funcional) */
+/* Checkbox */
 .tiptap ul[data-type="taskList"] input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -230,27 +228,27 @@ evitando que se cambie el color del texto al ponerlo bold */
   
   width: 1.15rem;
   height: 1.15rem;
-  margin-top: 0.4rem; /* Alineación manual con el texto */
+  margin-top: 0.4rem; /* Manual alignmen with text */
   
-  /* Borde y fondo en modo claro */
+  /* Background and border on light theme */
   border: 2px solid #37352f; 
   border-radius: 3px;
   background-color: transparent;
   position: relative;
 }
 
-/* 4. Checkbox en Modo Oscuro */
+/* Dark theme */
 .dark .tiptap ul[data-type="taskList"] input[type="checkbox"] {
   border-color: white;
 }
 
-/* 5. Estado MARCADO (Checked) */
+/* Checked state */
 .tiptap ul[data-type="taskList"] input[type="checkbox"]:checked {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
-/* 6. El símbolo de Check (Blanco) */
+/* Checked symbol */
 .tiptap ul[data-type="taskList"] input[type="checkbox"]:checked::after {
   content: "";
   position: absolute;
@@ -263,17 +261,17 @@ evitando que se cambie el color del texto al ponerlo bold */
   transform: rotate(45deg);
 }
 
-/* 7. El Texto de la tarea (Notion Style) */
+/* Task text */
 .tiptap ul[data-type="taskList"] li > div {
   @apply flex-1 min-w-0;
 }
 
 .tiptap ul[data-type="taskList"] li p {
-  margin: 0 !important; /* Quitar márgenes internos del párrafo */
+  margin: 0 !important;
   @apply transition-all duration-300;
 }
 
-/* 8. Estilo cuando está completado: Tachado y Gris */
+/* Text style when checked (line-through and gray text color) */
 .tiptap li[data-checked="true"] > div > p {
   @apply text-gray-400 dark:text-zinc-500;
   text-decoration: line-through;

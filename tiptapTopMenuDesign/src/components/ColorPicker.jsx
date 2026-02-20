@@ -3,6 +3,13 @@ import { useEditorState } from '@tiptap/react';
 import DropdownArrow from './DropdownArrow';
 import {useClickOutside} from '../hooks/useClickOutside';
 
+/**
+ * Tool that opens a menu with colors to apply as color to the selected text. 
+ * It also includes a custom color selector and a reset button.
+ * 
+ * @param {Object} editor - The editor instance
+ * @returns 
+ */
 const ColorPicker = ({ editor }) => {
     if (!editor) return null;
 
@@ -27,7 +34,7 @@ const ColorPicker = ({ editor }) => {
 
     return (
         <div className="relative inline-block" ref={menuRef}>
-            {/* Botón Principal (Disparador) */}
+            {/* Main button */}
             <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
@@ -39,13 +46,13 @@ const ColorPicker = ({ editor }) => {
                 <DropdownArrow menuOpen={menuOpen} defaultRotateAngle={0} />
             </button>
 
-            {/* Menú Desplegable */}
+            {/* Color menu */}
             {menuOpen && (
                 <div
                     className="absolute z-20 mt-2 p-2 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* Contenedor Horizontal de Presets de color de texto */}
+                    {/* Color presets container */}
                     <div className="flex items-center gap-1.5">
                         {presets.map(({ name, color }) => (
                             <button
@@ -64,10 +71,10 @@ const ColorPicker = ({ editor }) => {
                         ))}
                     </div>
 
-                    {/* Divisor vertical */}
+                    {/* divisor */}
                     <div className="w-px h-6 bg-gray-200 dark:bg-zinc-600" />
 
-                    {/* Selector Personalizado a la derecha */}
+                    {/* custom color selector */}
                     <div className="flex items-center gap-2">
                         <div className="relative w-8 h-8 overflow-hidden border border-gray-300 dark:border-zinc-500 rounded-md shadow-sm">
                             <input
@@ -78,6 +85,7 @@ const ColorPicker = ({ editor }) => {
                             />
                         </div>
 
+                        {/* Reset button */}
                         <button
                             onClick={() => {
                                 editor.chain().focus().unsetColor().run();

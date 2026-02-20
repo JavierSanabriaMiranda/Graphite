@@ -8,6 +8,11 @@ import BulletSelector from './BulletSelector';
 import NumberedListSelector from './NumberedListSelector';
 import TodoList from './TodoList';
 
+/**
+ * Top menu component that allows the user to edit the written text with the given tools
+ * 
+ * @param {Object} editor - The editor instance
+ */
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
@@ -28,12 +33,12 @@ const MenuBar = ({ editor }) => {
   return (
     <div className="flex flex-wrap items-center gap-2 p-2 bg-main-bg border-b border-gray-300 dark:border-zinc-700 shrink-0">
       <div className="flex-1 invisible md:visible">
-        {/* Este div vacío empuja el contenido hacia el centro */}
+        {/* Div to keep the menubar content adjusted in center while keeping changeThemeButton at the side */}
       </div>
 
-      {/* 2. Grupo Central: Todas tus herramientas */}
+      {/* Central group: All the tools */}
       <div className="flex flex-wrap items-center justify-center gap-2">
-        {/* Select de Tipo de Texto */}
+        {/* Text type */}
         <select
           value={state.currentTextType}
           onChange={(e) => {
@@ -49,7 +54,7 @@ const MenuBar = ({ editor }) => {
           <option value="h3">Título 3</option>
         </select>
 
-        {/* Select de Fuentes */}
+        {/* Fonts */}
         <select
           value={state.currentFont}
           onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}
@@ -62,10 +67,10 @@ const MenuBar = ({ editor }) => {
           <option value="Times New Roman">Times New Roman</option>
         </select>
 
-        {/* Divisor Visual */}
+        {/* Divisor */}
         {getDivisor()}
 
-        {/* Botones de Formato con isActive() nativo */}
+        {/* Format buttons */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -96,6 +101,7 @@ const MenuBar = ({ editor }) => {
           <s className="decoration-2">S</s>
         </button>
 
+        {/* Code button */}
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCode().run()}
@@ -113,16 +119,18 @@ const MenuBar = ({ editor }) => {
           </svg>
         </button>
 
-        {getDivisor()}
+        {/* Divisor */}
+        {getDivisor()} 
 
         <ColorPicker editor={editor} />
         <HighlightPicker editor={editor} />
 
+        {/* Divisor */}
         {getDivisor()}
 
         <AlignmentSelector editor={editor} />
 
-        {/* Botón de Bulleted List */}
+        {/* Lists */}
         <BulletSelector editor={editor} />
 
         <NumberedListSelector editor={editor} />
@@ -130,6 +138,7 @@ const MenuBar = ({ editor }) => {
         <TodoList editor={editor} />
       </div>
 
+      {/* Change theme button at the right side */}
       <div className='flex-1 flex justify-end'>
         <ChangeThemeButton />
       </div>

@@ -19,20 +19,20 @@ const TiptapEditor = () => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        // 1. Desactivamos el Code que viene por defecto
+        // Disable default code to custom it
         code: false,
       }),
       Underline,
       TextStyle,
       FontFamily,
       TextAlign.configure({
-        types: ['heading', 'paragraph'], // Especifica dónde se puede alinear
+        types: ['heading', 'paragraph'], // Specifies when text can be aligned
       }),
       BulletList.extend({
         addAttributes() {
           return {
             listStyle: {
-              default: 'default', // El estilo por defecto
+              default: 'default', // Default style
               parseHTML: element => element.getAttribute('data-list-style'),
               renderHTML: attributes => ({ 'data-list-style': attributes.listStyle }),
             },
@@ -43,7 +43,7 @@ const TiptapEditor = () => {
         addAttributes() {
           return {
             listStyle: {
-              default: 'default', // El estilo por defecto
+              default: 'default', // Default style
               parseHTML: element => element.getAttribute('data-list-style'),
               renderHTML: attributes => ({ 'data-list-style': attributes.listStyle }),
             },
@@ -52,12 +52,12 @@ const TiptapEditor = () => {
       }),
       TaskList,
       TaskItem.configure({
-        nested: true, // Permite anidar tareas dentro de otras
+        nested: true, // Allows tasks to be nested inside other tasks
       }),
       Color,
       Highlight.configure({ multicolor: true }),
       Code.extend({
-        // Esto permite que el código conviva con el color (TextStyle)
+        // Allows code blocks to be styled with Tailwind classes, while keeping inline code simple
         excludes: [],
       }).configure({
         HTMLAttributes: {
@@ -66,14 +66,13 @@ const TiptapEditor = () => {
       }),
       Placeholder.configure({
         placeholder: 'Escribe algo increíble...',
-        // Esta clase se aplica solo al párrafo vacío
         emptyEditorClass: 'is-editor-empty',
       }),
     ],
     content: '<p>Contenido inicial...</p>',
     editorProps: {
       attributes: {
-        // Clases de Tailwind aplicadas directamente al área de escritura
+        // Tailwind classes for the editor content area
         class: 'prose dark:prose-invert prose-slate max-w-none focus:outline-none p-8 min-h-[500px] transition-colors duration-300',
       },
     },

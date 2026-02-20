@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 
+/**
+ * Tool to change the theme of the editor.
+ * It toggles between light and dark mode, and saves the preference in localStorage.
+ */
 const ChangeThemeButton = () => {
 
-    // Inicializamos el estado mirando si ya había una preferencia guardada
+    // Initialize the theme based on localStorage or system preference
     const [isDark, setIsDark] = useState(() => {
         return localStorage.getItem('theme') === 'dark' || 
                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
