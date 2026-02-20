@@ -277,3 +277,12 @@ To-do list style
   text-decoration: line-through;
   text-decoration-thickness: 1.5px;
 }
+
+/* ====================
+Placeholder style
+==================== */
+
+.tiptap p.is-editor-empty:first-child::before {
+  @apply text-slate-400 float-left h-0 pointer-events-none;
+  content: attr(data-placeholder);
+}

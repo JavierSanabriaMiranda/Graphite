@@ -69,7 +69,7 @@ const TiptapEditor = () => {
         emptyEditorClass: 'is-editor-empty',
       }),
     ],
-    content: '<p>Contenido inicial...</p>',
+    content: '',
     editorProps: {
       attributes: {
         // Tailwind classes for the editor content area
