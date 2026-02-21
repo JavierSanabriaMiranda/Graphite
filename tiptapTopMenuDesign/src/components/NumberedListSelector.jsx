@@ -106,6 +106,7 @@ const NumberedListSelector = ({ editor }) => {
     const { refs, floatingStyles, context } = useFloating({
         open: menuOpen,
         onOpenChange: setMenuOpen,
+        placement: 'bottom-start',
         middleware: [
             offset(8), //  Space between button and menu
             flip(),    // Changes to top if not enough space at the bottom
@@ -152,7 +153,7 @@ const NumberedListSelector = ({ editor }) => {
                                 type="button"
                                 onClick={() => toggleStyle(opt.id)}
                                 className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 border ${isActive
-                                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary dark:text-blue-300 border-blue-200 dark:border-blue-800'
+                                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary border-blue-200 dark:border-blue-800'
                                     : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 border-transparent'
                                     }`}
                                 title={opt.name}

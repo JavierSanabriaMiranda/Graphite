@@ -62,6 +62,7 @@ const AlignmentSelector = ({ editor }) => {
     const { refs, floatingStyles, context } = useFloating({
         open: menuOpen,
         onOpenChange: setMenuOpen,
+        placement: 'bottom-start',
         middleware: [
             offset(8), //  Space between button and menu
             flip(),    // Changes to top if not enough space at the bottom
