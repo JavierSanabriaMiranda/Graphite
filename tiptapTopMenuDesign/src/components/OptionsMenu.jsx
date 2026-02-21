@@ -28,8 +28,6 @@ const OptionsMenu = ({ editor }) => {
     useDismiss(context),
   ]);
 
-  const isReady = context.x !== null && context.y !== null;
-
   return (
     <>
       <button
@@ -43,15 +41,13 @@ const OptionsMenu = ({ editor }) => {
         </svg>
       </button>
 
-      {menuOpen && (
-        <FloatingPortal>
+      
+        <FloatingPortal style={{visibility: menuOpen ? 'visible' : 'hidden'}}>
           <div
             ref={refs.setFloating}
-            style={{ ...floatingStyles, visibility: isReady ? 'visible' : 'hidden' }}
+            style={{ ...floatingStyles, visibility: menuOpen ? 'visible' : 'hidden'}}
             {...getFloatingProps()}
-            className={`z-[9999] min-w-[160px] p-1 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex flex-col ${
-              isReady ? 'animate-in fade-in zoom-in duration-150' : ''
-            }`}
+            className={`z-[9999] min-w-[160px] p-1 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex flex-col `}
           >
             <ExportButton onOpenModal={() => {
               setModalOpen(true); // Open export modal
@@ -60,7 +56,7 @@ const OptionsMenu = ({ editor }) => {
             <ImportButton editor={editor} onDone={() => setMenuOpen(false)} />
           </div>
         </FloatingPortal>
-      )}
+      
       <ExportModal 
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 
