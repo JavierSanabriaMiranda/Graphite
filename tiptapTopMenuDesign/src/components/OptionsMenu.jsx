@@ -33,7 +33,7 @@ const OptionsMenu = ({ editor }) => {
       <button
         ref={refs.setReference}
         {...getReferenceProps()}
-        className="flex items-center justify-center w-9 h-9 rounded-lg transition-all bg-main-bg hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-600 dark:text-zinc-400"
+        className="flex items-center justify-center w-9 h-9 rounded-lg transition-all bg-main-bg hover:bg-hover-primary-bg text-gray-600 dark:text-zinc-400"
         title="Más opciones"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

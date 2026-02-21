@@ -30,7 +30,7 @@ const ChangeThemeButton = () => {
             className="flex items-center justify-center w-9 h-9 rounded-lg 
                        transition-all duration-300 cursor-pointer
                        bg-main-bg
-                       hover:bg-gray-200 dark:hover:bg-zinc-700
+                       hover:bg-hover-primary-bg
                        text-xl"
             title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}>
             {isDark ? '☀️' : '🌙'}

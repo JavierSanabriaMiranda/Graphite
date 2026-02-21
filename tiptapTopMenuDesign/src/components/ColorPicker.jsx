@@ -62,7 +62,7 @@ const ColorPicker = ({ editor }) => {
                 ref={refs.setReference}
                 {...getReferenceProps()}
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
+                className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
             >
                 <div
                     className={`w-6 h-6 border border-black/10 rounded-full ${!currentColor ? 'bg-checkerboard' : ''}`}

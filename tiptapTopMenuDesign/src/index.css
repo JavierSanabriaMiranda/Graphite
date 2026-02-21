@@ -15,10 +15,12 @@
   :root {
     --color-app-bg: #f6f7f8;
     --color-primary: #136dec;
+    --color-hover-primary-bg: #e5e7eb;
   }
 
   .dark {
     --color-app-bg: #101822;
+    --color-hover-primary-bg: #3f3f46;
   }
 }
 
@@ -26,6 +28,7 @@
 @theme {
   --color-main-bg: var(--color-app-bg);
   --color-primary: var(--color-primary);
+  --color-hover-primary-bg: var(--color-hover-primary-bg);
 }
 
 @layer utilities {

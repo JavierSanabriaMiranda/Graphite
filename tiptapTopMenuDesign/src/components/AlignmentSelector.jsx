@@ -84,7 +84,7 @@ const AlignmentSelector = ({ editor }) => {
                 onClick={() => setMenuOpen(!menuOpen)}
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
+                className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
                 title="Alineación"
             >
                 <svg 
@@ -123,7 +123,7 @@ const AlignmentSelector = ({ editor }) => {
                             className={`p-2 rounded-lg transition-all flex items-center justify-center ${
                                 currentAlign === align.value
                                     ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-sm'
-                                    : 'hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300'
+                                    : 'hover:bg-hover-primary-bg text-gray-700 dark:text-zinc-300'
                             }`}
                             title={align.name}
                         >

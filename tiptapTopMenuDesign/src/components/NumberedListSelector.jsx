@@ -129,7 +129,7 @@ const NumberedListSelector = ({ editor }) => {
                 {...getReferenceProps()}
                 className={`flex items-center gap-1 p-2 rounded-lg transition-all ${isOrderedActive
                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
-                    : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 border-transparent'
+                    : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg border-transparent'
                     }`}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -154,7 +154,7 @@ const NumberedListSelector = ({ editor }) => {
                                 onClick={() => toggleStyle(opt.id)}
                                 className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 border ${isActive
                                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary border-blue-200 dark:border-blue-800'
-                                    : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 border-transparent'
+                                    : 'hover:bg-hover-primary-bg text-gray-500 dark:text-zinc-400 border-transparent'
                                     }`}
                                 title={opt.name}
                             >

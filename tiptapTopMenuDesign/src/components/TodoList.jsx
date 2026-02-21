@@ -20,7 +20,7 @@ const TodoList = ({editor}) => {
             className={` p-2 rounded-lg transition-colors ${
                 isTodoListActive 
                 ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-md' 
-                : 'text-black dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
+                : 'text-black dark:text-white hover:bg-hover-primary-bg'}`}
             title="Lista de tareas"
         >
             <svg

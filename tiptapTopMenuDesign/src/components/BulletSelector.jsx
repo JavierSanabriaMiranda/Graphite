@@ -142,7 +142,7 @@ const BulletSelector = ({ editor }) => {
                 {...getReferenceProps()}
                 className={`flex items-center gap-1 p-2 rounded-lg transition-all ${isBulletActive
                         ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary shadow-md'
-                        : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700'
+                        : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg'
                     }`}
                 title="Lista de viñetas"
             >
@@ -167,7 +167,7 @@ const BulletSelector = ({ editor }) => {
                             onClick={() => toggleStyle(opt.id)}
                             className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 ${isBulletActive && currentStyle === opt.id
                                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
-                                    : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-800 dark:text-gray-300'
+                                    : 'hover:bg-hover-primary-bg text-gray-800 dark:text-gray-300'
                                 }`}
                             title={opt.name}
                         >
