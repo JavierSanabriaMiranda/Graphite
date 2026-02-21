@@ -7,6 +7,7 @@ import AlignmentSelector from './AlignmentSelector';
 import BulletSelector from './BulletSelector';
 import NumberedListSelector from './NumberedListSelector';
 import TodoList from './TodoList';
+import OptionsMenu from './OptionsMenu';
 
 /**
  * Top menu component that allows the user to edit the written text with the given tools
@@ -153,6 +154,7 @@ const MenuBar = ({ editor }) => {
       {/* Change theme button at the right side */}
       <div className='flex-1 flex justify-end'>
         <ChangeThemeButton />
+        <OptionsMenu editor={editor} />
       </div>
 
 
