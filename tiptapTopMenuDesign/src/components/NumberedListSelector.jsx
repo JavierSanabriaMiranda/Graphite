@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
 import DropdownArrow from './DropdownArrow';
-import { useClickOutside } from '../hooks/useClickOutside';
+import {
+    useFloating,
+    offset,
+    flip,
+    shift,
+    useInteractions,
+    useClick,
+    useDismiss,
+    autoUpdate
+} from '@floating-ui/react';
 
 /**
  * NumberedListSelector component for selecting different ordered list styles in the editor.
@@ -12,9 +21,9 @@ const NumberedListSelector = ({ editor }) => {
     if (!editor) return null;
 
     const options = [
-        { 
-            id: 'default', 
-            name: 'Numbers (1, 1.1)', 
+        {
+            id: 'default',
+            name: 'Numbers (1, 1.1)',
             icon: (
                 <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">1</text>
@@ -24,11 +33,11 @@ const NumberedListSelector = ({ editor }) => {
                     <text x="0" y="21" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">3</text>
                     <line x1="10" y1="19" x2="21" y2="19" />
                 </g>
-            ) 
+            )
         },
-        { 
-            id: 'alpha', 
-            name: 'Letters (a, b, c)', 
+        {
+            id: 'alpha',
+            name: 'Letters (a, b, c)',
             icon: (
                 <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">a</text>
@@ -38,11 +47,11 @@ const NumberedListSelector = ({ editor }) => {
                     <text x="0" y="21" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">c</text>
                     <line x1="10" y1="19" x2="21" y2="19" />
                 </g>
-            ) 
+            )
         },
-        { 
-            id: 'roman', 
-            name: 'Roman Numerals (i, ii, iii)', 
+        {
+            id: 'roman',
+            name: 'Roman Numerals (i, ii, iii)',
             icon: (
                 <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">i</text>
@@ -52,11 +61,11 @@ const NumberedListSelector = ({ editor }) => {
                     <text x="0" y="21" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">iii</text>
                     <line x1="10" y1="19" x2="21" y2="19" />
                 </g>
-            ) 
+            )
         },
-        { 
-            id: 'mix', 
-            name: 'Mix (1, a, i)', 
+        {
+            id: 'mix',
+            name: 'Mix (1, a, i)',
             icon: (
                 <g stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">1</text>
@@ -66,7 +75,7 @@ const NumberedListSelector = ({ editor }) => {
                     <text x="1" y="21" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">i</text>
                     <line x1="10" y1="19" x2="21" y2="19" strokeWidth="2" opacity="0.4" />
                 </g>
-            ) 
+            )
         },
     ];
 
@@ -81,7 +90,6 @@ const NumberedListSelector = ({ editor }) => {
     });
 
     const [menuOpen, setMenuOpen] = useState(false);
-    const menuRef = useClickOutside(() => setMenuOpen(false));
 
     const toggleStyle = (styleId) => {
         if (!isOrderedActive) {
@@ -94,16 +102,34 @@ const NumberedListSelector = ({ editor }) => {
         setMenuOpen(false);
     };
 
+    // Positioning and interactions with Floating UI
+    const { refs, floatingStyles, context } = useFloating({
+        open: menuOpen,
+        onOpenChange: setMenuOpen,
+        middleware: [
+            offset(8), //  Space between button and menu
+            flip(),    // Changes to top if not enough space at the bottom
+            shift({ padding: 10 }) // Avoids to be cut off the screen edges
+        ],
+        whileElementsMounted: autoUpdate, // Keeps the position updated if the user scrolls or resizes while the menu is open
+    });
+
+    // Interactions for click and dismiss (click outside)
+    const click = useClick(context);
+    const dismiss = useDismiss(context);
+    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
     return (
-        <div className="relative inline-block" ref={menuRef}>
+        <div className="relative inline-block">
             <button
                 type="button"
                 onClick={() => setMenuOpen(!menuOpen)}
-                className={`flex items-center gap-1 p-2 rounded-lg transition-all ${
-                    isOrderedActive 
-                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary' 
+                ref={refs.setReference}
+                {...getReferenceProps()}
+                className={`flex items-center gap-1 p-2 rounded-lg transition-all ${isOrderedActive
+                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
                     : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 border-transparent'
-                }`}
+                    }`}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     {options.find(o => o.id === currentStyle)?.icon}
@@ -112,7 +138,12 @@ const NumberedListSelector = ({ editor }) => {
             </button>
 
             {menuOpen && (
-                <div className="absolute z-30 mt-2 p-1.5 bg-main-bg border border-gray-200 dark:border-zinc-800 rounded-xl shadow-2xl flex items-center gap-1 animate-in fade-in zoom-in duration-100 origin-top-left">
+                <div 
+                    ref={refs.setFloating}
+                    style={floatingStyles}
+                    {...getFloatingProps()}
+                    className="z-50 p-1.5 bg-main-bg border border-gray-200 dark:border-zinc-800 rounded-xl shadow-2xl flex items-center gap-1 animate-in fade-in zoom-in duration-100"
+                >
                     {options.map((opt) => {
                         const isActive = isOrderedActive && currentStyle === opt.id;
                         return (
@@ -120,11 +151,10 @@ const NumberedListSelector = ({ editor }) => {
                                 key={opt.id}
                                 type="button"
                                 onClick={() => toggleStyle(opt.id)}
-                                className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 border ${
-                                    isActive 
-                                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary dark:text-blue-300 border-blue-200 dark:border-blue-800' 
+                                className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 border ${isActive
+                                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary dark:text-blue-300 border-blue-200 dark:border-blue-800'
                                     : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 border-transparent'
-                                }`}
+                                    }`}
                                 title={opt.name}
                             >
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

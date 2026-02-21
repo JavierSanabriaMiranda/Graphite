@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
 import DropdownArrow from './DropdownArrow';
-import {useClickOutside} from '../hooks/useClickOutside';
+import {
+    useFloating,
+    offset,
+    flip,
+    shift,
+    useInteractions,
+    useClick,
+    useDismiss,
+    autoUpdate
+} from '@floating-ui/react';
 
 /**
  * Tool that opens a menu with colors to apply as highlight to the selected text. 
@@ -28,14 +37,29 @@ const HighlightPicker = ({ editor }) => {
 
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const menuRef = useClickOutside(() => {
-        setMenuOpen(false);
+    // Positioning and interactions with Floating UI
+    const { refs, floatingStyles, context } = useFloating({
+        open: menuOpen,
+        onOpenChange: setMenuOpen,
+        middleware: [
+            offset(8), //  Space between button and menu
+            flip(),    // Changes to top if not enough space at the bottom
+            shift({ padding: 10 }) // Avoids to be cut off the screen edges
+        ],
+        whileElementsMounted: autoUpdate, // Keeps the position updated if the user scrolls or resizes while the menu is open
     });
 
+    // Interactions for click and dismiss (click outside)
+    const click = useClick(context);
+    const dismiss = useDismiss(context);
+    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
     return (
-        <div className="relative inline-block" ref={menuRef}>
+        <div className="relative inline-block" >
             {/* Main button */}
             <button
+                ref={refs.setReference}
+                {...getReferenceProps()}
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
             >
@@ -51,7 +75,10 @@ const HighlightPicker = ({ editor }) => {
             {/* Color menu */}
             {menuOpen && (
                 <div 
-                    className="absolute z-20 mt-2 p-2 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
+                    ref={refs.setFloating}
+                    style={floatingStyles}
+                    {...getFloatingProps()}
+                    className="absolute z-20 p-2 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Horizontal default colors container */}
