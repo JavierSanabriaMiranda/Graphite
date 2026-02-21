@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FloatingPortal } from '@floating-ui/react';
+import { useToast } from '../util/ToastContext';
 
 /**
  * Modal component that allows the user to export the content of the editor in different formats (JSON or HTML).
@@ -10,6 +11,7 @@ import { FloatingPortal } from '@floating-ui/react';
  */
 const ExportModal = ({ isOpen, onClose, editor }) => {
   const [selectedFormat, setSelectedFormat] = useState('json');
+  const { showToast } = useToast();
 
   if (!isOpen) return null;
 
@@ -30,6 +32,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
     link.download = `documento.${selectedFormat}`;
     link.click();
     URL.revokeObjectURL(url);
+    showToast("¡Documento exportado con éxito!", "success");
     onClose(); // Close modal after download
   };
 
@@ -45,9 +48,8 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
               <button
                 key={format}
                 onClick={() => setSelectedFormat(format)}
-                className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
-                  selectedFormat === format ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'border-gray-100 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600'
-                }`}
+                className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${selectedFormat === format ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'border-gray-100 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600'
+                  }`}
               >
                 <span className="text-2xl">{format === 'json' ? '{ }' : '🌐'}</span>
                 <span className="font-bold uppercase">{format}</span>

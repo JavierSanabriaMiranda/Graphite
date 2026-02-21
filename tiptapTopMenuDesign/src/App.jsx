@@ -1,10 +1,13 @@
 import TiptapEditor from './components/TipTapEditor'
+import { ToastProvider } from './components/util/ToastContext';
 
 function App() {
 
   return (
     <>
-      <TiptapEditor />
+      <ToastProvider>
+        <TiptapEditor />
+      </ToastProvider>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useToast } from '../util/ToastContext';
 
 /**
  * Component to import a JSON file with the content of the editor and set it as the current content. 
@@ -9,6 +10,7 @@ import { useRef } from 'react';
  */
 const ImportButton = ({ editor, onDone }) => {
   const fileRef = useRef(null);
+  const { showToast } = useToast();
 
   /**
    * Handles the file input change event, reads the selected file, parses it as JSON and sets it as the editor content.
@@ -22,9 +24,11 @@ const ImportButton = ({ editor, onDone }) => {
       try {
         editor.commands.insertContent(JSON.parse(event.target.result));
         e.target.value = ""; // Reset file input to allow importing the same file again if needed
+
+        showToast("¡Documento importado con éxito!", "success");
         onDone();
       } catch (err) { 
-        alert("Archivo inválido"); 
+        showToast("Error al importar el documento. Asegúrate de que el archivo es un JSON válido.", "error");
         e.target.value = ""; // Reset file input to allow importing the same file again if needed
       }
     };
