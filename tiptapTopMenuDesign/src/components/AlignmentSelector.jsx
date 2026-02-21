@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
-import DropdownArrow from './DropdownArrow';
+import DropdownArrow from './util/DropdownArrow';
 import {
     useFloating,
     offset,

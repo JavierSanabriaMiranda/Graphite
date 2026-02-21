@@ -1,13 +1,13 @@
 import { useEditorState } from '@tiptap/react';
-import { menuBarStateSelector } from './menuBarStateSelector';
-import ChangeThemeButton from './ChangeThemeButton';
-import ColorPicker from './ColorPicker';
-import HighlightPicker from './HighlightPicker';
+import { menuBarStateSelector } from './util/menuBarStateSelector';
+import ChangeThemeButton from './util/ChangeThemeButton';
+import ColorPicker from './colors/ColorPicker';
+import HighlightPicker from './colors/HighlightPicker';
 import AlignmentSelector from './AlignmentSelector';
-import BulletSelector from './BulletSelector';
-import NumberedListSelector from './NumberedListSelector';
-import TodoList from './TodoList';
-import OptionsMenu from './OptionsMenu';
+import BulletSelector from './lists/BulletSelector';
+import NumberedListSelector from './lists/NumberedListSelector';
+import TodoList from './lists/TodoList';
+import OptionsMenu from './options_menu/OptionsMenu';
 
 /**
  * Top menu component that allows the user to edit the written text with the given tools
