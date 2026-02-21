@@ -21,8 +21,12 @@ const ImportButton = ({ editor, onDone }) => {
     reader.onload = (event) => {
       try {
         editor.commands.insertContent(JSON.parse(event.target.result));
+        e.target.value = ""; // Reset file input to allow importing the same file again if needed
         onDone();
-      } catch (err) { alert("Archivo inválido"); }
+      } catch (err) { 
+        alert("Archivo inválido"); 
+        e.target.value = ""; // Reset file input to allow importing the same file again if needed
+      }
     };
     reader.readAsText(file);
   };
