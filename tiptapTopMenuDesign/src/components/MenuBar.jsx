@@ -8,6 +8,7 @@ import BulletSelector from './lists/BulletSelector';
 import NumberedListSelector from './lists/NumberedListSelector';
 import TodoList from './lists/TodoList';
 import OptionsMenu from './options_menu/OptionsMenu';
+import TextTypeSelector from './TextTypeSelector';
 
 /**
  * Top menu component that allows the user to edit the written text with the given tools
@@ -43,20 +44,7 @@ const MenuBar = ({ editor }) => {
         { /* Text type and font selectors group */}
         <div className="flex items-center gap-2 flex-nowrap">
           {/* Text type */}
-          <select
-            value={state.currentTextType}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === 'p') editor.chain().focus().setParagraph().run();
-              else editor.chain().focus().toggleHeading({ level: parseInt(val.replace('h', '')) }).run();
-            }}
-            className="p-1.5 shadow-sm rounded dark:border dark:border-zinc-700 bg-main-bg text-sm focus:ring-2 focus:ring-primary outline-none dark:text-zinc-200"
-          >
-            <option value="p">Texto Normal</option>
-            <option value="h1">Título 1</option>
-            <option value="h2">Título 2</option>
-            <option value="h3">Título 3</option>
-          </select>
+          <TextTypeSelector editor={editor} state={state}/>
 
           {/* Fonts */}
           <select

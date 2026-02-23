@@ -20,6 +20,7 @@ export function menuBarStateSelector(ctx) {
     currentTextType: editor.isActive('heading', { level: 1 }) ? 'h1' 
                    : editor.isActive('heading', { level: 2 }) ? 'h2' 
                    : editor.isActive('heading', { level: 3 }) ? 'h3' 
+                   : editor.isActive('callout') ? 'callout'
                    : 'p',
 
     // Fonts

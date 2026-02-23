@@ -11,6 +11,8 @@ import OrderedList from '@tiptap/extension-ordered-list';
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 
+import {Callout} from './advanced_blocks/Callout'
+
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
@@ -64,6 +66,7 @@ const TiptapEditor = () => {
           class: 'rounded-md bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 font-mono text-sm',
         },
       }),
+      Callout,
       Placeholder.configure({
         placeholder: 'Escribe algo increíble...',
         emptyEditorClass: 'is-editor-empty',
