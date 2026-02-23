@@ -1,6 +1,12 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewContent, NodeViewWrapper } from '@tiptap/react';
 
+/**
+ * Custom callout component for representing text surrounded by a 
+ * rounded square and an icon at the left. 
+ * It can be toggled with the "toggleCallout" command, which will wrap the selected text
+ * into a callout or take it out if it's already inside one.
+ */
 const CalloutComponent = () => {
   return (
     <NodeViewWrapper className="flex gap-3 p-4 my-4 rounded-lg bg-gray-200 dark:bg-zinc-800/50 border border-gray-300 dark:border-zinc-700 items-start group">

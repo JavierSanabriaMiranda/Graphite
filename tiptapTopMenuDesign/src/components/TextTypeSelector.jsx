@@ -1,3 +1,10 @@
+/**
+ * TextTypeSelector component that allows the user to select the text type of the current 
+ * block (paragraph, heading 1, heading 2, callout...)
+ * 
+ * @param {Object} editor - The editor instance
+ * @param {Object} state - The state of the menu bar, used to know the current text type
+ */
 const TextTypeSelector = ({ editor, state }) => {
 
     return (
