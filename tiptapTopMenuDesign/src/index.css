@@ -289,3 +289,31 @@ Placeholder style
   @apply text-slate-400 float-left h-0 pointer-events-none;
   content: attr(data-placeholder);
 }
+
+/* ====================
+Quote style
+==================== */
+
+/* Style for the quote block */
+blockquote {
+  font-style: normal !important; /* remove italic style from the default blockquote */
+  quotes: none; /* Remove default quotation marks */
+  border-left: 3px solid #b1b7c3;
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: #4b5563; 
+}
+
+.dark blockquote {
+  border-left-color: #3f3f46; 
+  color: #a1a1aa; 
+}
+
+blockquote p {
+  margin: 0.5rem;
+  line-height: 1.5;
+}
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
