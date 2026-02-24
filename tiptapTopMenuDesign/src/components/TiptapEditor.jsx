@@ -19,6 +19,10 @@ import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
 import c from 'highlight.js/lib/languages/c';
 import cpp from 'highlight.js/lib/languages/cpp';
+import csharp from 'highlight.js/lib/languages/csharp';
+import bash from 'highlight.js/lib/languages/bash';
+import xml from 'highlight.js/lib/languages/xml'; // HTML is registered as xml in lowlight
+import css from 'highlight.js/lib/languages/css';
 
 import { Callout } from './advanced_blocks/Callout'
 
@@ -36,6 +40,10 @@ const TiptapEditor = () => {
   lowlight.register('python', python)
   lowlight.register('c', c)
   lowlight.register('cpp', cpp)
+  lowlight.register('csharp', csharp);
+  lowlight.register('bash', bash);
+  lowlight.register('html', xml); // Register as HTML but lowlight uses 'xml' for it
+  lowlight.register('css', css);
 
   const editor = useEditor({
     extensions: [

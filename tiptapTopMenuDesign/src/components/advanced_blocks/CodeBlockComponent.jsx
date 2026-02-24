@@ -25,12 +25,14 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
 
     const languageNames = {
         'c': 'C',
+        'csharp': 'C#',
+        'bash': 'Bash',
+        'html': 'HTML',
+        'css': 'CSS',
         'cpp': 'C++',
         'java': 'Java',
         'javascript': 'JavaScript',
         'python': 'Python',
-        'html': 'HTML',
-        'bash': 'Bash',
     };
 
     /**

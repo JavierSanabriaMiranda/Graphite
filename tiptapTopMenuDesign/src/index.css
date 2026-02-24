@@ -373,3 +373,58 @@ pre::-webkit-scrollbar-thumb {
 .dark .hljs-type, .dark .hljs-class { color: #4ec9b0; }
 .dark .hljs-title { color: #dcdcaa; }
 .dark .hljs-params { color: #9cdcfe; }
+
+/* Specific highlighting for HTML and CSS */
+.hljs-tag, .hljs-name { color: #800000; }
+.hljs-attr { color: #ff0000; }
+.hljs-selector-class { color: #800000; }
+.hljs-attribute { color: #ff0000; }
+.hljs-built_in { color: #0000ff; }
+
+
+.dark .hljs-tag, .dark .hljs-name { color: #569cd6; }
+.dark .hljs-attr { color: #9cdcfe; }
+.dark .hljs-attribute { color: #ce9178; }
+
+/* ====================
+Scroll bar style for code blocks
+==================== */
+
+/* Scroll container */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Scroll background (track) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Thumb (bar) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d4d4d8; 
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #a1a1aa;
+}
+
+/* Thumb (bar) in dark theme */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3f3f46;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b;
+}
+
+/* Support for Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d8 transparent;
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: #3f3f46 transparent;
+}
