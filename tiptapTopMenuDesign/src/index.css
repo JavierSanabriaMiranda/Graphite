@@ -355,11 +355,21 @@ pre::-webkit-scrollbar-thumb {
   border-radius: 4px;
 }
 
+/* Highlighting colors Light theme */
+.hljs-keyword, .hljs-selector-tag { color: #0000ff; font-weight: 500; }
+.hljs-string { color: #a31515; }
+.hljs-comment { color: #008000; font-style: italic; }
+.hljs-number { color: #098658; }
+.hljs-type, .hljs-class { color: #267f99; }
+.hljs-title { color: #795e26; }
+.hljs-params { color: #001080; }
+.hljs-attr { color: #ff0000; }
+
 /* Highlighting colors (Based on One Dark / VS Code) */
-.hljs-keyword, .hljs-selector-tag { color: #569cd6; }
-.hljs-string { color: #ce9178; }
-.hljs-comment { color: #6a9955; font-style: italic; }
-.hljs-number { color: #b5cea8; }
-.hljs-type, .hljs-class { color: #4ec9b0; }
-.hljs-title { color: #dcdcaa; }
-.hljs-params { color: #9cdcfe; }
+.dark .hljs-keyword, .dark .hljs-selector-tag { color: #569cd6; }
+.dark .hljs-string { color: #ce9178; }
+.dark .hljs-comment { color: #6a9955; font-style: italic; }
+.dark .hljs-number { color: #b5cea8; }
+.dark .hljs-type, .dark .hljs-class { color: #4ec9b0; }
+.dark .hljs-title { color: #dcdcaa; }
+.dark .hljs-params { color: #9cdcfe; }

@@ -23,7 +23,7 @@ const TextTypeSelector = ({ editor, state }) => {
                     editor.chain().focus().toggleBlockquote().run();
                 }
                 else if (val === 'code') {
-                    editor.chain().focus().toggleCodeBlock({ language: 'java' }).run();
+                    editor.chain().focus().toggleCodeBlock().run();
                 }
                 else if (val.startsWith('h')) {
                     const level = parseInt(val.replace('h', ''));
