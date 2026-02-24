@@ -22,6 +22,9 @@ const TextTypeSelector = ({ editor, state }) => {
                 else if (val === 'quote') {
                     editor.chain().focus().toggleBlockquote().run();
                 }
+                else if (val === 'code') {
+                    editor.chain().focus().toggleCodeBlock({ language: 'java' }).run();
+                }
                 else if (val.startsWith('h')) {
                     const level = parseInt(val.replace('h', ''));
                     editor.chain().focus().toggleHeading({ level }).run();
@@ -35,6 +38,7 @@ const TextTypeSelector = ({ editor, state }) => {
             <option value="h3">Título 3</option>
             <option value="quote">Cita</option>
             <option value="callout">Callout</option>
+            <option value="code">Código</option>
         </select>
     )
 

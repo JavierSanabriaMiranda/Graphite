@@ -22,6 +22,7 @@ export function menuBarStateSelector(ctx) {
                    : editor.isActive('heading', { level: 3 }) ? 'h3' 
                    : editor.isActive('callout') ? 'callout'
                    : editor.isActive('blockquote') ? 'quote'
+                   : editor.isActive('codeBlock') ? 'code'
                    : 'p',
 
     // Fonts

@@ -1,4 +1,4 @@
-import { EditorContent, useEditor } from '@tiptap/react' // EditorContent va entre llaves
+import { EditorContent, ReactNodeView, ReactNodeViewRenderer, useEditor } from '@tiptap/react' // EditorContent va entre llaves
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline' // Entre llaves
 import { TextStyle } from '@tiptap/extension-text-style' // Entre llaves
@@ -10,19 +10,39 @@ import BulletList from '@tiptap/extension-bullet-list';
 import OrderedList from '@tiptap/extension-ordered-list';
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { createLowlight } from 'lowlight'
 
-import {Callout} from './advanced_blocks/Callout'
+// Importing languages for syntax highlighting in code blocks
+import java from 'highlight.js/lib/languages/java'
+import javascript from 'highlight.js/lib/languages/javascript';
+import python from 'highlight.js/lib/languages/python';
+import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
+
+import { Callout } from './advanced_blocks/Callout'
 
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
+import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
 
 const TiptapEditor = () => {
+
+  // Instance for syntax highlighting in code blocks
+  const lowlight = createLowlight()
+  lowlight.register('java', java)
+  lowlight.register('javascript', javascript)
+  lowlight.register('python', python)
+  lowlight.register('c', c)
+  lowlight.register('cpp', cpp)
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         // Disable default code to custom it
         code: false,
+        codeBlock: false,
       }),
       Underline,
       TextStyle,
@@ -66,6 +86,12 @@ const TiptapEditor = () => {
           class: 'rounded-md bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 font-mono text-sm',
         },
       }),
+      CodeBlockLowlight.extend({
+        // Custom node view to use our CodeBlockComponent, which includes the language selector and better styling
+        addNodeView() {
+          return ReactNodeViewRenderer(CodeBlockComponent)
+        }
+      }).configure({ lowlight }),
       Callout,
       Placeholder.configure({
         placeholder: 'Escribe algo increíble...',

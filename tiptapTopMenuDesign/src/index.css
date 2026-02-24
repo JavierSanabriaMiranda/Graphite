@@ -317,3 +317,49 @@ blockquote p {
 }
 blockquote p:first-child { margin-top: 0; }
 blockquote p:last-child { margin-bottom: 0; }
+
+/* ====================
+Code block style
+==================== */
+
+/* Code block container */
+pre {
+  background: #f1f1f2 !important;
+  border: 1px solid #e6e6e8;
+  padding: 2em;
+}
+
+.dark pre {
+  background: #1e1e1e !important; 
+  border: 1px solid #27272a;
+  padding: 2em;
+}
+
+/* Code block content */
+pre code {
+  color: #121213 !important;
+  background: none !important;
+  padding: 0 !important;
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+.dark pre code {
+  color: #e4e4e7 !important;
+}
+
+pre::-webkit-scrollbar {
+  height: 8px;
+}
+pre::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 4px;
+}
+
+/* Highlighting colors (Based on One Dark / VS Code) */
+.hljs-keyword, .hljs-selector-tag { color: #569cd6; }
+.hljs-string { color: #ce9178; }
+.hljs-comment { color: #6a9955; font-style: italic; }
+.hljs-number { color: #b5cea8; }
+.hljs-type, .hljs-class { color: #4ec9b0; }
+.hljs-title { color: #dcdcaa; }
+.hljs-params { color: #9cdcfe; }
