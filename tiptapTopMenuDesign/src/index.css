@@ -428,3 +428,47 @@ Scroll bar style for code blocks
 .dark .custom-scrollbar {
   scrollbar-color: #3f3f46 transparent;
 }
+
+/* ====================
+Scroll bar style for editor
+==================== */
+
+/* Class for editor scrollbar */
+.editor-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Un poco más ancho para el editor principal */
+}
+
+.editor-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Light theme */
+.editor-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a4a4a8; 
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.editor-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #a1a1aa;
+}
+
+/* Dark theme */
+.dark .editor-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3f3f46; 
+}
+
+.dark .editor-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b;
+}
+
+/* Firefox */
+.editor-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #a4a4a8 transparent;
+}
+
+.dark .editor-scrollbar {
+  scrollbar-color: #3f3f46 transparent;
+}

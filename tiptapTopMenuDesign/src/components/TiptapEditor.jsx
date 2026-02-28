@@ -119,7 +119,7 @@ const TiptapEditor = () => {
     <div className="relative flex flex-col h-screen w-screen overflow-hidden bg-main-bg transition-colors duration-300">
       <MenuBar editor={editor} />
 
-      <div className="grow overflow-y-auto p-4 md:p-8">
+      <div className="grow overflow-y-auto p-4 md:p-8 editor-scrollbar">
         <div className="max-w-4xl mx-auto w-full">
           <EditorContent editor={editor} />
         </div>
