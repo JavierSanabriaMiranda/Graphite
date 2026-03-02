@@ -12,6 +12,7 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { createLowlight } from 'lowlight'
+import { Details, DetailsContent, DetailsSummary } from '@tiptap/extension-details'
 
 // Importing languages for syntax highlighting in code blocks
 import java from 'highlight.js/lib/languages/java'
@@ -30,6 +31,7 @@ import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
 import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
+import { ToggleBlock } from './advanced_blocks/ToggleBlock'
 
 const TiptapEditor = () => {
 
@@ -101,6 +103,15 @@ const TiptapEditor = () => {
         }
       }).configure({ lowlight }),
       Callout,
+      Details.configure({
+        persist: true, // Maintains the open/closed state of details blocks even after re-rendering
+        HTMLAttributes: {
+          class: 'details-wrapper',
+        },
+      }),
+      ToggleBlock,
+      DetailsSummary,
+      DetailsContent,
       Placeholder.configure({
         placeholder: 'Escribe algo increíble...',
         emptyEditorClass: 'is-editor-empty',

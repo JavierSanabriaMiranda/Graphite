@@ -472,3 +472,36 @@ Scroll bar style for editor
 .dark .editor-scrollbar {
   scrollbar-color: #3f3f46 transparent;
 }
+
+/* ====================
+Toggle style
+==================== */
+
+/* Title (first element on the container */
+.toggle-content-container [data-node-view-content-react] > *:first-child {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0.2em;
+  font-weight: 500;
+}
+
+/* Hide the content that is not the title (first child) */
+.is-closed [data-node-view-content-react] > *:not(:first-child) {
+  display: none !important;
+}
+
+/* Show an style when toggle is open */
+.is-open [data-node-view-content-react] > *:not(:first-child) {
+  margin-left: 0.6rem;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+.dark .is-open [data-node-view-content-react] > *:not(:first-child) {
+  border-left-color: #27272a;
+}
+
+/* Avoid the editor to create empty weird spaces */
+.toggle-block {
+  min-height: 1.5rem;
+}

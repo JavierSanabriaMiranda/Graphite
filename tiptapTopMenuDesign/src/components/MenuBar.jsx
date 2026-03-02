@@ -44,7 +44,7 @@ const MenuBar = ({ editor }) => {
         { /* Text type and font selectors group */}
         <div className="flex items-center gap-2 flex-nowrap">
           {/* Text type */}
-          <TextTypeSelector editor={editor} state={state}/>
+          <TextTypeSelector editor={editor} state={state} />
 
           {/* Fonts */}
           <select
@@ -125,7 +125,7 @@ const MenuBar = ({ editor }) => {
 
         {/* Divisor */}
         {getDivisor()}
-        
+
         { /* Text position and lists group */}
         <div className="flex items-center gap-2 flex-nowrap">
           <AlignmentSelector editor={editor} />
@@ -136,6 +136,16 @@ const MenuBar = ({ editor }) => {
           <NumberedListSelector editor={editor} />
 
           <TodoList editor={editor} />
+
+          <button
+            onClick={() => {
+              state.isToggleBlock ? editor.chain().focus().unsetToggle().run()
+              : editor.chain().focus().setToggle().run()
+            }}
+            className={getBtnClass(state.isToggleBlock)}
+          >
+            Toggle Block
+          </button>
         </div>
       </div>
 

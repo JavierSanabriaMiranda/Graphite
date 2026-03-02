@@ -15,6 +15,7 @@ export function menuBarStateSelector(ctx) {
     isStrike: editor.isActive('strike'),
     isCode: editor.isActive('code'),
     isBulletList: ctx.editor.isActive('bulletList'),
+    isToggleBlock: editor.isActive('toggleBlock'),
     
     // Text types
     currentTextType: editor.isActive('heading', { level: 1 }) ? 'h1' 
