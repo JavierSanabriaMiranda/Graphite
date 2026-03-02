@@ -2,28 +2,22 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewContent, NodeViewWrapper } from '@tiptap/react';
 import DropdownArrow from "../util/DropdownArrow";
 
-/**
- * 
- * @param {node} param0 
- * @returns 
- */
 const ToggleBlockComponent = ({ node, updateAttributes }) => {
   const { isOpen } = node.attrs;
 
   return (
-    <NodeViewWrapper className={`toggle-block group my-2 ${isOpen ? 'is-open' : 'is-closed'}`}>
+    <NodeViewWrapper className={`toggle-block my-2 ${isOpen ? 'is-open' : 'is-closed'}`}>
       <div className="flex items-start">
-        {/* Arrow to open or close the toggle */}
         <div
           contentEditable={false}
           onClick={() => updateAttributes({ isOpen: !isOpen })}
-          className="mt-1 p-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors cursor-pointer flex-shrink-0"
+          className="mt-1 p-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded cursor-pointer flex-shrink-0"
         >
           <DropdownArrow menuOpen={isOpen} defaultRotateAngle={-90} rotateAngle={0} />
         </div>
 
-        {/* Container with the title of the toggle block (first child) and the hidden content */}
-        <NodeViewContent className="flex-1 toggle-content-container" />
+        {/* NodeViewContent renderizará ToggleTitle y ToggleContent aquí */}
+        <NodeViewContent className="flex-1" />
       </div>
     </NodeViewWrapper>
   );
@@ -32,9 +26,8 @@ const ToggleBlockComponent = ({ node, updateAttributes }) => {
 export const ToggleBlock = Node.create({
   name: 'toggleBlock',
   group: 'block',
-  content: 'block+', // Makes the toggle block have at least one paragraph (title)
-  defining: true,
-  draggable: true,
+  content: 'toggleTitle toggleContent', // Estructura rígida obligatoria
+  allowGapCursor: false,
 
   addAttributes() {
     return {
@@ -46,21 +39,69 @@ export const ToggleBlock = Node.create({
     };
   },
 
-  parseHTML() {
-    return [{ tag: 'div[data-type="toggle-block"]' }];
-  },
-
-  renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'toggle-block' }), 0];
-  },
-
   addCommands() {
     return {
-      setToggle: () => ({ commands }) => {
-        return commands.wrapIn(this.name);
+      setToggle: () => ({ state, chain }) => {
+        const { $from } = state.selection;
+
+        // Get paragraph limits
+        const from = $from.before($from.depth);
+        const to = $from.after($from.depth);
+
+        // Copy the paragraph content
+        const content = $from.node($from.depth).content.toJSON();
+
+        return chain()
+          .focus()
+          // Replace whole paragraph with a toggleBlock
+          .insertContentAt({ from, to }, {
+            type: this.name,
+            content: [
+              { type: 'toggleTitle', content }, // The copied paragraph now it's the title
+              { type: 'toggleContent', content: [{ type: 'paragraph' }] }, // Empty spaces inside
+            ],
+          })
+          .setTextSelection(to) // Move cursor to the end of the title
+          .run();
       },
-      unsetToggle: () => ({ commands }) => {
-        return commands.lift(this.name);
+      unsetToggle: () => ({ state, chain }) => {
+        const { selection } = state;
+        const { $from } = selection;
+
+        // Look for toggleBlock in the JSON
+        let pos = -1;
+        let node = null;
+        for (let d = $from.depth; d > 0; d--) {
+          if ($from.node(d).type.name === 'toggleBlock') {
+            pos = $from.before(d);
+            node = $from.node(d);
+            break;
+          }
+        }
+
+        if (!node || pos === -1) return false;
+
+        // Clone the title and content blocks
+        const titleContentJSON = node.child(0).content.toJSON();
+        const bodyContentJSON = node.child(1).content.toJSON();
+
+        // Create new structure to replace the toggleBlock
+        const nodesToInsert = [
+          {
+            type: 'paragraph',
+            content: titleContentJSON, // Title is a normal paragraph
+          },
+          ...bodyContentJSON,
+        ];
+
+        // Replace toggleBlock with it's inside content
+        return chain()
+          .focus()
+          .insertContentAt({
+            from: pos,
+            to: pos + node.nodeSize
+          }, nodesToInsert)
+          .run();
       },
     };
   },

@@ -139,10 +139,12 @@ const MenuBar = ({ editor }) => {
 
           <button
             onClick={() => {
-              state.isToggleBlock ? editor.chain().focus().unsetToggle().run()
-              : editor.chain().focus().setToggle().run()
+              if (state.isToggle)
+                editor.chain().focus().unsetToggle().run()
+              else 
+                editor.chain().focus().setToggle().run()
             }}
-            className={getBtnClass(state.isToggleBlock)}
+            className={getBtnClass(state.isToggle)}
           >
             Toggle Block
           </button>

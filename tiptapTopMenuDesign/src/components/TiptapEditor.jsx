@@ -32,6 +32,8 @@ import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
 import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
 import { ToggleBlock } from './advanced_blocks/ToggleBlock'
+import { ToggleTitle } from './advanced_blocks/ToggleTitle'
+import { ToggleContent } from './advanced_blocks/ToggleContent'
 
 const TiptapEditor = () => {
 
@@ -110,6 +112,8 @@ const TiptapEditor = () => {
         },
       }),
       ToggleBlock,
+      ToggleTitle,
+      ToggleContent,
       DetailsSummary,
       DetailsContent,
       Placeholder.configure({
