@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 import DropdownArrow from '../util/DropdownArrow';
 import {
     useFloating,
@@ -20,10 +21,12 @@ import {
 const NumberedListSelector = ({ editor }) => {
     if (!editor) return null;
 
+    const { t } = useTranslation();
+
     const options = [
         {
             id: 'default',
-            name: 'Numbers (1, 1.1)',
+            name: t('editor.toolbar.ordered_list.numbers'),
             icon: (
                 <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">1</text>
@@ -37,7 +40,7 @@ const NumberedListSelector = ({ editor }) => {
         },
         {
             id: 'alpha',
-            name: 'Letters (a, b, c)',
+            name: t('editor.toolbar.ordered_list.letters'),
             icon: (
                 <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">a</text>
@@ -51,7 +54,7 @@ const NumberedListSelector = ({ editor }) => {
         },
         {
             id: 'roman',
-            name: 'Roman Numerals (i, ii, iii)',
+            name: t('editor.toolbar.ordered_list.roman'),
             icon: (
                 <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">i</text>
@@ -65,7 +68,7 @@ const NumberedListSelector = ({ editor }) => {
         },
         {
             id: 'mix',
-            name: 'Mix (1, a, i)',
+            name: t('editor.toolbar.ordered_list.mix'),
             icon: (
                 <g stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                     <text x="0" y="7" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none">1</text>
@@ -131,7 +134,7 @@ const NumberedListSelector = ({ editor }) => {
                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
                     : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg border-transparent'
                     }`}
-                title="Lista numerada"
+                title={t('editor.toolbar.ordered_list.ordered_list')}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     {options.find(o => o.id === currentStyle)?.icon}

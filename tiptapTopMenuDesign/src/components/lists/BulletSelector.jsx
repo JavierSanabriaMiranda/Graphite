@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 import DropdownArrow from '../util/DropdownArrow';
 import {
     useFloating,
@@ -20,11 +21,13 @@ import {
 const BulletSelector = ({ editor }) => {
     if (!editor) return null;
 
+    const { t } = useTranslation();
+
     // Icons for the different bullet styles
     const options = [
         {
             id: 'default',
-            name: 'Dots',
+            name: t('editor.toolbar.bulleted_list.dots'),
             icon: (
                 <g fill="currentColor">
                     <circle cx="4" cy="5" r="2.5" />
@@ -40,7 +43,7 @@ const BulletSelector = ({ editor }) => {
         },
         {
             id: 'circle',
-            name: 'Circles',
+            name: t('editor.toolbar.bulleted_list.circles'),
             icon: (
                 <g fill="none" stroke="currentColor" strokeLinecap="round">
                     <circle cx="4" cy="5" r="2.5" strokeWidth="1.5" />
@@ -56,7 +59,7 @@ const BulletSelector = ({ editor }) => {
         },
         {
             id: 'square',
-            name: 'Squares',
+            name: t('editor.toolbar.bulleted_list.squares'),
             icon: (
                 <g fill="currentColor">
                     <rect x="2" y="3.5" width="4.5" height="4.5" />
@@ -72,7 +75,7 @@ const BulletSelector = ({ editor }) => {
         },
         {
             id: 'mix',
-            name: 'Mix',
+            name: t('editor.toolbar.bulleted_list.mix'),
             icon: (
                 <g stroke="currentColor" strokeLinecap="round">
                     {/* Nivel 1: Disco */}
@@ -144,7 +147,7 @@ const BulletSelector = ({ editor }) => {
                         ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary shadow-md'
                         : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg'
                     }`}
-                title="Lista de viñetas"
+                title={t('editor.toolbar.bulleted_list.bulleted_list')}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     {/* Shows the default or the selected option icon */}

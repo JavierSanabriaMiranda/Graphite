@@ -1,4 +1,5 @@
 import { useEditorState } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Todo list button component for toggling task lists in the editor.
@@ -7,6 +8,8 @@ import { useEditorState } from '@tiptap/react';
  */
 const TodoList = ({editor}) => {
     if (!editor) return null;
+
+    const { t } = useTranslation();
 
     const isTodoListActive = useEditorState({
         editor,
@@ -21,7 +24,7 @@ const TodoList = ({editor}) => {
                 isTodoListActive 
                 ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-md' 
                 : 'text-black dark:text-white hover:bg-hover-primary-bg'}`}
-            title="Lista de tareas"
+            title={t('editor.toolbar.todo_list')}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

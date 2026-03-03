@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../util/ToastContext';
 
 /**
@@ -9,6 +10,9 @@ import { useToast } from '../util/ToastContext';
  * @param {Function} onDone - Callback function to call after the import is done (to close the menu) 
  */
 const ImportButton = ({ editor, onDone }) => {
+
+  const { t } = useTranslation();
+
   const fileRef = useRef(null);
   const { showToast } = useToast();
 
@@ -25,7 +29,7 @@ const ImportButton = ({ editor, onDone }) => {
         editor.commands.insertContent(JSON.parse(event.target.result));
         e.target.value = ""; // Reset file input to allow importing the same file again if needed
 
-        showToast("¡Documento importado con éxito!", "success");
+        showToast(t('editor.options_menu.import_success'), "success");
         onDone();
       } catch (err) { 
         showToast("Error al importar el documento. Asegúrate de que el archivo es un JSON válido.", "error");
@@ -45,7 +49,7 @@ const ImportButton = ({ editor, onDone }) => {
         <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
         </svg>
-        Importar JSON
+        {t('editor.options_menu.import')}
       </button>
     </>
   );

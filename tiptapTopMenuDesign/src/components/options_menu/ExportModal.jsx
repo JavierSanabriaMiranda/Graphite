@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FloatingPortal } from '@floating-ui/react';
 import { useToast } from '../util/ToastContext';
 
@@ -10,6 +11,9 @@ import { useToast } from '../util/ToastContext';
  * @param {Object} editor - The editor instance to get the content for export
  */
 const ExportModal = ({ isOpen, onClose, editor }) => {
+
+  const { t } = useTranslation();
+
   const [selectedFormat, setSelectedFormat] = useState('json');
   const { showToast } = useToast();
 
@@ -32,7 +36,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
     link.download = `documento.${selectedFormat}`;
     link.click();
     URL.revokeObjectURL(url);
-    showToast("¡Documento exportado con éxito!", "success");
+    showToast(t('editor.options_menu.export.export_success'), "success");
     onClose(); // Close modal after download
   };
 
@@ -40,8 +44,8 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
     <FloatingPortal>
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
         <div className="bg-main-bg border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-300 w-full max-w-md p-6 rounded-2xl shadow-2xl animate-in zoom-in slide-in-from-bottom-4 duration-300">
-          <h3 className="text-xl font-bold mb-4">Exportar Documento</h3>
-          <p className="text-gray-500 dark:text-zinc-400 mb-6">Selecciona el formato deseado:</p>
+          <h3 className="text-xl font-bold mb-4">{t('editor.options_menu.export.modal_title')}</h3>
+          <p className="text-gray-500 dark:text-zinc-400 mb-6">{t('editor.options_menu.export.modal_instructions')}</p>
 
           <div className="grid grid-cols-2 gap-4 mb-8">
             {['json', 'html'].map((format) => (
@@ -59,10 +63,10 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
 
           <div className="flex justify-end gap-3">
             <button onClick={onClose} className="px-4 py-2 text-sm font-medium hover:text-gray-900 dark:hover:text-white transition-colors">
-              Cancelar
+              {t('editor.options_menu.export.modal_cancel')}
             </button>
             <button onClick={downloadFile} className="px-6 py-2 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg">
-              Exportar ahora
+              {t('editor.options_menu.export.modal_export')}
             </button>
           </div>
         </div>

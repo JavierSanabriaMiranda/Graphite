@@ -1,8 +1,9 @@
-import { EditorContent, ReactNodeView, ReactNodeViewRenderer, useEditor } from '@tiptap/react' // EditorContent va entre llaves
+import { EditorContent, ReactNodeView, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
+import i18next from 'i18next'
 import StarterKit from '@tiptap/starter-kit'
-import { Underline } from '@tiptap/extension-underline' // Entre llaves
-import { TextStyle } from '@tiptap/extension-text-style' // Entre llaves
-import { FontFamily } from '@tiptap/extension-font-family' // Entre llaves
+import { Underline } from '@tiptap/extension-underline' 
+import { TextStyle } from '@tiptap/extension-text-style' 
+import { FontFamily } from '@tiptap/extension-font-family' 
 import { Color } from '@tiptap/extension-color'
 import Code from '@tiptap/extension-code'
 import TextAlign from '@tiptap/extension-text-align'
@@ -124,17 +125,17 @@ const TiptapEditor = () => {
 
           // Placeholder for toggle title
           if (node.type.name === 'toggleTitle') {
-            return 'Título del toggle...';
+            return i18next.t('editor.toggle_title');
           }
 
           // Placeholder for toggle content
           if (node.type.name === 'paragraph' && $pos.parent.type.name === 'toggleContent') {
-            return 'Este contenido se podrá ocultar dentro del toggle';
+            return i18next.t('editor.toggle_empty');
           }
 
           // Global placeholder (when editor is empty)
           if (editor.isEmpty && node.type.name === 'paragraph') {
-            return 'Escribe algo increíble...';
+            return i18next.t('editor.placeholder');
           }
 
           return '';

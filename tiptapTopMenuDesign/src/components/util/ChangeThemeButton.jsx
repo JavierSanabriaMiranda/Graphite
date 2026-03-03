@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Tool to change the theme of the editor.
  * It toggles between light and dark mode, and saves the preference in localStorage.
  */
 const ChangeThemeButton = () => {
+
+    const { t } = useTranslation();
 
     // Initialize the theme based on localStorage or system preference
     const [isDark, setIsDark] = useState(() => {
@@ -32,7 +35,7 @@ const ChangeThemeButton = () => {
                        bg-main-bg
                        hover:bg-hover-primary-bg
                        text-xl"
-            title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}>
+            title={isDark ? t('editor.toolbar.change_light_theme') : t('editor.toolbar.change_dark_theme')}>
             {isDark ? '☀️' : '🌙'}
         </button>
     );

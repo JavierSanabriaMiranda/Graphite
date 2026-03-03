@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 import DropdownArrow from '../util/DropdownArrow';
 import {
     useFloating,
@@ -21,6 +22,8 @@ import {
  */
 const HighlightPicker = ({ editor }) => {
     if (!editor) return null;
+
+    const { t } = useTranslation();
 
     const presets = [
         { name: 'Rojo', color: '#ef4444' },
@@ -63,7 +66,7 @@ const HighlightPicker = ({ editor }) => {
                 {...getReferenceProps()}
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
-                title="Color de resaltado"
+                title={t('editor.toolbar.highlight_color')}
             >
                 <div className="w-6 h-6 rounded-full border border-black/10 overflow-hidden relative">
                         <div 

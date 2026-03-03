@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 /**
  * TextTypeSelector component that allows the user to select the text type of the current 
  * block (paragraph, heading 1, heading 2, callout...)
@@ -6,6 +8,8 @@
  * @param {Object} state - The state of the menu bar, used to know the current text type
  */
 const TextTypeSelector = ({ editor, state }) => {
+
+    const { t } = useTranslation();
 
     return (
         <select
@@ -32,13 +36,13 @@ const TextTypeSelector = ({ editor, state }) => {
             }}
             className="p-1.5 shadow-sm rounded dark:border dark:border-zinc-700 bg-main-bg text-sm focus:ring-2 focus:ring-primary outline-none dark:text-zinc-200 cursor-pointer"
         >
-            <option value="p">Texto Normal</option>
-            <option value="h1">Título 1</option>
-            <option value="h2">Título 2</option>
-            <option value="h3">Título 3</option>
-            <option value="quote">Cita</option>
-            <option value="callout">Callout</option>
-            <option value="code">Código</option>
+            <option value="p">{t('editor.toolbar.block_type.normal_text')}</option>
+            <option value="h1">{t('editor.toolbar.block_type.h1')}</option>
+            <option value="h2">{t('editor.toolbar.block_type.h2')}</option>
+            <option value="h3">{t('editor.toolbar.block_type.h3')}</option>
+            <option value="quote">{t('editor.toolbar.block_type.quote')}</option>
+            <option value="callout">{t('editor.toolbar.block_type.callout')}</option>
+            <option value="code">{t('editor.toolbar.block_type.code_block.code_block')}</option>
         </select>
     )
 

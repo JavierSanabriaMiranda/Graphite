@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 import DropdownArrow from './util/DropdownArrow';
 import {
     useFloating,
@@ -19,6 +20,8 @@ import {
  */
 const AlignmentSelector = ({ editor }) => {
     if (!editor) return null;
+
+    const { t } = useTranslation();
 
     const alignments = [
         { 
@@ -85,7 +88,7 @@ const AlignmentSelector = ({ editor }) => {
                 ref={refs.setReference}
                 {...getReferenceProps()}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
-                title="Alineación"
+                title={t('editor.toolbar.alignment')}
             >
                 <svg 
                     xmlns="http://www.w3.org/2000/svg" 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 import DropdownArrow from '../util/DropdownArrow';
 import {
     useFloating,
@@ -21,6 +22,8 @@ import {
  */
 const ColorPicker = ({ editor }) => {
     if (!editor) return null;
+
+    const { t } = useTranslation();
 
     const presets = [
         { name: 'Rojo', color: '#ef4444' },
@@ -63,7 +66,7 @@ const ColorPicker = ({ editor }) => {
                 {...getReferenceProps()}
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
-                title="Color de texto"
+                title={t('editor.toolbar.text_color')}
             >
                 <div
                     className={`w-6 h-6 border border-black/10 rounded-full ${!currentColor ? 'bg-checkerboard' : ''}`}

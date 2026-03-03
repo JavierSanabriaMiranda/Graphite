@@ -1,4 +1,5 @@
 import { useEditorState } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 import { menuBarStateSelector } from './util/menuBarStateSelector';
 import ChangeThemeButton from './util/ChangeThemeButton';
 import ColorPicker from './colors/ColorPicker';
@@ -18,6 +19,8 @@ import { ToggleIcon } from './advanced_blocks/ToggleBlock/ToggleIcon';
  */
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
+
+  const { t } = useTranslation();
 
   const state = useEditorState({
     editor,
@@ -70,7 +73,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
             className={getBtnClass(state.isBold)}
-            title="Negrita"
+            title={t('editor.toolbar.bold')}
           >
             <b>B</b>
           </button>
@@ -78,7 +81,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
             className={getBtnClass(state.isItalic)}
-            title="Cursiva"
+            title={t('editor.toolbar.italic')}
           >
             <i>I</i>
           </button>
@@ -86,7 +89,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             className={getBtnClass(state.isUnderline)}
-            title="Subrayado"
+            title={t('editor.toolbar.underline')}
           >
             <u>U</u>
           </button>
@@ -95,7 +98,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleStrike().run()}
             className={getBtnClass(state.isStrike)}
-            title="Tachado"
+            title={t('editor.toolbar.strikethrough')}
           >
             <s className="decoration-2">S</s>
           </button>
@@ -105,7 +108,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleCode().run()}
             className={getBtnClass(state.isCode)}
-            title="Código"
+            title={t('editor.toolbar.code')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +154,7 @@ const MenuBar = ({ editor }) => {
                 editor.chain().focus().setToggle().run()
             }}
             className={getBtnClass(state.isToggle)}
-            title="Contenido comprimido"
+            title={t('editor.toolbar.toggle_block')}
           >
             <ToggleIcon className="w-5 h-5" />
           </button>

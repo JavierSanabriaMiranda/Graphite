@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFloating, offset, flip, shift, useInteractions, useClick, useDismiss, autoUpdate, FloatingPortal } from '@floating-ui/react';
 import ExportButton from './ExportButton';
 import ImportButton from './ImportButton';
@@ -10,6 +11,9 @@ import ExportModal from './ExportModal';
  * @param {Object} editor - The editor instance 
  */
 const OptionsMenu = ({ editor }) => {
+
+  const { t } = useTranslation(); 
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -34,7 +38,7 @@ const OptionsMenu = ({ editor }) => {
         ref={refs.setReference}
         {...getReferenceProps()}
         className="flex items-center justify-center w-9 h-9 rounded-lg transition-all bg-main-bg hover:bg-hover-primary-bg text-gray-600 dark:text-zinc-400"
-        title="Más opciones"
+        title={t('editor.options_menu.options_menu')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M5 12c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm9 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm9 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z" />

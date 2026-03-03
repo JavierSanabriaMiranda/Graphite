@@ -1,5 +1,6 @@
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react';
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     useFloating,
     offset,
@@ -21,6 +22,8 @@ import { useToast } from '../util/ToastContext';
  * @returns 
  */
 const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
+
+    const { t } = useTranslation();
     const { language } = node.attrs;
     const { showToast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +52,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
     const copyToClipboard = () => {
         const code = node.textContent;
         navigator.clipboard.writeText(code).then(() => {
-            showToast("Código copiado al portapapeles", "success");
+            showToast(t('editor.toolbar.block_type.code_block.copy_success'), "success");
         });
     };
 
@@ -73,7 +76,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
             .sort();
     }, [languages, search]);
 
-    const currentLabel = languageNames[language] || (language ? language.charAt(0).toUpperCase() + language.slice(1) : 'Auto-detectar');
+    const currentLabel = languageNames[language] || (language ? language.charAt(0).toUpperCase() + language.slice(1) : t('editor.toolbar.block_type.code_block.auto_detect'));
 
     return (
         <NodeViewWrapper className="relative group my-8">
@@ -101,7 +104,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                 {/* Copy code button */}
                 <button
                     onClick={copyToClipboard}
-                    title="Copiar código"
+                    title={t('editor.toolbar.block_type.code_block.copy_content')}
                     className="flex items-center justify-center p-1.5 rounded-md
                      bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400
                      border border-zinc-200 dark:border-zinc-700
@@ -133,7 +136,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                             </svg>
                             <input
                                 autoFocus
-                                placeholder="Buscar lenguaje..."
+                                placeholder={t('editor.toolbar.block_type.code_block.search_language')}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="w-full pl-7 pr-3 py-1.5 text-xs bg-zinc-50 dark:bg-zinc-950 border-none rounded-md focus:ring-1 focus:ring-primary outline-none dark:text-zinc-200"
@@ -147,7 +150,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                             onClick={() => { updateAttributes({ language: null }); setIsOpen(false); }} /* bg-primary dark:bg-primary/10 text-white dark:text-primary */
                             className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${!language ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
                         >
-                            Auto-detectar
+                            {t('editor.toolbar.block_type.code_block.auto_detect')}
                         </button>
 
                         <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
@@ -168,7 +171,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                                 </button>
                             ))
                         ) : (
-                            <div className="px-3 py-4 text-center text-xs text-zinc-400 italic">No hay resultados</div>
+                            <div className="px-3 py-4 text-center text-xs text-zinc-400 italic">{t('editor.toolbar.block_type.code_block.no_results')}</div>
                         )}
                     </div>
                 </div>
