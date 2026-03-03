@@ -70,6 +70,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
             className={getBtnClass(state.isBold)}
+            title="Negrita"
           >
             <b>B</b>
           </button>
@@ -77,6 +78,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
             className={getBtnClass(state.isItalic)}
+            title="Cursiva"
           >
             <i>I</i>
           </button>
@@ -84,6 +86,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             className={getBtnClass(state.isUnderline)}
+            title="Subrayado"
           >
             <u>U</u>
           </button>
@@ -92,6 +95,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleStrike().run()}
             className={getBtnClass(state.isStrike)}
+            title="Tachado"
           >
             <s className="decoration-2">S</s>
           </button>
@@ -101,6 +105,7 @@ const MenuBar = ({ editor }) => {
             type="button"
             onClick={() => editor.chain().focus().toggleCode().run()}
             className={getBtnClass(state.isCode)}
+            title="Código"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -8,12 +8,12 @@ export const ToggleIcon = ({ className }) => (
     strokeLinejoin="round" 
     className={className}
   >
-{/* FILA SUPERIOR (Centrada en y=8) */}
+    {/* Top row */}
     <path d="M4 5l3 3-3 3" />        {/* Chevron > */}
-    <path d="M11 8h9" />            {/* Línea de texto */}
+    <path d="M11 8h9" />            {/* Text line */}
 
-    {/* FILA INFERIOR (Centrada en y=16) */}
+    {/* Bottom row */}
     <path d="M4 13l3 3-3 3" />       {/* Chevron > */}
-    <path d="M11 16h9" />           {/* Línea de texto */}
+    <path d="M11 16h9" />           {/* Text line */}
   </svg>
 );

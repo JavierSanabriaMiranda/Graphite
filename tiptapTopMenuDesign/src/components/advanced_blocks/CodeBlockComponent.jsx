@@ -14,6 +14,12 @@ import {
 import DropdownArrow from '../util/DropdownArrow';
 import { useToast } from '../util/ToastContext';
 
+/**
+ * Custom code block component with syntax highlighting, a language selector and a copy content button
+ * 
+ * @param {} param0 
+ * @returns 
+ */
 const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
     const { language } = node.attrs;
     const { showToast } = useToast();
@@ -119,7 +125,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                     {...getFloatingProps()}
                     className="z-1000 w-52 overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl animate-in fade-in zoom-in duration-150"
                 >
-                    {/* Buscador */}
+                    {/* Searching zone */}
                     <div className="p-2 border-b border-zinc-100 dark:border-zinc-800">
                         <div className="relative">
                             <svg className="absolute left-2 top-2 w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

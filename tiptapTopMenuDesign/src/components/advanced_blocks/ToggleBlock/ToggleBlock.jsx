@@ -2,6 +2,9 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewContent, NodeViewWrapper } from '@tiptap/react';
 import DropdownArrow from "../../util/DropdownArrow";
 
+/**
+ * Component to wrap content into a hidden structure composed by a title and the hidden content
+ */
 const ToggleBlockComponent = ({ node, updateAttributes }) => {
   const { isOpen } = node.attrs;
 

@@ -131,6 +131,7 @@ const NumberedListSelector = ({ editor }) => {
                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
                     : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg border-transparent'
                     }`}
+                title="Lista numerada"
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     {options.find(o => o.id === currentStyle)?.icon}

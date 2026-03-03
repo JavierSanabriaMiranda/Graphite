@@ -63,6 +63,7 @@ const HighlightPicker = ({ editor }) => {
                 {...getReferenceProps()}
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
+                title="Color de resaltado"
             >
                 <div className="w-6 h-6 rounded-full border border-black/10 overflow-hidden relative">
                         <div 

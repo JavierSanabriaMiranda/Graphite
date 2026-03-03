@@ -1,5 +1,8 @@
 import { Node } from '@tiptap/core';
 
+/**
+ * Title shown in the toggle block
+ */
 export const ToggleTitle = Node.create({
   name: 'toggleTitle',
   group: 'block',

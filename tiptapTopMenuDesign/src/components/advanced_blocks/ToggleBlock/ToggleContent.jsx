@@ -1,5 +1,8 @@
 import { Node } from '@tiptap/core';
 
+/**
+ * Content hidden into the ToggleBlock
+ */
 export const ToggleContent = Node.create({
   name: 'toggleContent',
   group: 'block',
