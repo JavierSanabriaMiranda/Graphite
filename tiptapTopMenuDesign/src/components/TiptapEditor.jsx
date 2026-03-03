@@ -31,9 +31,9 @@ import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
 import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
-import { ToggleBlock } from './advanced_blocks/ToggleBlock'
-import { ToggleTitle } from './advanced_blocks/ToggleTitle'
-import { ToggleContent } from './advanced_blocks/ToggleContent'
+import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
+import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
+import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
 
 const TiptapEditor = () => {
 

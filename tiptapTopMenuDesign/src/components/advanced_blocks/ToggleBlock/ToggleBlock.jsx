@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewContent, NodeViewWrapper } from '@tiptap/react';
-import DropdownArrow from "../util/DropdownArrow";
+import DropdownArrow from "../../util/DropdownArrow";
 
 const ToggleBlockComponent = ({ node, updateAttributes }) => {
   const { isOpen } = node.attrs;

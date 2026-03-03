@@ -9,6 +9,7 @@ import NumberedListSelector from './lists/NumberedListSelector';
 import TodoList from './lists/TodoList';
 import OptionsMenu from './options_menu/OptionsMenu';
 import TextTypeSelector from './TextTypeSelector';
+import { ToggleIcon } from './advanced_blocks/ToggleBlock/ToggleIcon';
 
 /**
  * Top menu component that allows the user to edit the written text with the given tools
@@ -145,8 +146,9 @@ const MenuBar = ({ editor }) => {
                 editor.chain().focus().setToggle().run()
             }}
             className={getBtnClass(state.isToggle)}
+            title="Contenido comprimido"
           >
-            Toggle Block
+            <ToggleIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
