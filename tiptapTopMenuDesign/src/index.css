@@ -498,32 +498,24 @@ Toggle style
 Placeholder style
 ==================== */
 
-
-/* General placeholder (when editor is empty) */
-.is-editor-empty:first-child::before {
+/* Style for every empty block */
+.ProseMirror .is-empty::before {
   content: attr(data-placeholder);
   float: left;
-  color: #adb5bd;
-  pointer-events: none;
-  height: 0;
-}
-
-/* Specific toggle placeholders */
-.ProseMirror .is-empty[data-type="toggleTitle"]::before,
-.ProseMirror .is-empty[data-type="toggleContent"]::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #d1d5db;
+  color: #a1a1aa;
   pointer-events: none;
   height: 0;
   font-style: normal;
 }
 
-/* Avoids placeholder to be in normal paragraphs if editor is not empty */
-.ProseMirror p.is-empty::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #adb5bd;
-  pointer-events: none;
-  height: 0;
+/* Specific toggle title placeholder */
+[data-type="toggle-title"].is-empty::before {
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+/* Specific stile for empty toggle content */
+.toggle-block [data-type="toggle-content"] .is-empty::before {
+  font-size: 0.9em;
+  color: #d1d5db;
 }

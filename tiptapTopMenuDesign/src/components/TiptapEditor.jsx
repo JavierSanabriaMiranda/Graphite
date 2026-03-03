@@ -118,26 +118,25 @@ const TiptapEditor = () => {
       DetailsContent,
       Placeholder.configure({
         includeChildren: true,
-        placeholder: ({ node, editor }) => {
-          // 1. Si el editor está TOTALMENTE vacío, mostramos el mensaje general
-          // (Normalmente el primer nodo es un 'paragraph')
-          if (editor.isEmpty && node.type.name === 'paragraph') {
-            return 'Escribe algo increíble...';
-          }
+        placeholder: ({ node, editor, pos }) => {
+          const { state } = editor;
+          const $pos = state.doc.resolve(pos);
 
-          // 2. Si estamos en el Título del Toggle
+          // Placeholder for toggle title
           if (node.type.name === 'toggleTitle') {
             return 'Título del toggle...';
           }
 
-          // 3. Si estamos en el Contenido del Toggle
-          // (Buscamos si el nodo actual es un párrafo dentro de un toggleContent)
-          if (node.type.name === 'toggleContent') {
-            return 'Escribe el contenido que quieres ocultar...';
+          // Placeholder for toggle content
+          if (node.type.name === 'paragraph' && $pos.parent.type.name === 'toggleContent') {
+            return 'Este contenido se podrá ocultar dentro del toggle';
           }
 
-          // 4. Para cualquier otro caso (párrafos extra, etc.), devolvemos vacío
-          // para que no se solapen placeholders
+          // Global placeholder (when editor is empty)
+          if (editor.isEmpty && node.type.name === 'paragraph') {
+            return 'Escribe algo increíble...';
+          }
+
           return '';
         },
       }),
