@@ -513,9 +513,3 @@ Placeholder style
   font-weight: 500;
   opacity: 0.7;
 }
-
-/* Specific stile for empty toggle content */
-.toggle-block [data-type="toggle-content"] .is-empty::before {
-  font-size: 0.9em;
-  color: #d1d5db;
-}

@@ -71,6 +71,9 @@ export const ToggleBlock = Node.create({
         const { selection } = state;
         const { $from } = selection;
 
+        // Get paragraph limits
+        const from = $from.before($from.depth);
+
         // Look for toggleBlock in the JSON
         let pos = -1;
         let node = null;
@@ -104,6 +107,7 @@ export const ToggleBlock = Node.create({
             from: pos,
             to: pos + node.nodeSize
           }, nodesToInsert)
+          .setTextSelection(from)
           .run();
       },
     };
