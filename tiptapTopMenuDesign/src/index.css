@@ -281,14 +281,7 @@ To-do list style
   text-decoration-thickness: 1.5px;
 }
 
-/* ====================
-Placeholder style
-==================== */
 
-.tiptap p.is-editor-empty:first-child::before {
-  @apply text-slate-400 float-left h-0 pointer-events-none;
-  content: attr(data-placeholder);
-}
 
 /* ====================
 Quote style
@@ -492,10 +485,45 @@ Toggle style
 /* Content style when opened */
 .is-open [data-type="toggle-content"] {
   margin-left: 0.5rem;
+  border-left: 2px solid #e5e7eb;
   padding-left: 1rem;
   margin-top: 0.5rem;
 }
 
 .dark .is-open [data-type="toggle-content"] {
   border-left-color: #27272a;
+}
+
+/* ====================
+Placeholder style
+==================== */
+
+
+/* General placeholder (when editor is empty) */
+.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Specific toggle placeholders */
+.ProseMirror .is-empty[data-type="toggleTitle"]::before,
+.ProseMirror .is-empty[data-type="toggleContent"]::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #d1d5db;
+  pointer-events: none;
+  height: 0;
+  font-style: normal;
+}
+
+/* Avoids placeholder to be in normal paragraphs if editor is not empty */
+.ProseMirror p.is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
 }
