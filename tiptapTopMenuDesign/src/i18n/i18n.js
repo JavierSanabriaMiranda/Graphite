@@ -34,6 +34,13 @@ i18n
                             "strikethrough": "Strikethrough",
                             "code": "Code",
                             "text_color": "Text color",
+                            "color": {
+                                "red": "Red",
+                                "blue": "Blue",
+                                "green": "Green",
+                                "yellow": "Yellow",
+                                "purple": "Purple"
+                            },
                             "highlight_color": "Highlight color",
                             "alignment": "Alignment",
                             "bulleted_list": {
@@ -101,6 +108,13 @@ i18n
                             "code": "Código",
                             "text_color": "Color de texto",
                             "highlight_color": "Color de resaltado",
+                            "color": {
+                                "red": "Rojo",
+                                "blue": "Azul",
+                                "green": "Verde",
+                                "yellow": "Amarillo",
+                                "purple": "Púrpura"
+                            },
                             "alignment": "Alineación",
                             "bulleted_list": {
                                 "bulleted_list": "Lista de viñetas",

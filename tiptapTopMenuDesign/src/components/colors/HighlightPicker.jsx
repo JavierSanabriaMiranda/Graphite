@@ -26,11 +26,11 @@ const HighlightPicker = ({ editor }) => {
     const { t } = useTranslation();
 
     const presets = [
-        { name: 'Rojo', color: '#ef4444' },
-        { name: 'Azul', color: '#3b82f6' },
-        { name: 'Verde', color: '#22c55e' },
-        { name: 'Amarillo', color: '#eab308' },
-        { name: 'Púrpura', color: '#a855f7' },
+        { name: t('editor.toolbar.color.red'), color: '#ef4444' },
+        { name: t('editor.toolbar.color.blue'), color: '#3b82f6' },
+        { name: t('editor.toolbar.color.green'), color: '#22c55e' },
+        { name: t('editor.toolbar.color.yellow'), color: '#eab308' },
+        { name: t('editor.toolbar.color.purple'), color: '#a855f7' },
     ];
 
     const currentColor = useEditorState({
