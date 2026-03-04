@@ -154,21 +154,29 @@ const TextTypeSelector = ({ editor, state }) => {
                         </div>
                         {/* Texttype options */}
                         <div className="max-h-72 overflow-y-auto p-1 custom-scrollbar">
-                            {filteredOptions.map((opt) => (
-                                <button
-                                    key={opt.id}
-                                    onClick={() => handleSelect(opt.id)}
-                                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors
+                            {filteredOptions.length > 0 ?
+                                (
+                                    filteredOptions.map((opt) => (
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => handleSelect(opt.id)}
+                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors
                       ${state.currentTextType === opt.id
-                                            ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                                            : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}
+                                                    ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                                                    : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}
                     `}
-                                >
-                                    <Icon d={opt.icon} />
-                                    <span className="flex-1 text-left">{t(opt.label)}</span>
-                                    {state.currentTextType === opt.id && <CheckIcon />}
-                                </button>
-                            ))}
+                                        >
+                                            <Icon d={opt.icon} />
+                                            <span className="flex-1 text-left">{t(opt.label)}</span>
+                                            {state.currentTextType === opt.id && <CheckIcon />}
+                                        </button>
+                                    ))
+                                
+                                ) : (
+                                    <div className="p-4 text-center text-xs text-zinc-400 italic">
+                                        {t('editor.toolbar.block_type.search_not_found')}
+                                    </div>
+                                )}
                         </div>
                     </div>
                 </FloatingFocusManager>

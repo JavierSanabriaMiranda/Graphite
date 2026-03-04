@@ -6,6 +6,7 @@
         "toolbar": {
             "block_type": {
                 "search": "Buscar estilo...",
+                "search_not_found": "Tipo de texto no encontrado",
                 "normal_text": "Texto Normal",
                 "h1": "Título 1",
                 "h2": "Título 2",
@@ -20,6 +21,10 @@
                     "copy_content": "Copiar código",
                     "copy_success": "Código copiado al portapapeles"
                 }
+            },
+            "text_font": {
+                "search": "Buscar fuente...",
+                "search_not_found": "Fuente no encontrada"
             },
             "bold": "Negrita",
             "italic": "Cursiva",

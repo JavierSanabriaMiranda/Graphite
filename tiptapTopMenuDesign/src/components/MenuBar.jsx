@@ -10,6 +10,7 @@ import NumberedListSelector from './lists/NumberedListSelector';
 import TodoList from './lists/TodoList';
 import OptionsMenu from './options_menu/OptionsMenu';
 import TextTypeSelector from './TextTypeSelector';
+import FontSelector from './FontSelector';
 import { ToggleIcon } from './advanced_blocks/ToggleBlock/ToggleIcon';
 
 /**
@@ -51,17 +52,7 @@ const MenuBar = ({ editor }) => {
           <TextTypeSelector editor={editor} state={state} />
 
           {/* Fonts */}
-          <select
-            value={state.currentFont}
-            onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}
-            className="p-1.5 shadow-sm rounded dark:border dark:border-zinc-700 bg-main-bg text-sm focus:ring-2 focus:ring-primary outline-none dark:text-zinc-200"
-          >
-            <option value="Inter">Inter</option>
-            <option value="Arial">Arial</option>
-            <option value="Courier New">Courier New</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Times New Roman">Times New Roman</option>
-          </select>
+          <FontSelector editor={editor} state={state} />
         </div>
 
         {/* Divisor */}

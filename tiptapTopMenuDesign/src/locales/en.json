@@ -6,6 +6,7 @@
         "toolbar": {
             "block_type": {
                 "search": "Search style...",
+                "search_not_found": "Text type not found",
                 "normal_text": "Normal Text",
                 "h1": "Heading 1",
                 "h2": "Heading 2",
@@ -20,6 +21,10 @@
                     "copy_content": "Copy content",
                     "copy_success": "Content copied to clipboard"
                 }
+            },
+            "text_font": {
+                "search": "Search font...",
+                "search_not_found": "Font not found"
             },
             "bold": "Bold",
             "italic": "Italic",
