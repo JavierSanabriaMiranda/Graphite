@@ -1,0 +1,71 @@
+{
+    "editor": {
+        "placeholder": "Write something incredible...",
+        "toggle_title": "Toggle title...",
+        "toggle_empty": "This content can be hidden in the toggle",
+        "toolbar": {
+            "block_type": {
+                "normal_text": "Normal Text",
+                "h1": "Heading 1",
+                "h2": "Heading 2",
+                "h3": "Heading 3",
+                "quote": "Quote",
+                "callout": "Callout",
+                "code_block": {
+                    "code_block": "Code",
+                    "auto_detect": "Auto-detect",
+                    "search_language": "Search language",
+                    "no_results": "Nothing found",
+                    "copy_content": "Copy content",
+                    "copy_success": "Content copied to clipboard"
+                }
+            },
+            "bold": "Bold",
+            "italic": "Italic",
+            "underline": "Underline",
+            "strikethrough": "Strikethrough",
+            "code": "Code",
+            "text_color": "Text color",
+            "color": {
+                "red": "Red",
+                "blue": "Blue",
+                "green": "Green",
+                "yellow": "Yellow",
+                "purple": "Purple"
+            },
+            "highlight_color": "Highlight color",
+            "alignment": "Alignment",
+            "bulleted_list": {
+                "bulleted_list": "Bulleted List",
+                "dots": "Dots",
+                "circles": "Circles",
+                "squares": "Squares",
+                "mix": "Mix"
+            },
+            "ordered_list": {
+                "ordered_list": "Ordered List",
+                "numbers": "Numbers (1, 1.1)",
+                "letters": "Letters (a, b, c)",
+                "roman": "Roman Numerals (i, ii, iii)",
+                "mix": "Mix (1, a, i)"
+            },
+            "todo_list": "To-do list",
+            "toggle_block": "Toggle content",
+            "change_light_theme": "Change to light theme",
+            "change_dark_theme": "Change to dark theme"
+        },
+        "options_menu": {
+            "options_menu": "Options menu",
+            "export": {
+                "export": "Export",
+                "modal_title": "Export Document",
+                "modal_instructions": "Select the desired format:",
+                "modal_cancel": "Cancel",
+                "modal_export": "Export now",
+                "export_success": "Document exported successfully!"
+            },
+            "import": "Import",
+            "import_success": "Document imported successfully!"
+        }
+    }
+}

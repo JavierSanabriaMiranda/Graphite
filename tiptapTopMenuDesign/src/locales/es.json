@@ -1,0 +1,71 @@
+{
+    "editor": {
+        "placeholder": "Escribe algo increíble...",
+        "toggle_title": "Título del toggle...",
+        "toggle_empty": "Este contenido se podrá ocultar con el desplegable",
+        "toolbar": {
+            "block_type": {
+                "normal_text": "Texto Normal",
+                "h1": "Título 1",
+                "h2": "Título 2",
+                "h3": "Título 3",
+                "quote": "Cita",
+                "callout": "Destacado",
+                "code_block": {
+                    "code_block": "Código",
+                    "auto_detect": "Auto-detectar",
+                    "search_language": "Buscar lenguaje",
+                    "no_results": "No hay resultados",
+                    "copy_content": "Copiar código",
+                    "copy_success": "Código copiado al portapapeles"
+                }
+            },
+            "bold": "Negrita",
+            "italic": "Cursiva",
+            "underline": "Subrayado",
+            "strikethrough": "Tachado",
+            "code": "Código",
+            "text_color": "Color de texto",
+            "highlight_color": "Color de resaltado",
+            "color": {
+                "red": "Rojo",
+                "blue": "Azul",
+                "green": "Verde",
+                "yellow": "Amarillo",
+                "purple": "Púrpura"
+            },
+            "alignment": "Alineación",
+            "bulleted_list": {
+                "bulleted_list": "Lista de viñetas",
+                "dots": "Puntos",
+                "circles": "Circulos",
+                "squares": "Cuadrados",
+                "mix": "Mix"
+            },
+            "ordered_list": {
+                "ordered_list": "Lista ordenada",
+                "numbers": "Números (1, 1.1)",
+                "letters": "Letras (a, b, c)",
+                "roman": "Números romanos (i, ii, iii)",
+                "mix": "Mix (1, a, i)"
+            },
+            "todo_list": "Lista de tareas",
+            "toggle_block": "Contenido desplegable",
+            "change_light_theme": "Cambiar a modo claro",
+            "change_dark_theme": "Cambiar a modo oscuro"
+        },
+        "options_menu": {
+            "options_menu": "Opciones",
+            "export": {
+                "export": "Exportar",
+                "modal_title": "Exportar Documento",
+                "modal_instructions": "Selecciona el formato deseado:",
+                "modal_cancel": "Cancelar",
+                "modal_export": "Exportar ahora",
+                "export_success": "¡Documento exportado con éxito!"
+            },
+            "import": "Importar",
+            "import_success": "¡Documento importado con éxito!"
+        }
+    }
+}
