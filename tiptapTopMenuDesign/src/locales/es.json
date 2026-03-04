@@ -5,6 +5,7 @@
         "toggle_empty": "Este contenido se podrá ocultar con el desplegable",
         "toolbar": {
             "block_type": {
+                "search": "Buscar estilo...",
                 "normal_text": "Texto Normal",
                 "h1": "Título 1",
                 "h2": "Título 2",

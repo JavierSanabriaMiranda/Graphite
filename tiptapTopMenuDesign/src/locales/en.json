@@ -5,6 +5,7 @@
         "toggle_empty": "This content can be hidden in the toggle",
         "toolbar": {
             "block_type": {
+                "search": "Search style...",
                 "normal_text": "Normal Text",
                 "h1": "Heading 1",
                 "h2": "Heading 2",
