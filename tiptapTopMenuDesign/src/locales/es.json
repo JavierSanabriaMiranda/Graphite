@@ -75,5 +75,18 @@
             "import": "Importar",
             "import_success": "¡Documento importado con éxito!"
         }
+    },
+    "emojis": {
+        "categories": {
+            "smileys": "Caras y Personas",
+            "food": "Comida y Bebida"
+        },
+        "names": {
+            "grinning_face": "risa sonrisa feliz",
+            "joy": "llorar risa alegría jaja",
+            "heart_eyes": "amor corazon enamorado",
+            "pizza": "comida pizza cena queso",
+            "rocket": "cohete espacio despegar"
+        }
     }
 }

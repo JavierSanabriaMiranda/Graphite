@@ -75,5 +75,18 @@
             "import": "Import",
             "import_success": "Document imported successfully!"
         }
+    },
+    "emojis": {
+        "categories": {
+            "smileys": "Smileys & People",
+            "food": "Food & Drink"
+        },
+        "names": {
+            "grinning_face": "laugh smile happy",
+            "joy": "cry laugh joy haha",
+            "heart_eyes": "love heart",
+            "pizza": "food pizza dinner cheese",
+            "rocket": "rocket space launch"
+        }
     }
 }
