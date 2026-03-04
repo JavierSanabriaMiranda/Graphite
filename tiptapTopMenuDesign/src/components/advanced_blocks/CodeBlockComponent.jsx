@@ -148,7 +148,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                     <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
                         <button
                             onClick={() => { updateAttributes({ language: null }); setIsOpen(false); }} /* bg-primary dark:bg-primary/10 text-white dark:text-primary */
-                            className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${!language ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
+                            className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${!language ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
                         >
                             {t('editor.toolbar.block_type.code_block.auto_detect')}
                         </button>

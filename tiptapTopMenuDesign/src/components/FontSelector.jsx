@@ -13,14 +13,12 @@ const FONTS = [
     { id: 'Times New Roman', label: 'Times New Roman', type: 'serif' },
 ];
 
-/**
- * Normalize text to remove accents
- * 
- * @param {String} text to normalize
- * @returns 
- */
-const normalizeText = (text) =>
-    text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+// Selection check icon
+const CheckIcon = () => (
+    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+    </svg>
+);
 
 /**
  * Component to select the font of the text. Opens a floating menu to select the font with a 
@@ -46,6 +44,14 @@ const FontSelector = ({ editor, state }) => {
         useDismiss(context),
         useRole(context),
     ]);
+
+    /**
+     * Normalize text to remove accents
+     * 
+     * @param {String} text to normalize
+     */
+    const normalizeText = (text) =>
+        text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
     const filteredFonts = useMemo(() => {
         const s = normalizeText(search);
@@ -76,50 +82,51 @@ const FontSelector = ({ editor, state }) => {
             </button>
 
             <FloatingPortal>
-                    <FloatingFocusManager context={context} modal={false} style={{ visibility: isOpen ? 'visible' : 'hidden' }}>
-                        <div
-                            ref={refs.setFloating}
-                            style={{...floatingStyles, visibility: isOpen ? 'visible' : 'hidden'}}
-                            {...getFloatingProps()}
-                            className="z-9999 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-2xl overflow-hidden outline-none animate-in fade-in zoom-in-95 duration-100"
-                        >
-                            {/* Searching field */}
-                            <div className="p-2 border-b border-zinc-100 dark:border-zinc-800">
-                                <input
-                                    autoFocus
-                                    placeholder={t('editor.toolbar.text_font.search') || "Search font..."}
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full p-2 text-sm bg-zinc-50 dark:bg-zinc-800 border-none rounded-md outline-none focus:ring-1 focus:ring-primary dark:text-zinc-200"
-                                />
-                            </div>
-
-                            {/* Floating menu with fonts list */}
-                            <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
-                                {filteredFonts.length > 0 ? (
-                                    filteredFonts.map((font) => (
-                                        <button
-                                            key={font.id}
-                                            onClick={() => handleSelect(font.id)}
-                                            className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors
-                        ${state.currentFont === font.id
-                                                    ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                                                    : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}
-                      `}
-                                        >
-                                            <span style={{ fontFamily: font.id }} className="truncate">
-                                                {font.label}
-                                            </span>
-                                        </button>
-                                    ))
-                                ) : (
-                                    <div className="p-4 text-center text-xs text-zinc-400 italic">
-                                        {t('editor.toolbar.text_font.search_not_found')}
-                                    </div>
-                                )}
-                            </div>
+                <FloatingFocusManager context={context} modal={false} style={{ visibility: isOpen ? 'visible' : 'hidden' }}>
+                    <div
+                        ref={refs.setFloating}
+                        style={{ ...floatingStyles, visibility: isOpen ? 'visible' : 'hidden' }}
+                        {...getFloatingProps()}
+                        className="z-9999 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-2xl overflow-hidden outline-none animate-in fade-in zoom-in-95 duration-100"
+                    >
+                        {/* Searching field */}
+                        <div className="p-2 border-b border-zinc-100 dark:border-zinc-800">
+                            <input
+                                autoFocus
+                                placeholder={t('editor.toolbar.text_font.search') || "Search font..."}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full p-2 text-sm bg-zinc-50 dark:bg-zinc-800 border-none rounded-md outline-none focus:ring-1 focus:ring-primary dark:text-zinc-200"
+                            />
                         </div>
-                    </FloatingFocusManager>
+
+                        {/* Floating menu with fonts list */}
+                        <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
+                            {filteredFonts.length > 0 ? (
+                                filteredFonts.map((font) => (
+                                    <button
+                                        key={font.id}
+                                        onClick={() => handleSelect(font.id)}
+                                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors
+                        ${state.currentFont === font.id
+                                                ? 'bg-primary/10 text-primary'
+                                                : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}
+                      `}
+                                    >
+                                        <span style={{ fontFamily: font.id }} className="truncate">
+                                            {font.label}
+                                        </span>
+                                        {state.currentFont === font.id && <CheckIcon />}
+                                    </button>
+                                ))
+                            ) : (
+                                <div className="p-4 text-center text-xs text-zinc-400 italic">
+                                    {t('editor.toolbar.text_font.search_not_found')}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </FloatingFocusManager>
             </FloatingPortal>
         </>
     );

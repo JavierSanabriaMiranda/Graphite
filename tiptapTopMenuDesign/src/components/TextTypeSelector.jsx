@@ -164,7 +164,7 @@ const TextTypeSelector = ({ editor, state }) => {
                                             onClick={() => handleSelect(opt.id)}
                                             className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors
                       ${state.currentTextType === opt.id
-                                                    ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                                                    ? 'bg-primary/10 text-primary'
                                                     : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}
                     `}
                                         >
