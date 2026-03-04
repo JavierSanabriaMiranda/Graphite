@@ -5,6 +5,7 @@
         "toggle_empty": "Este contenido se podrá ocultar con el desplegable",
         "toolbar": {
             "block_type": {
+                "text_type": "Tipo de texto",
                 "search": "Buscar estilo...",
                 "search_not_found": "Tipo de texto no encontrado",
                 "normal_text": "Texto Normal",
@@ -23,6 +24,7 @@
                 }
             },
             "text_font": {
+                "font_selector": "Fuente del texto",
                 "search": "Buscar fuente...",
                 "search_not_found": "Fuente no encontrada"
             },

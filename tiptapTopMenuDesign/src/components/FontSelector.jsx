@@ -13,9 +13,22 @@ const FONTS = [
     { id: 'Times New Roman', label: 'Times New Roman', type: 'serif' },
 ];
 
+/**
+ * Normalize text to remove accents
+ * 
+ * @param {String} text to normalize
+ * @returns 
+ */
 const normalizeText = (text) =>
     text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
+/**
+ * Component to select the font of the text. Opens a floating menu to select the font with a 
+ * field to search by text
+ * 
+ * @param {Object} editor - The editor instance
+ * @param {Object} state - The state of the menu bar, used to know the current text type 
+ */
 const FontSelector = ({ editor, state }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
@@ -49,11 +62,12 @@ const FontSelector = ({ editor, state }) => {
 
     return (
         <>
-            {/* Trigger: Muestra la fuente actual */}
+            {/* Selection button */}
             <button
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                className="flex items-center justify-between gap-2 min-w-[130px] p-1.5 px-3 bg-main-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-200 outline-none focus:ring-2 focus:ring-primary/50"
+                className="flex items-center justify-between gap-2 min-w-32.5 p-1.5 px-3 bg-main-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-200 outline-none focus:ring-2 focus:ring-primary/50"
+                title={t('editor.toolbar.text_font.font_selector')}
             >
                 <span className="truncate" style={{ fontFamily: currentFont.id }}>
                     {currentFont.label}
@@ -62,15 +76,14 @@ const FontSelector = ({ editor, state }) => {
             </button>
 
             <FloatingPortal>
-                {isOpen && (
-                    <FloatingFocusManager context={context} modal={false}>
+                    <FloatingFocusManager context={context} modal={false} style={{ visibility: isOpen ? 'visible' : 'hidden' }}>
                         <div
                             ref={refs.setFloating}
-                            style={floatingStyles}
+                            style={{...floatingStyles, visibility: isOpen ? 'visible' : 'hidden'}}
                             {...getFloatingProps()}
-                            className="z-[9999] w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-2xl overflow-hidden outline-none animate-in fade-in zoom-in-95 duration-100"
+                            className="z-9999 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-2xl overflow-hidden outline-none animate-in fade-in zoom-in-95 duration-100"
                         >
-                            {/* Buscador */}
+                            {/* Searching field */}
                             <div className="p-2 border-b border-zinc-100 dark:border-zinc-800">
                                 <input
                                     autoFocus
@@ -81,7 +94,7 @@ const FontSelector = ({ editor, state }) => {
                                 />
                             </div>
 
-                            {/* Lista de Fuentes */}
+                            {/* Floating menu with fonts list */}
                             <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
                                 {filteredFonts.length > 0 ? (
                                     filteredFonts.map((font) => (
@@ -107,7 +120,6 @@ const FontSelector = ({ editor, state }) => {
                             </div>
                         </div>
                     </FloatingFocusManager>
-                )}
             </FloatingPortal>
         </>
     );

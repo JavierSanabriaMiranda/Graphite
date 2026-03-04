@@ -5,6 +5,7 @@
         "toggle_empty": "This content can be hidden in the toggle",
         "toolbar": {
             "block_type": {
+                "text_type": "Text type",
                 "search": "Search style...",
                 "search_not_found": "Text type not found",
                 "normal_text": "Normal Text",
@@ -23,6 +24,7 @@
                 }
             },
             "text_font": {
+                "font_selector": "Text font",
                 "search": "Search font...",
                 "search_not_found": "Font not found"
             },

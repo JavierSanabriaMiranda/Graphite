@@ -48,7 +48,8 @@ const CheckIcon = () => (
 
 /**
  * TextTypeSelector component that allows the user to select the text type of the current 
- * block (paragraph, heading 1, heading 2, callout...)
+ * block (paragraph, heading 1, heading 2, callout...). Opens a floating menu to select the text type
+ * with a field to search by text
  * 
  * @param {Object} editor - The editor instance
  * @param {Object} state - The state of the menu bar, used to know the current text type
@@ -129,6 +130,7 @@ const TextTypeSelector = ({ editor, state }) => {
                 ref={refs.setReference}
                 {...getReferenceProps()}
                 className="flex items-center justify-between gap-2 min-w-30 p-1.5 px-3 bg-app-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-200 outline-none focus:ring-2 focus:ring-primary/50"
+                title={t('editor.toolbar.block_type.text_type')}
             >
                 <span className="truncate">{t(currentOption.label)}</span>
                 <DropdownArrow menuOpen={isOpen} defaultRotateAngle={0} />
