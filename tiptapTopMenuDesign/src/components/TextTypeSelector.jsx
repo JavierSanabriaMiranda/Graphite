@@ -26,15 +26,23 @@ const OPTIONS = [
     {
         id: 'quote',
         label: 'editor.toolbar.block_type.quote',
-        icon: 'M9.42 4.55C5.66 6.97 3.57 9.79 3.15 13C2.5 18 6.97 20.44 9.23 18.24C11.5 16.05 10.14 13.25 8.5 12.49C6.86 11.73 5.85 12 6.03 10.98C6.2 9.96 8.54 7.13 10.59 5.81C10.72 5.7 10.78 5.47 10.64 5.3C10.56 5.19 10.39 4.97 10.14 4.65C9.92 4.36 9.71 4.37 9.42 4.55ZM19.33 4.55C15.57 6.97 13.48 9.79 13.06 13C12.41 18 16.88 20.44 19.14 18.24C21.41 16.05 20.05 13.25 18.41 12.49C16.77 11.73 15.77 12 15.94 10.98C16.12 9.96 18.45 7.13 20.5 5.81C20.64 5.7 20.69 5.47 20.56 5.3C20.47 5.19 20.3 4.97 20.05 4.65C19.83 4.36 19.62 4.37 19.33 4.55Z'
+        icon: 'M5.315 3.401c-1.61 0-2.916 1.343-2.916 3 0 1.656 1.306 3 2.916 3 2.915 0 .972 5.799-2.916 5.799v1.4c6.939.001 9.658-13.199 2.916-13.199zm8.4 0c-1.609 0-2.915 1.343-2.915 3 0 1.656 1.306 3 2.915 3 2.916 0 .973 5.799-2.915 5.799v1.4c6.938.001 9.657-13.199 2.915-13.199z'
     },
     { id: 'callout', label: 'editor.toolbar.block_type.callout', icon: 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01' },
     { id: 'code', label: 'editor.toolbar.block_type.code_block.code_block', icon: 'M16 18l6-6-6-6M8 6l-6 6 6 6' },
 ];
 
 // Generic icon that receives a path
-const Icon = ({ d, className = "w-4 h-4" }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const Icon = ({ d, id, className = "w-4 h-4" }) => (
+    <svg
+        className={className}
+        fill={id === 'quote' ? "currentColor" : "none"}
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={id === 'quote' ? "0" : "2"}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
         <path d={d} />
     </svg>
 );
@@ -168,12 +176,12 @@ const TextTypeSelector = ({ editor, state }) => {
                                                     : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}
                     `}
                                         >
-                                            <Icon d={opt.icon} />
+                                            <Icon d={opt.icon} id={opt.id} />
                                             <span className="flex-1 text-left">{t(opt.label)}</span>
                                             {state.currentTextType === opt.id && <CheckIcon />}
                                         </button>
                                     ))
-                                
+
                                 ) : (
                                     <div className="p-4 text-center text-xs text-zinc-400 italic">
                                         {t('editor.toolbar.block_type.search_not_found')}

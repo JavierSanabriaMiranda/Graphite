@@ -513,3 +513,25 @@ Placeholder style
   font-weight: 500;
   opacity: 0.7;
 }
+
+/* ====================
+Emojis style
+==================== */
+
+/* Local emoji font for Windows/Linux */
+@font-face {
+  font-family: 'TwemojiLocal';
+  src: url('./assets/fonts/Twemoji.Mozilla.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* Create emojis "Stack" */
+:root {
+  /* Priority order */
+  --font-emoji: "Apple Color Emoji", "TwemojiLocal", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
+}
+
+/* Apply fonts to editor and EmojiPicker */
+.tiptap, .emoji-picker-content {
+  font-family: var(--font-emoji) !important;
+}

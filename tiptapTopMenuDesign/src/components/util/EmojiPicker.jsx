@@ -126,13 +126,13 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                         <div className="grid grid-cols-6 gap-1">
                             {search ? (
                                 filteredItems?.map(item => (
-                                    <button key={item.id} onClick={() => handleSelect(item)} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center">
+                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center">
                                         {view === 'emojis' ? <span className="text-2xl">{item.char}</span> : <Icon d={item.char} className="w-6 h-6" />}
                                     </button>
                                 ))
                             ) : (
                                 data.filter(e => e.category === activeCategory).map(item => (
-                                    <button key={item.id} onClick={() => handleSelect(item)} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center">
+                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center">
                                         {view === 'emojis' ? <span className="text-2xl">{item.char}</span> : <Icon d={item.char} className="w-6 h-6" />}
                                     </button>
                                 ))
