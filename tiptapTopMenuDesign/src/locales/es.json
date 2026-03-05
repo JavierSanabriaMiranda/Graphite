@@ -77,6 +77,8 @@
         }
     },
     "emojis": {
+        "emoji": "Emoji",
+        "search": "Buscar emoji...",
         "categories": {
             "smileys": "Caras y Personas",
             "food": "Comida y Bebida"
@@ -88,5 +90,9 @@
             "pizza": "comida pizza cena queso",
             "rocket": "cohete espacio despegar"
         }
+    },
+    "icons": {
+        "icons": "Iconos",
+        "search": "Buscar icono..."
     }
 }

@@ -77,6 +77,8 @@
         }
     },
     "emojis": {
+        "emojis": "Emoji",
+        "search": "Search emoji...",
         "categories": {
             "smileys": "Smileys & People",
             "food": "Food & Drink"
@@ -88,5 +90,9 @@
             "pizza": "food pizza dinner cheese",
             "rocket": "rocket space launch"
         }
+    },
+    "icons": {
+        "icons": "Icons",
+        "search": "Search icon..."
     }
 }

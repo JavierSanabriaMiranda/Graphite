@@ -1,5 +1,3 @@
-// src/data/emojis.js
-
 export const EMOJI_CATEGORIES = [
   { id: 'smileys', label: 'emojis.categories.smileys', icon: 'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 0 1-4-4h8a4 4 0 0 1-4 4z' },
   { id: 'animals', label: 'emojis.categories.animals', icon: 'M12 3l1.45 4.45L18 9l-4.55 1.55L12 15l-1.55-4.45L6 9l4.45-1.45L12 3z' },
