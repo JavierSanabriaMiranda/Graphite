@@ -531,7 +531,7 @@ Emojis style
   --font-emoji: "Apple Color Emoji", "TwemojiLocal", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
 }
 
-/* Apply fonts to editor and EmojiPicker */
-.tiptap, .emoji-picker-content {
+/* Apply fonts to EmojiPicker */
+.emoji-picker-content {
   font-family: var(--font-emoji) !important;
 }

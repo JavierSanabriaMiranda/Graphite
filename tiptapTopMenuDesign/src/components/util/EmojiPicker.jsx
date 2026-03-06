@@ -58,8 +58,8 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
     const data = view === 'emojis' ? EMOJI_DATA : ICON_DATA;
 
     const handleSelect = (item) => {
-        // If emoji, sends the corresponding char. If icon, sends SVG path
-        onSelect(view === 'emojis' ? item.char : <Icon d={item.char} className={"w-6 h-6"}/>);
+        // item.char SIEMPRE debe ser un string (el emoji '🚀' o el path 'M12...')
+        onSelect(item.char);
         setIsOpen(false);
         setSearch('');
     };
@@ -75,7 +75,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                     ref={refs.setFloating}
                     {...getFloatingProps()}
                     style={{ ...floatingStyles, visibility: isOpen ? 'visible' : 'hidden' }}
-                    className="z-1000 w-72 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+                    className="z-1000 w-90 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
                 >
                     {/* Mode selector (Emojis vs Icons) */}
                     {showIconsMenu ? (<div className="flex p-1 bg-zinc-100 dark:bg-zinc-800/50 m-2 rounded-lg">
@@ -115,7 +115,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                                     onClick={() => setActiveCategory(cat.id)}
                                     className={`p-1.5 rounded-md transition-colors ${activeCategory === cat.id ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500'}`}
                                 >
-                                    <Icon d={cat.icon} className="w-4 h-4" />
+                                    <Icon d={cat.icon} className="w-6 h-6" />
                                 </button>
                             ))}
                         </div>
@@ -123,16 +123,16 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
 
                     {/* Content grid */}
                     <div className="h-64 overflow-y-auto p-2 custom-scrollbar">
-                        <div className="grid grid-cols-6 gap-1">
+                        <div className="grid grid-cols-8 gap-1">
                             {search ? (
                                 filteredItems?.map(item => (
-                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center">
+                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
                                         {view === 'emojis' ? <span className="text-2xl">{item.char}</span> : <Icon d={item.char} className="w-6 h-6" />}
                                     </button>
                                 ))
                             ) : (
                                 data.filter(e => e.category === activeCategory).map(item => (
-                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center">
+                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
                                         {view === 'emojis' ? <span className="text-2xl">{item.char}</span> : <Icon d={item.char} className="w-6 h-6" />}
                                     </button>
                                 ))

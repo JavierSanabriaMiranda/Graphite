@@ -10,6 +10,8 @@ import EmojiPicker from '../util/EmojiPicker';
  */
 const CalloutComponent = (props) => {
   const { node, updateAttributes } = props;
+  const emojiValue = node.attrs.emoji || '💡';
+  const isSvg = emojiValue.length > 10;
 
   const handleEmojiSelect = (newEmoji) => {
     // Updates the internal TipTap state and marks the document as "to save"
@@ -20,11 +22,14 @@ const CalloutComponent = (props) => {
     <NodeViewWrapper className="flex gap-3 p-2 my-2 rounded-lg bg-gray-200 dark:bg-zinc-800/50 border border-gray-300 dark:border-zinc-700 items-start group">
       {/* Wrap emoji with EmojiPicker */}
       <EmojiPicker onSelect={handleEmojiSelect}>
-        <div
-          className="text-xl my-4 ml-2 select-none cursor-pointer hover:scale-110 transition-transform p-1 rounded hover:bg-black/5 dark:hover:bg-white/10"
-          contentEditable={false}
-        >
-          {node.attrs.emoji}
+        <div className="text-xl my-4 ml-2 select-none cursor-pointer hover:scale-110 transition-transform p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 text-zinc-800 dark:text-zinc-100">
+          {isSvg ? (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d={emojiValue} />
+            </svg>
+          ) : (
+            <span style={{ fontFamily: 'var(--font-emoji)' }}>{emojiValue}</span>
+          )}
         </div>
       </EmojiPicker>
       {/* NodeViewContent where paragraphs will be */}
@@ -54,10 +59,23 @@ export const Callout = Node.create({
     return [{ tag: 'div[data-type="callout"]' }];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'callout' }), 0];
-  },
+  renderHTML({ HTMLAttributes, node }) {
+    const emojiStr = node.attrs.emoji || '💡';
+    const isSvg = emojiStr.includes('M'); // Los paths de iconos suelen empezar por M
 
+    return [
+      'div',
+      mergeAttributes(HTMLAttributes, { 'data-type': 'callout' }),
+      [
+        'div',
+        { class: 'callout-icon', contenteditable: 'false' },
+        isSvg
+          ? ['svg', { viewBox: '0 0 24 24', fill: 'currentColor', style: 'width: 24px; height: 24px;' }, ['path', { d: emojiStr }]]
+          : emojiStr
+      ],
+      ['div', { class: 'callout-content' }, 0],
+    ];
+  },
   addCommands() {
     return {
       toggleCallout: () => ({ commands, editor }) => {
