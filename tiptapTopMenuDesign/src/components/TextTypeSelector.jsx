@@ -137,7 +137,7 @@ const TextTypeSelector = ({ editor, state }) => {
             <button
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                className="flex items-center justify-between gap-2 min-w-30 p-1.5 px-3 bg-app-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-200 outline-none focus:ring-2 focus:ring-primary/50"
+                className="cursor-pointer flex items-center justify-between gap-2 min-w-30 p-1.5 px-3 bg-app-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-200 outline-none focus:ring-2 focus:ring-primary/50"
                 title={t('editor.toolbar.block_type.text_type')}
             >
                 <span className="truncate">{t(currentOption.label)}</span>
@@ -170,7 +170,7 @@ const TextTypeSelector = ({ editor, state }) => {
                                         <button
                                             key={opt.id}
                                             onClick={() => handleSelect(opt.id)}
-                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors
+                                            className={`cursor-pointer w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors
                       ${state.currentTextType === opt.id
                                                     ? 'bg-primary/10 text-primary'
                                                     : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}

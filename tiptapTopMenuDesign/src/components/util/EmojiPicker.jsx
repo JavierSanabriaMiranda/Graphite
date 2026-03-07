@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, Component } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     useFloating, autoUpdate, offset, flip, shift, FloatingPortal, useInteractions,
@@ -8,12 +8,19 @@ import {
 import { EMOJI_DATA, EMOJI_CATEGORIES } from '../../data/emojis';
 import { ICON_DATA, ICON_CATEGORIES } from '../../data/icons';
 
-const Icon = ({ d, className = "w-4 h-4", strokeWidth=2 }) => (
+const Icon = ({ d, className = "w-4 h-4", strokeWidth = 2 }) => (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
         <path d={d} />
     </svg>
 );
 
+/**
+ * Component for picking an emoji or icon. It opens a floating menu with a list of emoji and icons
+ * 
+ * @param {Function} onSelect - Callback function to call when a emoji or icon is selected
+ * @param {Component} childer - Children to be wrapped. It can open the EmojiPicker floating menu 
+ * @param {Boolean} showIconsMenu - True if the icons menu must be shown, false otherwise
+ */
 const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
@@ -22,15 +29,15 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
     const [activeCategory, setActiveCategory] = useState('people');
 
     const scrollContainerRef = useRef(null);
-    
+
     /**
      * Makes the scrollbar go to the top when changing categories
      */
     useEffect(() => {
-    if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-    }
-}, [activeCategory, view]);
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+        }
+    }, [activeCategory, view]);
 
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -69,7 +76,6 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
     const data = view === 'emojis' ? EMOJI_DATA : ICON_DATA;
 
     const handleSelect = (item) => {
-        // item.char SIEMPRE debe ser un string (el emoji '🚀' o el path 'M12...')
         onSelect(item.char);
         setIsOpen(false);
         setSearch('');
@@ -92,13 +98,13 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                     {showIconsMenu ? (<div className="flex p-1 bg-zinc-100 dark:bg-zinc-800/50 m-2 rounded-lg">
                         <button
                             onClick={() => { setView('emojis'); setActiveCategory('people'); }}
-                            className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${view === 'emojis' ? 'bg-white dark:bg-zinc-700 shadow-sm text-primary' : 'text-zinc-500'}`}
+                            className={`cursor-pointer flex-1 py-1 text-xs font-medium rounded-md transition-all ${view === 'emojis' ? 'bg-white dark:bg-zinc-700 shadow-sm text-primary' : 'text-zinc-500'}`}
                         >
                             {t('emojis.emojis') || 'Emojis'}
                         </button>
                         <button
                             onClick={() => { setView('icons'); setActiveCategory('ui'); }}
-                            className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${view === 'icons' ? 'bg-white dark:bg-zinc-700 shadow-sm text-primary' : 'text-zinc-500'}`}
+                            className={`cursor-pointer flex-1 py-1 text-xs font-medium rounded-md transition-all ${view === 'icons' ? 'bg-white dark:bg-zinc-700 shadow-sm text-primary' : 'text-zinc-500'}`}
                         >
                             {t('icons.icons') || 'Icons'}
                         </button>
@@ -124,7 +130,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                                 <button
                                     key={cat.id}
                                     onClick={() => setActiveCategory(cat.id)}
-                                    className={`p-1.5 rounded-md transition-colors ${activeCategory === cat.id ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500'}`}
+                                    className={`cursor-pointer p-1.5 rounded-md transition-colors ${activeCategory === cat.id ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500'}`}
                                     title={t(cat.label)}
                                 >
                                     <Icon d={cat.icon} className="w-6 h-6" strokeWidth={1} />
@@ -138,13 +144,13 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                         <div className="grid grid-cols-8 gap-1">
                             {search ? (
                                 filteredItems?.map(item => (
-                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
+                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="cursor-pointer p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
                                         {view === 'emojis' ? <span className="text-2xl">{item.char}</span> : <Icon d={item.char} className="w-6 h-6" />}
                                     </button>
                                 ))
                             ) : (
                                 data.filter(e => e.category === activeCategory).map(item => (
-                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
+                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="cursor-pointer p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
                                         {view === 'emojis' ? <span className="text-2xl">{item.char}</span> : <Icon d={item.char} className="w-6 h-6" />}
                                     </button>
                                 ))

@@ -73,7 +73,8 @@
                 "export_success": "Document exported successfully!"
             },
             "import": "Import",
-            "import_success": "Document imported successfully!"
+            "import_success": "Document imported successfully!",
+            "import_error": "Error while importing the document. Make sure it is a valid JSON file"
         }
     },
     "emojis": {

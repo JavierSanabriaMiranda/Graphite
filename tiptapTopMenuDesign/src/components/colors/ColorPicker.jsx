@@ -65,7 +65,7 @@ const ColorPicker = ({ editor }) => {
                 ref={refs.setReference}
                 {...getReferenceProps()}
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
+                className="cursor-pointer flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
                 title={t('editor.toolbar.text_color')}
             >
                 <div
@@ -93,7 +93,7 @@ const ColorPicker = ({ editor }) => {
                                     editor.chain().focus().setColor(color).run();
                                     setMenuOpen(false); // Opcional: cerrar al elegir
                                 }}
-                                className={`w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-95 ${editor.isActive('textStyle', { color })
+                                className={`cursor-pointer w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-95 ${editor.isActive('textStyle', { color })
                                         ? 'ring-2 ring-blue-500 border-white'
                                         : 'border-transparent'
                                     }`}
@@ -123,7 +123,7 @@ const ColorPicker = ({ editor }) => {
                                 editor.chain().focus().unsetColor().run();
                                 setMenuOpen(false);
                             }}
-                            className="p-1 text-[10px] uppercase tracking-wider font-bold text-gray-400 hover:text-red-500 transition-colors"
+                            className="cursor-pointer p-1 text-[10px] uppercase tracking-wider font-bold text-gray-400 hover:text-red-500 transition-colors"
                         >
                             Reset
                         </button>

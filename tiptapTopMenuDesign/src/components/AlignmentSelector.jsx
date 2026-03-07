@@ -87,7 +87,7 @@ const AlignmentSelector = ({ editor }) => {
                 onClick={() => setMenuOpen(!menuOpen)}
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                className="flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
+                className="cursor-pointer flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
                 title={t('editor.toolbar.alignment')}
             >
                 <svg 
@@ -123,7 +123,7 @@ const AlignmentSelector = ({ editor }) => {
                                 editor.chain().focus().setTextAlign(align.value).run();
                                 setMenuOpen(false);
                             }}
-                            className={`p-2 rounded-lg transition-all flex items-center justify-center ${
+                            className={`cursor-pointer p-2 rounded-lg transition-all flex items-center justify-center ${
                                 currentAlign === align.value
                                     ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-sm'
                                     : 'hover:bg-hover-primary-bg text-gray-700 dark:text-zinc-300'

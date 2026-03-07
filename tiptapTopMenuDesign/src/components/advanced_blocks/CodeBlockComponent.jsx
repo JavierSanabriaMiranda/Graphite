@@ -92,7 +92,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                     ref={refs.setReference}
                     {...getReferenceProps()}
                     contentEditable={false}
-                    className="flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium rounded-md 
+                    className="cursor-pointer flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium rounded-md 
                      bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400
                      border border-zinc-200 dark:border-zinc-700
                      hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100
@@ -105,7 +105,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                 <button
                     onClick={copyToClipboard}
                     title={t('editor.toolbar.block_type.code_block.copy_content')}
-                    className="flex items-center justify-center p-1.5 rounded-md
+                    className="cursor-pointer flex items-center justify-center p-1.5 rounded-md
                      bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400
                      border border-zinc-200 dark:border-zinc-700
                      hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100
@@ -147,8 +147,8 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                     {/* Language list */}
                     <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
                         <button
-                            onClick={() => { updateAttributes({ language: null }); setIsOpen(false); }} /* bg-primary dark:bg-primary/10 text-white dark:text-primary */
-                            className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${!language ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
+                            onClick={() => { updateAttributes({ language: null }); setIsOpen(false); }}
+                            className={`cursor-pointer w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${!language ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
                         >
                             {t('editor.toolbar.block_type.code_block.auto_detect')}
                         </button>
@@ -164,7 +164,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                                         setIsOpen(false);
                                         setSearch('');
                                     }}
-                                    className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors flex items-center justify-between ${language === lang ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary font-bold' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
+                                    className={`cursor-pointer w-full text-left px-3 py-2 text-xs rounded-lg transition-colors flex items-center justify-between ${language === lang ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary font-bold' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
                                 >
                                     {languageNames[lang] || lang}
                                     {language === lang && <span className="text-[10px]">●</span>}

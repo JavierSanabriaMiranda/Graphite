@@ -37,7 +37,7 @@ const OptionsMenu = ({ editor }) => {
       <button
         ref={refs.setReference}
         {...getReferenceProps()}
-        className="flex items-center justify-center w-9 h-9 rounded-lg transition-all bg-main-bg hover:bg-hover-primary-bg text-gray-600 dark:text-zinc-400"
+        className="cursor-pointer flex items-center justify-center w-9 h-9 rounded-lg transition-all bg-main-bg hover:bg-hover-primary-bg text-gray-600 dark:text-zinc-400"
         title={t('editor.options_menu.options_menu')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -51,7 +51,7 @@ const OptionsMenu = ({ editor }) => {
             ref={refs.setFloating}
             style={{ ...floatingStyles, visibility: menuOpen ? 'visible' : 'hidden'}}
             {...getFloatingProps()}
-            className={`z-[9999] min-w-[160px] p-1 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex flex-col `}
+            className={`z-9999 min-w-40 p-1 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex flex-col `}
           >
             <ExportButton onOpenModal={() => {
               setModalOpen(true); // Open export modal

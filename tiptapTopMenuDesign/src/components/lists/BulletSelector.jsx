@@ -143,7 +143,7 @@ const BulletSelector = ({ editor }) => {
                 onClick={() => setMenuOpen(!menuOpen)}
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                className={`flex items-center gap-1 p-2 rounded-lg transition-all ${isBulletActive
+                className={`cursor-pointer flex items-center gap-1 p-2 rounded-lg transition-all ${isBulletActive
                         ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary shadow-md'
                         : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg'
                     }`}
@@ -168,7 +168,7 @@ const BulletSelector = ({ editor }) => {
                             key={opt.id}
                             type="button"
                             onClick={() => toggleStyle(opt.id)}
-                            className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 ${isBulletActive && currentStyle === opt.id
+                            className={`cursor-pointer p-2 rounded-lg transition-all hover:scale-105 active:scale-95 ${isBulletActive && currentStyle === opt.id
                                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
                                     : 'hover:bg-hover-primary-bg text-gray-800 dark:text-gray-300'
                                 }`}

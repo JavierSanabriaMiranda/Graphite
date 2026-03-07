@@ -29,7 +29,7 @@ const MenuBar = ({ editor }) => {
   });
 
   const getBtnClass = (isActive) => `
-    px-3 py-1.5 rounded transition-all duration-200 text-sm font-medium
+    cursor-pointer px-3 py-1.5 rounded transition-all duration-200 text-sm font-medium
     ${isActive
       ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 transition-colors'
       : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg'}

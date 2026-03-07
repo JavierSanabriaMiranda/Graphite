@@ -20,7 +20,7 @@ const TodoList = ({editor}) => {
         <button
             type="button"
             onClick={() => editor.chain().focus().toggleTaskList().run()}
-            className={` p-2 rounded-lg transition-colors ${
+            className={`cursor-pointer p-2 rounded-lg transition-colors ${
                 isTodoListActive 
                 ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-md' 
                 : 'text-black dark:text-white hover:bg-hover-primary-bg'}`}

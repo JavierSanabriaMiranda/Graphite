@@ -14,7 +14,7 @@ const ToggleBlockComponent = ({ node, updateAttributes }) => {
         <div
           contentEditable={false}
           onClick={() => updateAttributes({ isOpen: !isOpen })}
-          className="mt-1 p-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded cursor-pointer flex-shrink-0"
+          className="mt-1 p-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded cursor-pointer shrink-0"
         >
           <DropdownArrow menuOpen={isOpen} defaultRotateAngle={-90} rotateAngle={0} />
         </div>

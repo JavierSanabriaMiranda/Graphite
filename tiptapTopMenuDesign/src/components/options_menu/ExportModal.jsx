@@ -42,7 +42,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
 
   return (
     <FloatingPortal>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
         <div className="bg-main-bg border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-300 w-full max-w-md p-6 rounded-2xl shadow-2xl animate-in zoom-in slide-in-from-bottom-4 duration-300">
           <h3 className="text-xl font-bold mb-4">{t('editor.options_menu.export.modal_title')}</h3>
           <p className="text-gray-500 dark:text-zinc-400 mb-6">{t('editor.options_menu.export.modal_instructions')}</p>
@@ -52,7 +52,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
               <button
                 key={format}
                 onClick={() => setSelectedFormat(format)}
-                className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${selectedFormat === format ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'border-gray-100 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600'
+                className={`cursor-pointer p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${selectedFormat === format ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'border-gray-100 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600'
                   }`}
               >
                 <span className="text-2xl">{format === 'json' ? '{ }' : '🌐'}</span>
@@ -62,10 +62,10 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
           </div>
 
           <div className="flex justify-end gap-3">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-medium hover:text-gray-900 dark:hover:text-white transition-colors">
+            <button onClick={onClose} className="cursor-pointer px-4 py-2 text-sm font-medium hover:text-gray-900 dark:hover:text-white transition-colors">
               {t('editor.options_menu.export.modal_cancel')}
             </button>
-            <button onClick={downloadFile} className="px-6 py-2 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg">
+            <button onClick={downloadFile} className="cursor-pointer px-6 py-2 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg">
               {t('editor.options_menu.export.modal_export')}
             </button>
           </div>

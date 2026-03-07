@@ -130,7 +130,7 @@ const NumberedListSelector = ({ editor }) => {
                 onClick={() => setMenuOpen(!menuOpen)}
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                className={`flex items-center gap-1 p-2 rounded-lg transition-all ${isOrderedActive
+                className={`cursor-pointer flex items-center gap-1 p-2 rounded-lg transition-all ${isOrderedActive
                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
                     : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg border-transparent'
                     }`}
@@ -156,7 +156,7 @@ const NumberedListSelector = ({ editor }) => {
                                 key={opt.id}
                                 type="button"
                                 onClick={() => toggleStyle(opt.id)}
-                                className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 border ${isActive
+                                className={`cursor-pointer p-2 rounded-lg transition-all hover:scale-105 active:scale-95 border ${isActive
                                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary border-blue-200 dark:border-blue-800'
                                     : 'hover:bg-hover-primary-bg text-gray-500 dark:text-zinc-400 border-transparent'
                                     }`}
