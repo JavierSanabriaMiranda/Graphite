@@ -1,0 +1,68 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+### --- Java & Maven ---
+target/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### --- IntelliJ IDEA ---
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+gen/
+
+### --- VS Code ---
+.vscode/
+.factorypath
+.project
+.settings/
+.classpath
+
+### --- Spring Boot Specific ---
+# Ignoramos logs de la aplicación
+/logs
+*.log
+
+# Si usas Spring Boot DevTools
+.sts4-cache/
+
+### --- Environment & Secrets ---
+# ¡MUY IMPORTANTE para tu TFG!
+# No subir credenciales reales si las pruebas en local
+.env
+.env.local
+src/main/resources/application-local.properties
+src/main/resources/secrets.properties
+
+### --- OS Specific ---
+.DS_Store
+Thumbs.db

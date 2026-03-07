@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "graphite",
+  "version": "0.1.0",
+  "identifier": "com.graphite.app",
+  "build": {
+    "beforeDevCommand": "npm run front:dev",
+    "beforeBuildCommand": "npm run build --prefix front",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../front/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Graphite",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
