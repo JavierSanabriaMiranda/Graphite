@@ -8,8 +8,8 @@ import {
 import { EMOJI_DATA, EMOJI_CATEGORIES } from '../../data/emojis';
 import { ICON_DATA, ICON_CATEGORIES } from '../../data/icons';
 
-const Icon = ({ d, className = "w-4 h-4" }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const Icon = ({ d, className = "w-4 h-4", strokeWidth=2 }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
         <path d={d} />
     </svg>
 );
@@ -19,7 +19,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [view, setView] = useState('emojis');
-    const [activeCategory, setActiveCategory] = useState('smileys');
+    const [activeCategory, setActiveCategory] = useState('people');
 
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -80,7 +80,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                     {/* Mode selector (Emojis vs Icons) */}
                     {showIconsMenu ? (<div className="flex p-1 bg-zinc-100 dark:bg-zinc-800/50 m-2 rounded-lg">
                         <button
-                            onClick={() => { setView('emojis'); setActiveCategory('smileys'); }}
+                            onClick={() => { setView('emojis'); setActiveCategory('people'); }}
                             className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${view === 'emojis' ? 'bg-white dark:bg-zinc-700 shadow-sm text-primary' : 'text-zinc-500'}`}
                         >
                             {t('emojis.emojis') || 'Emojis'}
@@ -115,7 +115,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                                     onClick={() => setActiveCategory(cat.id)}
                                     className={`p-1.5 rounded-md transition-colors ${activeCategory === cat.id ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500'}`}
                                 >
-                                    <Icon d={cat.icon} className="w-6 h-6" />
+                                    <Icon d={cat.icon} className="w-6 h-6" strokeWidth={1} />
                                 </button>
                             ))}
                         </div>
