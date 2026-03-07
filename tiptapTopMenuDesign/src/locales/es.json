@@ -80,8 +80,14 @@
         "emoji": "Emoji",
         "search": "Buscar emoji...",
         "categories": {
-            "smileys": "Caras y Personas",
-            "food": "Comida y Bebida"
+            "people": "Caras y Personas",
+            "animals_and_nature": "Animales y Naturaleza",
+            "food": "Comida y Bebida",
+            "activities": "Actividades",
+            "travel": "Viajes",
+            "objects": "Objetos",
+            "symbols": "Símbolos",
+            "flags": "Banderas"
         },
         "names": {
             "grinning_face": "risa sonrisa feliz",
@@ -93,6 +99,13 @@
     },
     "icons": {
         "icons": "Iconos",
-        "search": "Buscar icono..."
+        "search": "Buscar icono...",
+        "categories": {
+            "ui": "UI",
+            "media": "Multimedia",
+            "communication": "Comunicación",
+            "files": "Archivos",
+            "arrows": "Flechas"
+        }
     }
 }

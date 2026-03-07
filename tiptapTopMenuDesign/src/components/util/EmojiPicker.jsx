@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     useFloating, autoUpdate, offset, flip, shift, FloatingPortal, useInteractions,
@@ -20,6 +20,17 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
     const [search, setSearch] = useState('');
     const [view, setView] = useState('emojis');
     const [activeCategory, setActiveCategory] = useState('people');
+
+    const scrollContainerRef = useRef(null);
+    
+    /**
+     * Makes the scrollbar go to the top when changing categories
+     */
+    useEffect(() => {
+    if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+    }
+}, [activeCategory, view]);
 
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -114,6 +125,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                                     key={cat.id}
                                     onClick={() => setActiveCategory(cat.id)}
                                     className={`p-1.5 rounded-md transition-colors ${activeCategory === cat.id ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500'}`}
+                                    title={t(cat.label)}
                                 >
                                     <Icon d={cat.icon} className="w-6 h-6" strokeWidth={1} />
                                 </button>
@@ -122,7 +134,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
                     )}
 
                     {/* Content grid */}
-                    <div className="h-64 overflow-y-auto p-2 custom-scrollbar">
+                    <div ref={scrollContainerRef} className="h-64 overflow-y-auto p-2 custom-scrollbar">
                         <div className="grid grid-cols-8 gap-1">
                             {search ? (
                                 filteredItems?.map(item => (

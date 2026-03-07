@@ -80,8 +80,14 @@
         "emojis": "Emoji",
         "search": "Search emoji...",
         "categories": {
-            "smileys": "Smileys & People",
-            "food": "Food & Drink"
+            "people": "Smileys and People",
+            "animals_and_nature": "Animals and Nature",
+            "food": "Food and Drink",
+            "activities": "Activities",
+            "travel": "Travels",
+            "objects": "Objects",
+            "symbols": "Symbols",
+            "flags": "Flags"
         },
         "names": {
             "grinning_face": "laugh smile happy",
@@ -93,6 +99,13 @@
     },
     "icons": {
         "icons": "Icons",
-        "search": "Search icon..."
+        "search": "Search icon...",
+        "categories": {
+            "ui": "UI",
+            "media": "Media",
+            "communication": "Communication",
+            "files": "Files",
+            "arrows": "Arrows"
+        }
     }
 }
