@@ -77,6 +77,11 @@
             "import_error": "Error while importing the document. Make sure it is a valid JSON file"
         }
     },
+    "sidebar": {
+        "configuration": "Configuration",
+        "notes": "Notes",
+        "new_note": "New note"
+    },
     "emojis": {
         "emojis": "Emoji",
         "search": "Search emoji...",

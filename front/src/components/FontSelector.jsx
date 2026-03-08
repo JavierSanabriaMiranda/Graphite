@@ -72,7 +72,7 @@ const FontSelector = ({ editor, state }) => {
             <button
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                className="cursor-pointer flex items-center justify-between gap-2 min-w-32.5 p-1.5 px-3 bg-main-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-200 outline-none focus:ring-2 focus:ring-primary/50"
+                className="cursor-pointer flex items-center justify-between gap-2 min-w-32.5 p-1.5 px-3 bg-main-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-gray-700 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-primary/50"
                 title={t('editor.toolbar.text_font.font_selector')}
             >
                 <span className="truncate" style={{ fontFamily: currentFont.id }}>
