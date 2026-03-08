@@ -12,14 +12,18 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Graphite",
         "width": 1280,
         "height": 720
       }
     ],
     "security": {
-      "csp": null
+      "capabilities": ["default"]
     }
+  },
+  "plugins": {
+    "sql": {} 
   },
   "bundle": {
     "active": true,

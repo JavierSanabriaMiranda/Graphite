@@ -1,0 +1,35 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS USERS (
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    email TEXT UNIQUE,
+    password TEXT
+);
+
+CREATE TABLE IF NOT EXISTS WORKSPACES (
+    workspace_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner_id INTEGER REFERENCES USERS(user_id),
+    name TEXT
+);
+
+CREATE TABLE IF NOT EXISTS NOTES (
+    note_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    workspace_id INTEGER REFERENCES WORKSPACES(workspace_id) ON DELETE CASCADE,
+    parent_id INTEGER REFERENCES NOTES(note_id) ON DELETE SET NULL,
+    title TEXT,
+    icon_id TEXT,
+    content TEXT,
+    note_path TEXT,
+    is_favorite INTEGER DEFAULT 0,
+    is_editable INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    note_version INTEGER DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS NOTE_LINKS (
+    source_id INTEGER REFERENCES NOTES(note_id) ON DELETE CASCADE,  
+    target_id INTEGER REFERENCES NOTES(note_id) ON DELETE CASCADE,
+    PRIMARY KEY (source_id, target_id)
+);
