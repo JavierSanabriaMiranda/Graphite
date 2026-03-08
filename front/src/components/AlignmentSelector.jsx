@@ -99,7 +99,7 @@ const AlignmentSelector = ({ editor }) => {
                     strokeWidth="2" 
                     strokeLinecap="round" 
                     strokeLinejoin="round" 
-                    className="text-gray-700 dark:text-zinc-300"
+                    className="text-text-primary"
                 >
                     {currentIcon}
                 </svg>
@@ -126,7 +126,7 @@ const AlignmentSelector = ({ editor }) => {
                             className={`cursor-pointer p-2 rounded-lg transition-all flex items-center justify-center ${
                                 currentAlign === align.value
                                     ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-sm'
-                                    : 'hover:bg-hover-primary-bg text-gray-700 dark:text-zinc-300'
+                                    : 'hover:bg-hover-primary-bg text-text-primary'
                             }`}
                             title={align.name}
                         >

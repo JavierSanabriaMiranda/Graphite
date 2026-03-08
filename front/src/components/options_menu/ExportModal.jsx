@@ -43,7 +43,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
   return (
     <FloatingPortal>
       <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="bg-main-bg border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-300 w-full max-w-md p-6 rounded-2xl shadow-2xl animate-in zoom-in slide-in-from-bottom-4 duration-300">
+        <div className="bg-main-bg border border-gray-200 dark:border-zinc-800 text-text-primary w-full max-w-md p-6 rounded-2xl shadow-2xl animate-in zoom-in slide-in-from-bottom-4 duration-300">
           <h3 className="text-xl font-bold mb-4">{t('editor.options_menu.export.modal_title')}</h3>
           <p className="text-gray-500 dark:text-zinc-400 mb-6">{t('editor.options_menu.export.modal_instructions')}</p>
 

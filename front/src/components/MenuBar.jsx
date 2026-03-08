@@ -32,7 +32,7 @@ const MenuBar = ({ editor }) => {
     cursor-pointer px-3 py-1.5 rounded transition-all duration-200 text-sm font-medium
     ${isActive
       ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 transition-colors'
-      : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg'}
+      : 'bg-main-bg text-text-primary hover:bg-hover-primary-bg'}
   `;
 
   const getDivisor = () => <div className="w-px h-6 bg-gray-300 dark:bg-zinc-700 mx-1" />; // Divisor

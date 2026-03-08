@@ -132,7 +132,7 @@ const NumberedListSelector = ({ editor }) => {
                 {...getReferenceProps()}
                 className={`cursor-pointer flex items-center gap-1 p-2 rounded-lg transition-all ${isOrderedActive
                     ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
-                    : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg border-transparent'
+                    : 'bg-main-bg text-text-primary hover:bg-hover-primary-bg border-transparent'
                     }`}
                 title={t('editor.toolbar.ordered_list.ordered_list')}
             >

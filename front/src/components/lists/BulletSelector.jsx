@@ -145,7 +145,7 @@ const BulletSelector = ({ editor }) => {
                 {...getReferenceProps()}
                 className={`cursor-pointer flex items-center gap-1 p-2 rounded-lg transition-all ${isBulletActive
                         ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary shadow-md'
-                        : 'bg-main-bg text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg'
+                        : 'bg-main-bg text-text-primary hover:bg-hover-primary-bg'
                     }`}
                 title={t('editor.toolbar.bulleted_list.bulleted_list')}
             >

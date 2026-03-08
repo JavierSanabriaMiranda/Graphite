@@ -31,20 +31,20 @@ const Sidebar = ({ isOpen, setIsOpen, workspaceName = "Mi Workspace" }) => {
                 <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-zinc-700">
                     <div className="flex items-center gap-2 overflow-hidden">
                         <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white">G</div>
-                        <h2 className="font-semibold text-gray-700 dark:text-zinc-300 truncate">{workspaceName}</h2>
+                        <h2 className="font-semibold text-text-primary truncate">{workspaceName}</h2>
                     </div>
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="p-1 hover:bg-hover-primary-bg rounded text-zinc-400 transition-colors"
+                        className="p-1 hover:bg-hover-primary-bg rounded transition-colors"
                     >
                         <PanelLeft
-                            className={`w-4.5 h-4.5 transition-colors ${isOpen ? 'text-primary' : 'text-gray-700 dark:text-zinc-300'}`}
+                            className={`w-4.5 h-4.5 transition-colors ${isOpen ? 'text-primary' : 'text-text-primary'}`}
                         />
                     </button>
                 </div>
 
                 <div className="p-3">
-                    <button className="w-full flex items-center gap-2 px-2 py-2 text-sm text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg rounded-md transition-all">
+                    <button className="w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all">
                         <Settings className="w-4 h-4" />
                         <span>{t('sidebar.configuration')}</span>
                     </button>
@@ -60,7 +60,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspaceName = "Mi Workspace" }) => {
                         {/* Notes */}
                         {['Introducción', 'Ideas Proyecto', 'Borrador'].map((note) => (
                             <li key={note}>
-                                <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg rounded-md transition-all group">
+                                <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all group">
                                     <FileText className="w-4 h-4 text-gray-500 dark:text-zinc-500 group-hover:text-primary" />
                                     <span className="truncate">{note}</span>
                                 </button>
@@ -71,7 +71,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspaceName = "Mi Workspace" }) => {
 
                 {/* FOOTER: Add new note */}
                 <div className="p-3 border-t border-gray-300 dark:border-zinc-700">
-                    <button className="w-full flex items-center gap-2 px-2 py-2 text-sm text-gray-700 dark:text-zinc-300 hover:bg-hover-primary-bg rounded-md transition-all">
+                    <button className="w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all">
                         <Plus className="w-3.5 h-3.5" />
                         <span>{t('sidebar.new_note')}</span>
                     </button>
