@@ -32,6 +32,7 @@ import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
 import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
+import { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent'
 import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
 import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
 import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
@@ -99,12 +100,13 @@ const TiptapEditor = () => {
           class: 'rounded-md bg-gray-200 dark:bg-zinc-800 px-1.5 py-0.5 font-mono text-sm',
         },
       }),
-      CodeBlockLowlight.extend({
-        // Custom node view to use our CodeBlockComponent, which includes the language selector and better styling
+      CustomCodeBlock.configure({
+        lowlight,
+      }).extend({
         addNodeView() {
           return ReactNodeViewRenderer(CodeBlockComponent)
         }
-      }).configure({ lowlight }),
+      }),
       Callout,
       Details.configure({
         persist: true, // Maintains the open/closed state of details blocks even after re-rendering

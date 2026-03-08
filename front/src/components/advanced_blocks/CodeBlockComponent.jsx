@@ -1,5 +1,6 @@
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react';
-import React, { useState, useMemo } from 'react';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     useFloating,
@@ -21,13 +22,16 @@ import { useToast } from '../util/ToastContext';
  * @param {} param0 
  * @returns 
  */
-const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
+const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
 
     const { t } = useTranslation();
     const { language } = node.attrs;
     const { showToast } = useToast();
+
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
+    const [activeIndex, setActiveIndex] = useState(0); // For navigating with arrow keys
+    const inputRef = useRef(null);
 
     // Supported languages for syntax highlighting, obtained from the lowlight instance of the CodeBlockLowlight extension
     const languages = extension.options.lowlight.listLanguages();
@@ -75,6 +79,53 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
             .filter(lang => lang.toLowerCase().includes(search.toLowerCase()))
             .sort();
     }, [languages, search]);
+
+    // Make the searching field get the focus when opening the language menu
+    useEffect(() => {
+        if (isOpen) {
+            setActiveIndex(0);
+            // Timeout to make sure the Floating-UI portal has been mounted
+            setTimeout(() => inputRef.current?.focus(), 10);
+        }
+    }, [isOpen]);
+
+    // Function to select a language from the list using the ENTER key
+    const selectLanguage = (lang) => {
+        updateAttributes({ language: lang });
+        setIsOpen(false);
+        setSearch('');
+
+        requestAnimationFrame(() => {
+            editor.commands.focus();
+        });
+    };
+
+    /**
+     * Function to move on the menu options with arrow keys
+     * 
+     * @param {Event} e - Keydown event to handle
+     */
+    const handleSearchKeyDown = (e) => {
+        const maxIndex = filteredLanguages.length;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setActiveIndex(prev => (prev < maxIndex ? prev + 1 : prev));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setActiveIndex(prev => (prev > 0 ? prev - 1 : prev));
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIndex === 0) {
+                selectLanguage(null); // Auto-detect option
+            } else {
+                selectLanguage(filteredLanguages[activeIndex - 1]); // Adjust index
+            }
+        } else if (e.key === 'Escape') {
+            setIsOpen(false);
+            editor.commands.focus();
+        }
+    };
 
     const currentLabel = languageNames[language] || (language ? language.charAt(0).toUpperCase() + language.slice(1) : t('editor.toolbar.block_type.code_block.auto_detect'));
 
@@ -135,10 +186,12 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                             <input
+                                ref={inputRef}
                                 autoFocus
                                 placeholder={t('editor.toolbar.block_type.code_block.search_language')}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={handleSearchKeyDown}
                                 className="w-full pl-7 pr-3 py-1.5 text-xs bg-zinc-50 dark:bg-zinc-950 border-none rounded-md focus:ring-1 focus:ring-primary outline-none dark:text-zinc-200"
                             />
                         </div>
@@ -147,7 +200,8 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                     {/* Language list */}
                     <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
                         <button
-                            onClick={() => { updateAttributes({ language: null }); setIsOpen(false); }}
+                            onClick={() => selectLanguage(null)}
+                            onMouseEnter={() => setActiveIndex(0)}
                             className={`cursor-pointer w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${!language ? 'bg-primary/10 text-primary' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
                         >
                             {t('editor.toolbar.block_type.code_block.auto_detect')}
@@ -156,20 +210,22 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
                         <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
 
                         {filteredLanguages.length > 0 ? (
-                            filteredLanguages.map((lang) => (
-                                <button
-                                    key={lang}
-                                    onClick={() => {
-                                        updateAttributes({ language: lang });
-                                        setIsOpen(false);
-                                        setSearch('');
-                                    }}
-                                    className={`cursor-pointer w-full text-left px-3 py-2 text-xs rounded-lg transition-colors flex items-center justify-between ${language === lang ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary font-bold' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}
-                                >
-                                    {languageNames[lang] || lang}
-                                    {language === lang && <span className="text-[10px]">●</span>}
-                                </button>
-                            ))
+                            filteredLanguages.map((lang, index) => {
+                                const visualIndex = index + 1;
+                                return (
+                                    <button
+                                        key={lang}
+                                        onClick={() => selectLanguage(lang)}
+                                        onMouseEnter={() => setActiveIndex(visualIndex)}
+                                        className={`cursor-pointer w-full text-left px-3 py-2 text-xs rounded-lg transition-colors flex items-center justify-between 
+                                            ${activeIndex === visualIndex ? 'bg-zinc-100 dark:bg-zinc-800' : ''}
+                                            ${language === lang ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary font-bold' : 'text-zinc-600 dark:text-zinc-400'}`}
+                                    >
+                                        {languageNames[lang] || lang}
+                                        {language === lang && <span className="text-[10px]">●</span>}
+                                    </button>
+                                )
+                            })
                         ) : (
                             <div className="px-3 py-4 text-center text-xs text-zinc-400 italic">{t('editor.toolbar.block_type.code_block.no_results')}</div>
                         )}
@@ -187,3 +243,31 @@ const CodeBlockComponent = ({ node, updateAttributes, extension }) => {
 };
 
 export default CodeBlockComponent;
+
+export const CustomCodeBlock = CodeBlockLowlight.extend({
+    addKeyboardShortcuts() {
+        return {
+            // Tab for inserting a '\t'
+            Tab: () => {
+                if (!this.editor.isActive('codeBlock')) return false
+                return this.editor.commands.insertContent('\t')
+            },
+
+            // ENTER: Keeps the previous line indenting
+            Enter: () => {
+                if (!this.editor.isActive('codeBlock')) return false
+
+                const { state } = this.editor
+                const { selection } = state
+                const { $from } = selection
+
+                const currentLineText = $from.nodeBefore?.text?.split('\n').pop() || ''
+                const indentMatch = currentLineText.match(/^(\s+)/)
+                const indent = indentMatch ? indentMatch[1] : ''
+
+                // Insert same tabs as the previous line
+                return this.editor.commands.insertContent('\n' + indent)
+            },
+        }
+    },
+})
