@@ -3,6 +3,15 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+html, body, #root {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Remove default scroll */
+  position: fixed; 
+}
+
 /* Style defined for the strong texto to inherit the normal text color */
 @layer base {
   .prose strong {

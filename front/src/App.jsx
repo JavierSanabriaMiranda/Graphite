@@ -9,6 +9,9 @@ function App() {
   const [isSidebarPinned, setIsSidebarPinned] = useState(true);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const refreshNotes = () => setRefreshTrigger(prev => prev + 1);
 
   useEffect(() => {
     const init = async () => {
@@ -29,10 +32,11 @@ function App() {
         workspace={currentWorkspace}
         onNoteSelect={setSelectedNote}
         activeNoteId={selectedNote?.note_id}
+        refreshTrigger={refreshTrigger}
       />
       <main className={`flex-1 transition-all duration-300 ${isSidebarPinned ? 'pl-64' : 'pl-0'}`}>
         <ToastProvider>
-          <TiptapEditor activeNote={selectedNote} />
+          <TiptapEditor activeNote={selectedNote} onNoteUpdate={refreshNotes} />
         </ToastProvider>
       </main>
     </div>

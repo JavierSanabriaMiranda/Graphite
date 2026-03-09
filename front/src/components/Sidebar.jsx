@@ -4,19 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { noteService } from '../services/db/noteService';
 import NavItem from './NavItem';
 
-const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId }) => {
+const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId, refreshTrigger }) => {
     const { t } = useTranslation();
 
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
 
+    // Updates notes when changing workspace or when a note changes it's icon or title
     useEffect(() => {
         if (workspace) {
             noteService.getByWorkspace(workspace.workspace_id).then(res => {
                 setNotes(res.filter(n => !n.is_deleted));
             });
         }
-    }, [workspace]);
+    }, [workspace, refreshTrigger]);
 
     const rootNotes = notes.filter(n => n.parent_id === null);
     // If closed but mouse on the left border show it

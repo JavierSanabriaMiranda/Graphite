@@ -1,10 +1,10 @@
 import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import i18next from 'i18next'
 import StarterKit from '@tiptap/starter-kit'
-import { Underline } from '@tiptap/extension-underline' 
-import { TextStyle } from '@tiptap/extension-text-style' 
-import { FontFamily } from '@tiptap/extension-font-family' 
+import { Underline } from '@tiptap/extension-underline'
+import { TextStyle } from '@tiptap/extension-text-style'
+import { FontFamily } from '@tiptap/extension-font-family'
 import { Color } from '@tiptap/extension-color'
 import Code from '@tiptap/extension-code'
 import TextAlign from '@tiptap/extension-text-align'
@@ -37,7 +37,11 @@ import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
 import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
 import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
 
-const TiptapEditor = ({ activeNote }) => {
+import { noteService } from '../services/db/noteService';
+
+const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
+  const [title, setTitle] = useState('');
+  const [icon, setIcon] = useState('');
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -167,13 +171,63 @@ const TiptapEditor = ({ activeNote }) => {
     }
   }, [activeNote, editor]);
 
+  // Sync title when note changes
+  useEffect(() => {
+    if (activeNote) {
+      setTitle(activeNote.title || '');
+      setIcon(activeNote.icon || '');
+    } else {
+      setTitle('');
+      setIcon('');
+    }
+  }, [activeNote]);
+
+  // Save changes on db and tells the sidebar
+  const handleTitleChange = async (e) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle); // Actualización visual inmediata en el input
+  };
+
+  const saveTitle = async () => {
+    if (activeNote && title !== activeNote.title) {
+      // Update on DB
+      await noteService.update(activeNote.note_id, { title: title });
+
+      // Tells the App.jsx component to update the sidebar
+      if (onNoteUpdate) onNoteUpdate();
+    }
+  };
+
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden bg-main-bg transition-colors duration-300">
       <MenuBar editor={editor} />
 
-      <div className="grow overflow-y-auto p-4 md:p-8 editor-scrollbar">
-        <div className="max-w-4xl mx-auto w-full">
-          <EditorContent editor={editor} />
+      <div className="grow overflow-y-auto editor-scrollbar">
+        <div className={`max-w-3xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
+
+          {/* Header */}
+          <div className="group mb-8">
+            {/* Page icon */}
+            <div className="text-7xl mb-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 w-fit p-2 rounded-xl cursor-pointer transition-colors min-h-[1.2em]">
+              {icon || <span className="opacity-0 group-hover:opacity-30 text-4xl text-zinc-400">add_icon</span>}
+            </div>
+
+            {/* Title */}
+            <input
+              type="text"
+              value={title}
+              onChange={handleTitleChange}
+              onBlur={saveTitle} // Save when losing focus
+              onKeyDown={(e) => e.key === 'Enter' && e.target.blur()} // Save using enter
+              placeholder="Sin título"
+              className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all"
+            />
+          </div>
+
+          {/* Editor body */}
+          <div className="tiptap-container">
+            <EditorContent editor={editor} />
+          </div>
         </div>
       </div>
     </div>
