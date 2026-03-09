@@ -1,5 +1,7 @@
 import Database from '@tauri-apps/plugin-sql';
 import setupScript from './setup.sql?raw';
+import { getWelcomeNote } from './welcomeContent';
+import i18next from 'i18next';
 
 let db = null;
 
@@ -14,7 +16,7 @@ export const initializeDB = async () => {
 
             await db.execute("PRAGMA foreign_keys = ON;");
 
-            const tableExists = await db.select(
+            var tableExists = await db.select(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'"
             );
 
@@ -29,6 +31,26 @@ export const initializeDB = async () => {
                     await db.execute(query);
                 }
                 console.log("Database correctly initialized");
+
+                console.log("Database created. Seeding initial data...");
+
+                // 1. Insertar Usuario por defecto
+                await db.execute("INSERT INTO USERS (username) VALUES ($1)", ["User"]);
+
+                // 2. Insertar Workspace inicial
+                await db.execute("INSERT INTO WORKSPACES (owner_id, name) VALUES (1, $1)", ["Personal"]);
+
+                // 3. Obtener contenido traducido
+                const lang = i18next.language.split('-')[0]; // Obtiene 'es' o 'en'
+                const welcome = getWelcomeNote(lang);
+
+                // 4. Insertar Nota de Bienvenida
+                await db.execute(
+                    "INSERT INTO NOTES (workspace_id, title, content, note_path) VALUES ($1, $2, $3, $4)",
+                    [1, welcome.title, welcome.body, "/" + welcome.title]
+                );
+
+                console.log("Seed data inserted correctly 🚀");
             }
         }
         return db;
@@ -36,4 +58,14 @@ export const initializeDB = async () => {
         console.error("Error while initializing DB:", error);
         throw error;
     }
+};
+
+/**
+ * @returns db connection
+ */
+export const getDB = async () => {
+    if (!db) {
+        db = await Database.load("sqlite:graphite.db");
+    }
+    return db;
 };
