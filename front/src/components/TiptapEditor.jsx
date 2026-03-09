@@ -1,4 +1,5 @@
-import { EditorContent, ReactNodeView, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
+import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
+import { useEffect } from 'react'
 import i18next from 'i18next'
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline' 
@@ -11,7 +12,6 @@ import BulletList from '@tiptap/extension-bullet-list';
 import OrderedList from '@tiptap/extension-ordered-list';
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { createLowlight } from 'lowlight'
 import { Details, DetailsContent, DetailsSummary } from '@tiptap/extension-details'
 
@@ -37,7 +37,7 @@ import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
 import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
 import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
 
-const TiptapEditor = () => {
+const TiptapEditor = ({ activeNote }) => {
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -152,6 +152,20 @@ const TiptapEditor = () => {
       },
     },
   })
+
+  // Effect to load selected note
+  useEffect(() => {
+    if (editor && activeNote) {
+      try {
+        const content = JSON.parse(activeNote.content);
+        editor.commands.setContent(content);
+      } catch (e) {
+        editor.commands.setContent(activeNote.content || '');
+      }
+    } else if (editor && !activeNote) {
+      editor.commands.setContent('');
+    }
+  }, [activeNote, editor]);
 
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden bg-main-bg transition-colors duration-300">

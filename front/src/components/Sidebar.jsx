@@ -1,12 +1,24 @@
-import { useState } from 'react';
-import { PanelLeft, Settings, Plus, FileText } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { PanelLeft, Settings, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { noteService } from '../services/db/noteService';
+import NavItem from './NavItem';
 
-const Sidebar = ({ isOpen, setIsOpen, workspaceName = "Mi Workspace" }) => {
+const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId }) => {
     const { t } = useTranslation();
 
-    const [isHovered, setIsHovered] = useState(false); // Para el efecto de asomar
+    const [isHovered, setIsHovered] = useState(false);
+    const [notes, setNotes] = useState([]);
 
+    useEffect(() => {
+        if (workspace) {
+            noteService.getByWorkspace(workspace.workspace_id).then(res => {
+                setNotes(res.filter(n => !n.is_deleted));
+            });
+        }
+    }, [workspace]);
+
+    const rootNotes = notes.filter(n => n.parent_id === null);
     // If closed but mouse on the left border show it
     const showSidebar = isOpen || isHovered;
 
@@ -31,7 +43,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspaceName = "Mi Workspace" }) => {
                 <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-zinc-700">
                     <div className="flex items-center gap-2 overflow-hidden">
                         <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white">G</div>
-                        <h2 className="font-semibold text-text-primary truncate">{workspaceName}</h2>
+                        <h2 className="font-semibold text-text-primary truncate">{workspace?.name || '...'}</h2>
                     </div>
                     <button
                         onClick={() => setIsOpen(!isOpen)}
@@ -58,13 +70,14 @@ const Sidebar = ({ isOpen, setIsOpen, workspaceName = "Mi Workspace" }) => {
 
                     <ul className="space-y-0.5">
                         {/* Notes */}
-                        {['Introducción', 'Ideas Proyecto', 'Borrador'].map((note) => (
-                            <li key={note}>
-                                <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all group">
-                                    <FileText className="w-4 h-4 text-gray-500 dark:text-zinc-500 group-hover:text-primary" />
-                                    <span className="truncate">{note}</span>
-                                </button>
-                            </li>
+                        {rootNotes.map(note => (
+                            <NavItem
+                                key={note.note_id}
+                                note={note}
+                                allNotes={notes}
+                                onNoteSelect={onNoteSelect}
+                                activeNoteId={activeNoteId}
+                            />
                         ))}
                     </ul>
                 </nav>
@@ -78,7 +91,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspaceName = "Mi Workspace" }) => {
                 </div>
             </aside>
 
-            {/* 3. OVERLAY: Puts blur effect is sidebar is floating */}
+            {/* Blur effect if sidebar is floating */}
             {!isOpen && isHovered && (
                 <div className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[0.5px] transition-opacity" />
             )}

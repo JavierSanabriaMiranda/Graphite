@@ -11,46 +11,73 @@ let db = null;
 export const initializeDB = async () => {
     try {
         if (!db) {
-            // Stores in system AppData automatically
             db = await Database.load("sqlite:graphite.db");
 
             await db.execute("PRAGMA foreign_keys = ON;");
 
-            var tableExists = await db.select(
+            const tableExists = await db.select(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'"
             );
 
-            // Execute setup script
             if (tableExists.length === 0) {
                 console.log("Executing setup script...");
+
                 const queries = setupScript
-                    .split(';')
+                    .split(/;(?=(?:[^']*'[^']*')*[^']*$)(?!(?:[^]*BEGIN[^]*?END)*[^]*?END)/gi)
                     .filter(query => query.trim() !== '');
 
                 for (const query of queries) {
                     await db.execute(query);
                 }
-                console.log("Database correctly initialized");
 
                 console.log("Database created. Seeding initial data...");
 
-                // 1. Insertar Usuario por defecto
-                await db.execute("INSERT INTO USERS (username) VALUES ($1)", ["User"]);
+                const userUuid = crypto.randomUUID();
+                const workspaceUuid = crypto.randomUUID();
+                const noteUuid = crypto.randomUUID();
+                const subnoteUuid = crypto.randomUUID();
 
-                // 2. Insertar Workspace inicial
-                await db.execute("INSERT INTO WORKSPACES (owner_id, name) VALUES (1, $1)", ["Personal"]);
-
-                // 3. Obtener contenido traducido
-                const lang = i18next.language.split('-')[0]; // Obtiene 'es' o 'en'
-                const welcome = getWelcomeNote(lang);
-
-                // 4. Insertar Nota de Bienvenida
                 await db.execute(
-                    "INSERT INTO NOTES (workspace_id, title, content, note_path) VALUES ($1, $2, $3, $4)",
-                    [1, welcome.title, welcome.body, "/" + welcome.title]
+                    "INSERT INTO USERS (user_id, username, email) VALUES ($1, $2, $3)",
+                    [userUuid, "User", "local@graphite.app"]
                 );
 
-                console.log("Seed data inserted correctly 🚀");
+                await db.execute(
+                    "INSERT INTO WORKSPACES (workspace_id, owner_id, name) VALUES ($1, $2, $3)",
+                    [workspaceUuid, userUuid, "Personal"]
+                );
+
+                const lang = i18next.language?.split('-')[0] || 'en';
+                const localizedContent = getWelcomeNote(lang);
+                const welcome = localizedContent.welcome_note;
+                const subnote = localizedContent.subnote;
+
+                await db.execute(
+                    `INSERT INTO NOTES (note_id, workspace_id, title, content, note_path, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, 0)`,
+                    [
+                        noteUuid,
+                        workspaceUuid,
+                        welcome.title,
+                        welcome.body,
+                        "/" + welcome.title,
+                    ]
+                );
+
+                await db.execute(
+                    `INSERT INTO NOTES (note_id, parent_id, workspace_id, title, content, note_path, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, $6, 0)`,
+                    [
+                        subnoteUuid,
+                        noteUuid,
+                        workspaceUuid,
+                        subnote.title,
+                        subnote.body,
+                        "/" + subnote.title,
+                    ]
+                );
+
+                console.log("Database correctly initialized and seeded 🚀");
             }
         }
         return db;
