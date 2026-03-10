@@ -91,6 +91,9 @@
                 "success": "Page has been successfully deleted",
                 "error": "Error while trying to delete page"
             }
+        },
+        "errors": {
+            "name_collision": "There's already a page with this title on this location"
         }
     },
     "sidebar": {

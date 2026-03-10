@@ -91,7 +91,9 @@
                 "success": "La página se ha borrado correctamente",
                 "error": "Error al intentar borrar la página"
             }
-            
+        },
+        "errors": {
+            "name_collision": "Ya hay una página con este nombre en esta ubicación"
         }
     },
     "sidebar": {

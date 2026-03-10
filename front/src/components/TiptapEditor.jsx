@@ -45,8 +45,11 @@ import NoteIcon from './NoteIcon'
 
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
+import { useToast } from './util/ToastContext';
 
 const TiptapEditor = () => {
+  const { showToast } = useToast();
+
   const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, selectNote: onNoteSelect } = useNote();
 
   const [title, setTitle] = useState('');
@@ -259,12 +262,23 @@ const TiptapEditor = () => {
 
   // Saves title on db
   const saveTitle = async () => {
-    if (activeNote && title !== activeNote.title) {
-      // Update on DB
-      await noteService.update(activeNote.note_id, { title: title });
+    if (activeNote && title.trim() !== '' && title !== activeNote.title) {
+      const result = await noteService.update(activeNote.note_id, { title: title });
 
-      // Tells the App.jsx component to update the sidebar
+      if (result?.error === 'COLLISION') {
+        // Feedback to user
+        showToast(t('editor.errors.name_collision') || "Ya existe una nota con ese nombre en esta ubicación", "error");
+
+        // Revert title change
+        setTitle(activeNote.title);
+        return;
+      }
+
+      // If everything goes fine, update sidebar
       onNoteUpdate();
+    } else if (title.trim() === '') {
+      // If title is empty, revert
+      setTitle(activeNote.title);
     }
   };
 

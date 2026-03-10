@@ -1,20 +1,20 @@
 import { getDB } from './index';
 
 const emptyContent = JSON.stringify({
-        type: 'doc',
-        content: [
-            {
-                type: 'paragraph',
-            },
-        ],
-    });
+    type: 'doc',
+    content: [
+        {
+            type: 'paragraph',
+        },
+    ],
+});
 
 /**
  * Service for CRUD operations in Notes table
  */
 export const noteService = {
 
-    
+
 
     /**
      * Get all the notes of a workspace
@@ -177,7 +177,16 @@ export const noteService = {
             } else {
                 newPath = `/${newTitle}`;
             }
-            data.note_path = newPath.replace(/\/+/g, '/');
+            newPath = newPath.replace(/\/+/g, '/');
+
+            // Check if the new title or path makes a collision
+            const collision = await noteService.getNoteByPath(newPath, current.workspace_id);
+
+            if (collision && collision.note_id !== noteId) {
+                return { error: 'COLLISION', message: 'Path already exists' };
+            }
+
+            data.note_path = newPath;
 
             // TODO: Update also path of the children
         }
