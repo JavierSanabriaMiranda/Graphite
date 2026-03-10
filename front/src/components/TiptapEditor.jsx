@@ -206,24 +206,21 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
           }
         }
 
-        // 2. LA SOLUCIÓN PRO: Crear un estado totalmente nuevo
-        // Esto resetea el Historial (prevTime), las Selecciones y los Plugins de golpe
+        // Reset undo history when changing note
         const newState = EditorState.create({
           doc: editor.schema.nodeFromJSON(contentToSet),
-          plugins: editor.state.plugins, // Mantenemos los plugins actuales (StarterKit, etc)
+          plugins: editor.state.plugins,
         });
 
-        // 3. Aplicamos el nuevo estado al editor
         editor.view.updateState(newState);
 
-        // 4. Finalizamos carga
-        setTimeout(() => setIsPageLoading(false), 20);
+        setIsPageLoading(false)
 
       } catch (error) {
-        console.error("Error crítico al cargar:", error);
+        console.error("Critical error while loading:", error);
         setIsPageLoading(false);
       }
-    }, 10); // Delay to let ProseMirror load
+    }, 5); // Delay to let ProseMirror load
 
     return () => clearTimeout(timer);
   }, [activeNote?.note_id, editor]);
@@ -320,10 +317,10 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
       <MenuBar editor={editor} />
 
       <div className="grow overflow-y-auto editor-scrollbar">
-        <div className={`max-w-3xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
+        <div className={`max-w-5xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
 
           {/* Header */}
-          <div className="group mb-8">
+          <div className="group mb-8 ml-7">
             <div className="relative w-fit group/icon-wrapper">
               {/* Page icon */}
               <EmojiPicker onSelect={handleIconSelect}>
@@ -366,7 +363,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
 
           {/* Editor body */}
           <div className="tiptap-container relative">
-            {/* El Skeleton se superpone al editor en lugar de reemplazarlo */}
+            {/* Skeleton for page loading */}
             {isPageLoading && (
               <div className="absolute inset-0 z-10 bg-main-bg">
                 <div className="animate-pulse space-y-4 pt-4">
@@ -377,7 +374,6 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
               </div>
             )}
 
-            {/* El editor siempre está en el DOM, evitando el crash de toDOM y flushSync */}
             <div className={isPageLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}>
               <EditorContent editor={editor} />
             </div>

@@ -13,6 +13,11 @@ function App() {
 
   const refreshNotes = () => setRefreshTrigger(prev => prev + 1);
 
+  const changeNote = (newNote) => {
+    if (newNote.note_id === selectedNote?.note_id) return;
+    setSelectedNote(newNote);
+  }
+
   useEffect(() => {
     const init = async () => {
       const user = await userService.getCurrentUser();
@@ -30,7 +35,7 @@ function App() {
         isOpen={isSidebarPinned}
         setIsOpen={setIsSidebarPinned}
         workspace={currentWorkspace}
-        onNoteSelect={setSelectedNote}
+        onNoteSelect={changeNote}
         activeNoteId={selectedNote?.note_id}
         refreshTrigger={refreshTrigger}
       />

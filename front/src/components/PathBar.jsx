@@ -78,7 +78,7 @@ const PathBar = ({ activeNote, saveStatus, editor, onNoteSelect }) => {
     };
 
     return (
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0 z-20">
+        <div className="flex items-center justify-between px-4 py-2 bg-main-bg h-10 shrink-0 z-20">
             {/* Left side: Note path*/}
             <div className="flex items-center gap-2 overflow-hidden flex-1 mr-4">
                 {renderBreadcrumbs()}
@@ -95,7 +95,7 @@ const PathBar = ({ activeNote, saveStatus, editor, onNoteSelect }) => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-1 border-l border-gray-300 dark:border-zinc-700 pl-4">
+                <div className="flex items-center gap-1">
                     <ChangeThemeButton />
                     <OptionsMenu editor={editor} />
                 </div>
