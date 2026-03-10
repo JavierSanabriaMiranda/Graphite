@@ -29,7 +29,7 @@ const ToggleBlockComponent = ({ node, updateAttributes }) => {
 export const ToggleBlock = Node.create({
   name: 'toggleBlock',
   group: 'block',
-  content: 'toggleTitle toggleContent', // Estructura rígida obligatoria
+  content: 'toggleTitle toggleContent',
   allowGapCursor: false,
 
   addAttributes() {
@@ -40,6 +40,14 @@ export const ToggleBlock = Node.create({
         renderHTML: attributes => ({ 'data-open': attributes.isOpen }),
       },
     };
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return [
+      'div', 
+      mergeAttributes(HTMLAttributes, { 'data-type': 'toggle-block', class: 'toggle-block' }), 
+      0
+    ];
   },
 
   addCommands() {

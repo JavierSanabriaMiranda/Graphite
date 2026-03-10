@@ -61,7 +61,7 @@ export const Callout = Node.create({
 
   renderHTML({ HTMLAttributes, node }) {
     const emojiStr = node.attrs.emoji || '💡';
-    const isSvg = emojiStr.includes('M'); // Los paths de iconos suelen empezar por M
+    const isSvg = emojiStr.includes('M');
 
     return [
       'div',

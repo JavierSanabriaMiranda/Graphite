@@ -1,4 +1,5 @@
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react';
+import { mergeAttributes } from '@tiptap/core'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -245,6 +246,24 @@ const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
 export default CodeBlockComponent;
 
 export const CustomCodeBlock = CodeBlockLowlight.extend({
+    priority: 1000,
+
+    renderHTML({ node, HTMLAttributes }) {
+        return [
+            'pre', 
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 
+            [
+                'code', 
+                { 
+                    class: node.attrs.language 
+                        ? `language-${node.attrs.language}` 
+                        : null 
+                }, 
+                0
+            ]
+        ]
+    },
+
     addKeyboardShortcuts() {
         return {
             // Tab for inserting a '\t'
