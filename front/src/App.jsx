@@ -36,7 +36,7 @@ function App() {
       />
       <main className={`flex-1 transition-all duration-300 ${isSidebarPinned ? 'pl-64' : 'pl-0'}`}>
         <ToastProvider>
-          <TiptapEditor activeNote={selectedNote} onNoteUpdate={refreshNotes} />
+          <TiptapEditor activeNote={selectedNote} onNoteUpdate={refreshNotes} onNoteSelect={setSelectedNote} />
         </ToastProvider>
       </main>
     </div>

@@ -78,6 +78,22 @@ export const noteService = {
     },
 
     /**
+     * Get the note with the path specified as param in the workspace specified as param
+     * 
+     * @param {String} path - Path of the note to get
+     * @param {String} workspaceId - Id of the workspace in which the note is
+     * @returns note with the path specified as param in the workspace specified as param
+     */
+    getNoteByPath: async (path, workspaceId) => {
+        const db = await getDB();
+        const res = await db.select(
+            "SELECT * FROM NOTES WHERE note_path = $1 AND workspace_id = $2 AND is_deleted = 0 LIMIT 1",
+            [path, workspaceId]
+        );
+        return res[0];
+    },
+
+    /**
      * Create new note on Notes table
      * 
      * @param {string} workspaceId - ID of the workspace in which the note is

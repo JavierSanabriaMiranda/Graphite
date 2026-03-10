@@ -46,7 +46,7 @@ import NoteIcon from './NoteIcon'
 
 import { noteService } from '../services/db/noteService';
 
-const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
+const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
   const [saveStatus, setSaveStatus] = useState('saved');
@@ -315,6 +315,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
         activeNote={activeNote}
         saveStatus={saveStatus}
         editor={editor}
+        onNoteSelect={onNoteSelect}
       />
       <MenuBar editor={editor} />
 
