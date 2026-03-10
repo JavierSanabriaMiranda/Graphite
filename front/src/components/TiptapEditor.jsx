@@ -40,13 +40,15 @@ import { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent'
 import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
 import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
 import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
-
 import EmojiPicker from './util/EmojiPicker'
 import NoteIcon from './NoteIcon'
 
 import { noteService } from '../services/db/noteService';
+import { useNote } from './context/NoteContext';
 
-const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
+const TiptapEditor = () => {
+  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, selectNote: onNoteSelect } = useNote();
+
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
   const [saveStatus, setSaveStatus] = useState('saved');
@@ -262,7 +264,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
       await noteService.update(activeNote.note_id, { title: title });
 
       // Tells the App.jsx component to update the sidebar
-      if (onNoteUpdate) onNoteUpdate();
+      onNoteUpdate();
     }
   };
 
@@ -275,7 +277,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
     await noteService.update(activeNote.note_id, { icon: char });
 
     // Notifies App.jsx to update sidebar
-    if (onNoteUpdate) onNoteUpdate();
+    onNoteUpdate();
   };
 
   // Handles when the page icon is removed
@@ -287,7 +289,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
     // Actualizamos a null en la DB
     await noteService.update(activeNote.note_id, { icon: null });
 
-    if (onNoteUpdate) onNoteUpdate();
+    onNoteUpdate();
   };
 
   // Saves the current note content to DB
@@ -299,7 +301,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
       is_dirty: 1 // Mark for cloud sync
     });
 
-    if (onNoteUpdate) onNoteUpdate();
+    onNoteUpdate();
 
     setTimeout(() => {
       setSaveStatus('saved');
@@ -309,10 +311,8 @@ const TiptapEditor = ({ activeNote, onNoteUpdate, onNoteSelect }) => {
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden bg-main-bg transition-colors duration-300">
       <PathBar
-        activeNote={activeNote}
         saveStatus={saveStatus}
         editor={editor}
-        onNoteSelect={onNoteSelect}
       />
       <MenuBar editor={editor} />
 

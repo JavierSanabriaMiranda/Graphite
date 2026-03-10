@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { PanelLeft, Settings, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../services/db/noteService';
+import { useNote } from './context/NoteContext';
 import NavItem from './NavItem';
 
-const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId, refreshTrigger }) => {
+const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
     const { t } = useTranslation();
+    const { refreshTrigger } = useNote();
 
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
@@ -72,9 +74,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId, ref
                             <NavItem
                                 key={note.note_id}
                                 note={note}
-                                onNoteSelect={onNoteSelect}
-                                activeNoteId={activeNoteId}
-                                refreshTrigger={refreshTrigger}
+                                level={0}
                             />
                         ))}
                     </ul>

@@ -3,12 +3,14 @@ import { ChevronRight } from 'lucide-react';
 import ChangeThemeButton from './util/ChangeThemeButton';
 import OptionsMenu from './options_menu/OptionsMenu';
 import { noteService } from '../services/db/noteService'
+import { useNote } from './context/NoteContext';
 
 /**
  * PathBar - Topbar for navigation and note state
  */
-const PathBar = ({ activeNote, saveStatus, editor, onNoteSelect }) => {
+const PathBar = ({ saveStatus, editor }) => {
     const { t } = useTranslation();
+    const { selectedNote: activeNote, selectNote: onNoteSelect } = useNote();
 
     // Handles the click on a path part to redirect to that note
     const handlePathClick = async (parts, index) => {

@@ -4,6 +4,7 @@ import { FileText } from 'lucide-react';
 import DropdownArrow from './util/DropdownArrow';
 import NoteIcon from './NoteIcon';
 import { noteService } from '../services/db/noteService';
+import { useNote } from './context/NoteContext';
 
 /**
  * Component that represents a page with its subnotes in the sidebar
@@ -13,8 +14,10 @@ import { noteService } from '../services/db/noteService';
  * @param {String} activeNoteId - Id of the current active note
  * @param {number} level - Level to calculate the padding of the NavItem 
  */
-const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0, refreshTrigger}) => {
+const NavItem = ({ note, level = 0}) => {
     const { t } = useTranslation();
+
+    const { selectedNote, selectNote, refreshTrigger } = useNote();
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [subnotes, setSubnotes] = useState([]);
@@ -26,7 +29,7 @@ const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0, refreshTrigger})
         noteService.hasSubnotes(note.note_id).then(setHasSubnotes);
     }, [note.note_id, refreshTrigger]);
 
-    // Load subnotes just when expanded and if are not loaded yet
+    // Load subnotes just when expanded
     useEffect(() => {
         if (isExpanded) {
             setIsLoading(true);
@@ -38,7 +41,7 @@ const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0, refreshTrigger})
         }
     }, [isExpanded, note.note_id, subnotes.length, refreshTrigger]);
 
-    const isActive = activeNoteId === note.note_id;
+    const isActive = selectedNote?.note_id === note.note_id;
 
     return (
         <li>
@@ -46,7 +49,7 @@ const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0, refreshTrigger})
                 className={`flex items-center gap-1 px-2 py-1 rounded-md cursor-pointer transition-all group
           ${isActive ? 'bg-primary/10 text-primary' : 'text-text-primary hover:bg-hover-primary-bg'}`}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
-                onClick={() => onNoteSelect(note)}
+                onClick={() => selectNote(note)}
             >
                 <button
                     onClick={(e) => {
@@ -78,8 +81,6 @@ const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0, refreshTrigger})
                             <NavItem
                                 key={subnote.note_id}
                                 note={subnote}
-                                onNoteSelect={onNoteSelect}
-                                activeNoteId={activeNoteId}
                                 level={level + 1}
                             />
                         ))

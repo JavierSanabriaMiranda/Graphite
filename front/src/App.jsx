@@ -4,19 +4,11 @@ import { ToastProvider } from './components/util/ToastContext';
 import Sidebar from './components/Sidebar';
 import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
+import { NoteProvider } from './components/context/NoteContext';
 
 function App() {
   const [isSidebarPinned, setIsSidebarPinned] = useState(true);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
-  const [selectedNote, setSelectedNote] = useState(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  const refreshNotes = () => setRefreshTrigger(prev => prev + 1);
-
-  const changeNote = (newNote) => {
-    if (newNote.note_id === selectedNote?.note_id) return;
-    setSelectedNote(newNote);
-  }
 
   useEffect(() => {
     const init = async () => {
@@ -30,21 +22,20 @@ function App() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-zinc-200">
-      <Sidebar
-        isOpen={isSidebarPinned}
-        setIsOpen={setIsSidebarPinned}
-        workspace={currentWorkspace}
-        onNoteSelect={changeNote}
-        activeNoteId={selectedNote?.note_id}
-        refreshTrigger={refreshTrigger}
-      />
-      <main className={`flex-1 transition-all duration-300 ${isSidebarPinned ? 'pl-64' : 'pl-0'}`}>
-        <ToastProvider>
-          <TiptapEditor activeNote={selectedNote} onNoteUpdate={refreshNotes} onNoteSelect={setSelectedNote} />
-        </ToastProvider>
-      </main>
-    </div>
+    <NoteProvider>
+      <div className="flex h-screen bg-zinc-950 text-zinc-200">
+        <Sidebar
+          isOpen={isSidebarPinned}
+          setIsOpen={setIsSidebarPinned}
+          workspace={currentWorkspace}
+        />
+        <main className={`flex-1 transition-all duration-300 ${isSidebarPinned ? 'pl-64' : 'pl-0'}`}>
+          <ToastProvider>
+            <TiptapEditor />
+          </ToastProvider>
+        </main>
+      </div>
+    </NoteProvider>
   )
 }
 
