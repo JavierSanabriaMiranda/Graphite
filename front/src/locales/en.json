@@ -7,6 +7,7 @@
         "no_title_placeholder": "New page",
         "saving": "Saving...",
         "saved": "Saved",
+        "untitled_note": "New page",
         "toolbar": {
             "block_type": {
                 "text_type": "Text type",
@@ -84,7 +85,7 @@
     "sidebar": {
         "configuration": "Configuration",
         "notes": "Notes",
-        "new_note": "New note",
+        "new_note": "New page",
         "loading": "Loading..."
     },
     "emojis": {

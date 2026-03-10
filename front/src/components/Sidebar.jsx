@@ -7,7 +7,7 @@ import NavItem from './NavItem';
 
 const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
     const { t } = useTranslation();
-    const { refreshTrigger } = useNote();
+    const { refreshTrigger, selectNote, triggerRefresh } = useNote();
 
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
@@ -21,6 +21,31 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
 
     // If closed but mouse on the left border show it
     const showSidebar = isOpen || isHovered;
+
+    /**
+     * Logic to create a new root note
+     */
+    const handleCreateRootNote = async () => {
+        if (!workspace) return;
+
+        try {
+            const workspaceId = workspace.workspace_id
+            const title = t('editor.untitled_note') || 'Untitled'
+
+            // Create note in DB
+            const newNoteId = await noteService.create(workspaceId, title);
+            const newNote = await noteService.getByNoteId(newNoteId);
+
+            // Select note to open it
+            selectNote(newNote);
+
+            // Refresh sidebar
+            triggerRefresh();
+
+        } catch (error) {
+            console.error("Error creating new root note:", error);
+        }
+    };
 
     return (
         <>
@@ -82,7 +107,10 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
 
                 {/* FOOTER: Add new note */}
                 <div className="p-3 border-t border-gray-300 dark:border-zinc-700">
-                    <button className="w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all">
+                    <button
+                        onClick={handleCreateRootNote}
+                        className="w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
+                    >
                         <Plus className="w-3.5 h-3.5" />
                         <span>{t('sidebar.new_note')}</span>
                     </button>

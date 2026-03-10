@@ -1,9 +1,20 @@
 import { getDB } from './index';
 
+const emptyContent = JSON.stringify({
+        type: 'doc',
+        content: [
+            {
+                type: 'paragraph',
+            },
+        ],
+    });
+
 /**
  * Service for CRUD operations in Notes table
  */
 export const noteService = {
+
+    
 
     /**
      * Get all the notes of a workspace
@@ -43,7 +54,7 @@ export const noteService = {
     getRootNotes: async (workspaceId) => {
         const db = await getDB();
         return await db.select(
-            "SELECT * FROM NOTES WHERE workspace_id = $1 AND parent_id IS NULL AND is_deleted = 0 ORDER BY updated_at DESC",
+            "SELECT * FROM NOTES WHERE workspace_id = $1 AND parent_id IS NULL AND is_deleted = 0 ORDER BY title ASC",
             [workspaceId]
         );
     },
@@ -98,25 +109,48 @@ export const noteService = {
      * 
      * @param {string} workspaceId - ID of the workspace in which the note is
      * @param {string} title - title of the new note
-     * @param {JSON} contentJSON - content of the new note in tiptap JSON format
      * @param {string} parentId - ID of the parent note or null if it's a root note
      * 
-     * @returns confirmation of the insert
+     * @returns noteId of the new note
      */
-    create: async (workspaceId, title, contentJSON, parentId = null) => {
+    create: async (workspaceId, title, parentId = null) => {
         const db = await getDB();
-        const contentStr = JSON.stringify(contentJSON);
         const noteId = crypto.randomUUID();
 
-        let path = parentId
-            ? (await noteService.getByNoteId(parentId)).note_path + "/" + title
-            : "/" + title;
+        // Get parent path if exists
+        let parentPath = "";
+        if (parentId) {
+            const parentNote = await noteService.getByNoteId(parentId);
+            parentPath = parentNote ? parentNote.note_path : "";
+        }
 
-        return await db.execute(
+        let finalTitle = title;
+        let path = `${parentPath}/${finalTitle}`.replace(/\/+/g, '/');
+        let counter = 1;
+
+        // Loop for checking name collisions
+        while (true) {
+            const existing = await noteService.getNoteByPath(path, workspaceId)
+
+            if (!existing) {
+                // If no results, unique path, exit loop
+                break;
+            }
+
+            // If exists modify title and recalculate path
+            finalTitle = `${title} (${counter})`;
+            path = `${parentPath}/${finalTitle}`.replace(/\/+/g, '/');
+            counter++;
+        }
+
+
+        await db.execute(
             `INSERT INTO NOTES (note_id, workspace_id, title, content, parent_id, note_path, is_dirty) 
          VALUES ($1, $2, $3, $4, $5, $6, 1)`,
-            [noteId, workspaceId, title, contentStr, parentId, path.replace(/\/+/g, '/')]
+            [noteId, workspaceId, finalTitle, emptyContent, parentId, path.replace(/\/+/g, '/')]
         );
+
+        return noteId;
     },
 
     /**
