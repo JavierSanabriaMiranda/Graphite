@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS NOTES (
     workspace_id TEXT REFERENCES WORKSPACES(workspace_id) ON DELETE CASCADE,
     parent_id TEXT REFERENCES NOTES(note_id) ON DELETE SET NULL,
     title TEXT,
-    icon_id TEXT,
+    icon TEXT,
     content TEXT,
     note_path TEXT,
     is_favorite INTEGER DEFAULT 0,

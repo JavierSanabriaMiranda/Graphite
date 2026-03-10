@@ -53,20 +53,21 @@ export const initializeDB = async () => {
                 const subnote = localizedContent.subnote;
 
                 await db.execute(
-                    `INSERT INTO NOTES (note_id, workspace_id, title, content, note_path, is_dirty) 
-                     VALUES ($1, $2, $3, $4, $5, 0)`,
+                    `INSERT INTO NOTES (note_id, workspace_id, title, content, note_path, icon, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, $6, 0)`,
                     [
                         noteUuid,
                         workspaceUuid,
                         welcome.title,
                         welcome.body,
                         "/" + welcome.title,
+                        welcome.icon
                     ]
                 );
 
                 await db.execute(
-                    `INSERT INTO NOTES (note_id, parent_id, workspace_id, title, content, note_path, is_dirty) 
-                     VALUES ($1, $2, $3, $4, $5, $6, 0)`,
+                    `INSERT INTO NOTES (note_id, parent_id, workspace_id, title, content, note_path, icon, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, 0)`,
                     [
                         subnoteUuid,
                         noteUuid,
@@ -74,6 +75,7 @@ export const initializeDB = async () => {
                         subnote.title,
                         subnote.body,
                         "/" + subnote.title,
+                        subnote.icon
                     ]
                 );
 

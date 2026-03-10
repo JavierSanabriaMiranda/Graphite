@@ -1,8 +1,17 @@
 import { useState } from 'react';
 import { FileText } from 'lucide-react';
 import DropdownArrow from './util/DropdownArrow';
+import NoteIcon from './NoteIcon';
 
-
+/**
+ * Component that represents a page with its children in the sidebar
+ * 
+ * @param {Object} note - Note to represent in the navItem
+ * @param {Array<Object>} allNotes - All notes of the user to get the children 
+ * @param {Function} onNoteSelect - Function to be called when a note is selected
+ * @param {String} activeNoteId - Id of the current active note
+ * @param {number} level - Level to calculate the padding of the NavItem 
+ */
 const NavItem = ({ note, allNotes, onNoteSelect, activeNoteId, level = 0 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const children = allNotes.filter(n => n.parent_id === note.note_id && !n.is_deleted);
@@ -26,8 +35,13 @@ const NavItem = ({ note, allNotes, onNoteSelect, activeNoteId, level = 0 }) => {
                 >
                     <DropdownArrow menuOpen={isExpanded} defaultRotateAngle={-90} rotateAngle={0} />
                 </button>
-
-                <FileText className={`w-4 h-4 shrink-0 ${isActive ? 'text-primary' : 'text-zinc-500 group-hover:text-primary'}`} />
+                <div className={`w-4 h-4 shrink-0 flex items-center justify-center ${isActive ? 'text-primary' : 'text-zinc-500 group-hover:text-primary'}`}>
+                    {note.icon ? (
+                        <NoteIcon iconChar={note.icon} className="w-full h-full" />
+                    ) : (
+                        <FileText className="w-full h-full" />
+                    )}
+                </div>
                 <span className="truncate text-sm font-medium">{note.title}</span>
             </div>
 

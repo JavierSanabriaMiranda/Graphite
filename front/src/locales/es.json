@@ -3,6 +3,8 @@
         "placeholder": "Escribe algo increíble...",
         "toggle_title": "Título del toggle...",
         "toggle_empty": "Este contenido se podrá ocultar con el desplegable",
+        "add_icon": "Añadir Icono",
+        "no_title_placeholder": "Nueva página",
         "toolbar": {
             "block_type": {
                 "text_type": "Tipo de texto",

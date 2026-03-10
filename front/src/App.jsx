@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import TiptapEditor from './components/TipTapEditor'
+import TiptapEditor from './components/TiptapEditor';
 import { ToastProvider } from './components/util/ToastContext';
 import Sidebar from './components/Sidebar';
 import { userService } from './services/db/userService';

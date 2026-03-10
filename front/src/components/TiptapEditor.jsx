@@ -1,6 +1,8 @@
 import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import { useEffect, useState } from 'react'
-import i18next from 'i18next'
+import i18next, { t } from 'i18next'
+import { Trash2 } from 'lucide-react';
+
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -36,6 +38,9 @@ import { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent'
 import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
 import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
 import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
+
+import EmojiPicker from './util/EmojiPicker'
+import NoteIcon from './NoteIcon'
 
 import { noteService } from '../services/db/noteService';
 
@@ -185,9 +190,10 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
   // Save changes on db and tells the sidebar
   const handleTitleChange = async (e) => {
     const newTitle = e.target.value;
-    setTitle(newTitle); // Actualización visual inmediata en el input
+    setTitle(newTitle);
   };
 
+  // Saves title on db
   const saveTitle = async () => {
     if (activeNote && title !== activeNote.title) {
       // Update on DB
@@ -196,6 +202,30 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
       // Tells the App.jsx component to update the sidebar
       if (onNoteUpdate) onNoteUpdate();
     }
+  };
+
+  // Handles the page icon selection
+  const handleIconSelect = async (char) => {
+    if (!activeNote) return;
+
+    setIcon(char)
+    // Update on db
+    await noteService.update(activeNote.note_id, { icon: char });
+
+    // Notifies App.jsx to update sidebar
+    if (onNoteUpdate) onNoteUpdate();
+  };
+
+  // Handles when the page icon is removed
+  const handleRemoveIcon = async (e) => {
+    e.stopPropagation(); // Avoids emoji picker for opening
+    if (!activeNote) return;
+
+    setIcon('');
+    // Actualizamos a null en la DB
+    await noteService.update(activeNote.note_id, { icon: null });
+
+    if (onNoteUpdate) onNoteUpdate();
   };
 
   return (
@@ -207,9 +237,32 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
 
           {/* Header */}
           <div className="group mb-8">
-            {/* Page icon */}
-            <div className="text-7xl mb-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 w-fit p-2 rounded-xl cursor-pointer transition-colors min-h-[1.2em]">
-              {icon || <span className="opacity-0 group-hover:opacity-30 text-4xl text-zinc-400">add_icon</span>}
+            <div className="relative w-fit group/icon-wrapper">
+              {/* Page icon */}
+              <EmojiPicker onSelect={handleIconSelect}>
+                <div className="text-7xl mb-4 hover:bg-zinc-200 dark:hover:bg-zinc-800/50 w-24 h-24 mt-4 flex items-center justify-center rounded-xl cursor-pointer transition-colors group/icon">
+                  {icon ? (
+                    <div className="w-20 h-20 text-text-primary">
+                      <NoteIcon iconChar={icon} />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-4xl">+</span>
+                      <span className="text-xs font-medium uppercase tracking-tighter">{t('editor.add_icon')}</span>
+                    </div>
+                  )}
+                </div>
+              </EmojiPicker>
+
+              {icon && (
+                <button
+                  onClick={handleRemoveIcon}
+                  className="absolute -top-2 -right-2 p-1.5 text-text-primary bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 transition-all z-10"
+                  title={t('editor.remove_icon') || "Quitar icono"}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
             {/* Title */}
@@ -219,7 +272,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
               onChange={handleTitleChange}
               onBlur={saveTitle} // Save when losing focus
               onKeyDown={(e) => e.key === 'Enter' && e.target.blur()} // Save using enter
-              placeholder="Sin título"
+              placeholder={t('editor.no_title_placeholder')}
               className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all"
             />
           </div>
