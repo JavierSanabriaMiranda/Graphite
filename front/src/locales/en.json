@@ -5,6 +5,8 @@
         "toggle_empty": "This content can be hidden in the toggle",
         "add_icon": "Add Icon",
         "no_title_placeholder": "New page",
+        "saving": "Saving...",
+        "saved": "Saved",
         "toolbar": {
             "block_type": {
                 "text_type": "Text type",
@@ -82,7 +84,8 @@
     "sidebar": {
         "configuration": "Configuration",
         "notes": "Notes",
-        "new_note": "New note"
+        "new_note": "New note",
+        "loading": "Loading..."
     },
     "emojis": {
         "emojis": "Emoji",

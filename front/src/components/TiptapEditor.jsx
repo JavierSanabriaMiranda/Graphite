@@ -1,5 +1,5 @@
 import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import i18next, { t } from 'i18next'
 import { Trash2 } from 'lucide-react';
 
@@ -47,6 +47,9 @@ import { noteService } from '../services/db/noteService';
 const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
+  const [saveStatus, setSaveStatus] = useState('saved');
+
+  const saveTimeoutRef = useRef(null);
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -153,6 +156,20 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
         },
       }),
     ],
+    onUpdate: ({ editor }) => {
+      // Clean timeout if the user keeps typing
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+
+      // Program when the user stops typing for 1 second
+      saveTimeoutRef.current = setTimeout(() => {
+        setSaveStatus('saving');
+        const jsonContent = editor.getJSON();
+        saveContentToDB(jsonContent);
+      }, 2000);
+
+    },
     content: '',
     editorProps: {
       attributes: {
@@ -185,6 +202,19 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
       setTitle('');
       setIcon('');
     }
+  }, [activeNote]);
+
+  // Force save note content when changing note
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        const currentContent = editor?.getJSON();
+        if (currentContent) {
+          saveContentToDB(currentContent);
+        }
+      }
+    };
   }, [activeNote]);
 
   // Save changes on db and tells the sidebar
@@ -228,9 +258,28 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
     if (onNoteUpdate) onNoteUpdate();
   };
 
+  // Saves the current note content to DB
+  // This automatically triggers when user stops typing for 1 second
+  const saveContentToDB = async (content) => {
+    if (!activeNote) return;
+    await noteService.update(activeNote.note_id, {
+      content: content,
+      is_dirty: 1 // Mark for cloud sync
+    });
+    
+    if (onNoteUpdate) onNoteUpdate();
+
+    setTimeout(() => {
+      setSaveStatus('saved');
+    }, 1000);
+  };
+
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden bg-main-bg transition-colors duration-300">
       <MenuBar editor={editor} />
+      <div className="absolute top-6 right-24 text-[10px] uppercase tracking-widest text-zinc-500">
+        {saveStatus === 'saving' ? t('editor.saving') : t('editor.saved')}
+      </div>
 
       <div className="grow overflow-y-auto editor-scrollbar">
         <div className={`max-w-3xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>

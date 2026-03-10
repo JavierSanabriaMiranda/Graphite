@@ -17,7 +17,7 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "text": "¡Bienvenido a Graphite!"
+                  "text": "¡Tu herramienta de gestión de notas!"
                 }
               ]
             },
@@ -549,7 +549,7 @@ export const getWelcomeNote = (lang) => {
     en: {
       welcome_note: {
         icon: "👋",
-        title: "Welcome to Graphite 2!",
+        title: "Your note taking application!",
         body: JSON.stringify({
           "type": "doc",
           "content": [

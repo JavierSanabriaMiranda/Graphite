@@ -5,6 +5,8 @@
         "toggle_empty": "Este contenido se podrá ocultar con el desplegable",
         "add_icon": "Añadir Icono",
         "no_title_placeholder": "Nueva página",
+        "saving": "Guardando...",
+        "saved": "Guardado",
         "toolbar": {
             "block_type": {
                 "text_type": "Tipo de texto",
@@ -82,7 +84,8 @@
     "sidebar": {
         "configuration": "Configuración",
         "notes": "Notas",
-        "new_note": "Nueva nota"
+        "new_note": "Nueva nota",
+        "loading": "Cargando..."
     },
     "emojis": {
         "emoji": "Emoji",

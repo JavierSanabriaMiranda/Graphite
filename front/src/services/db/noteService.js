@@ -8,7 +8,7 @@ export const noteService = {
     /**
      * Get all the notes of a workspace
      * 
-     * @param {string} workspaceId - Id of the workspace in which the note is
+     * @param {string} workspaceId - Id of the workspace in which the notes are
      * @returns all notes of a workspace
      */
     getByWorkspace: async (workspaceId) => {
@@ -32,6 +32,34 @@ export const noteService = {
             [noteId]
         );
         return notes.length > 0 ? notes[0] : null;
+    },
+
+    /**
+     * Get all the root notes (notes with no parent)
+     * 
+     * @param {String} workspaceId - Id of the workspace in which the notes are
+     * @returns all the root notes
+     */
+    getRootNotes: async (workspaceId) => {
+        const db = await getDB();
+        return await db.select(
+            "SELECT * FROM NOTES WHERE workspace_id = $1 AND parent_id IS NULL AND is_deleted = 0 ORDER BY updated_at DESC",
+            [workspaceId]
+        );
+    },
+
+    /**
+     * Get all subnotes of the specified note
+     * 
+     * @param {String} parentId - Id of the note to get it's children
+     * @returns subnotes of the note specified as param
+     */
+    getSubnotes: async (parentId) => {
+        const db = await getDB();
+        return await db.select(
+            "SELECT * FROM NOTES WHERE parent_id = $1 AND is_deleted = 0 ORDER BY updated_at DESC",
+            [parentId]
+        );
     },
 
     /**
