@@ -33,6 +33,7 @@ import { Callout } from './advanced_blocks/Callout'
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './MenuBar'
+import PathBar from './PathBar';
 import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
 import { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent'
 import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
@@ -266,7 +267,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
       content: content,
       is_dirty: 1 // Mark for cloud sync
     });
-    
+
     if (onNoteUpdate) onNoteUpdate();
 
     setTimeout(() => {
@@ -276,10 +277,12 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
 
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden bg-main-bg transition-colors duration-300">
+      <PathBar
+        activeNote={activeNote}
+        saveStatus={saveStatus}
+        editor={editor}
+      />
       <MenuBar editor={editor} />
-      <div className="absolute top-6 right-24 text-[10px] uppercase tracking-widest text-zinc-500">
-        {saveStatus === 'saving' ? t('editor.saving') : t('editor.saved')}
-      </div>
 
       <div className="grow overflow-y-auto editor-scrollbar">
         <div className={`max-w-3xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>

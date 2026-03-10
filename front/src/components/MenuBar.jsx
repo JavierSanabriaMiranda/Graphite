@@ -1,14 +1,12 @@
 import { useEditorState } from '@tiptap/react';
 import { useTranslation } from 'react-i18next';
 import { menuBarStateSelector } from './util/menuBarStateSelector';
-import ChangeThemeButton from './util/ChangeThemeButton';
 import ColorPicker from './colors/ColorPicker';
 import HighlightPicker from './colors/HighlightPicker';
 import AlignmentSelector from './AlignmentSelector';
 import BulletSelector from './lists/BulletSelector';
 import NumberedListSelector from './lists/NumberedListSelector';
 import TodoList from './lists/TodoList';
-import OptionsMenu from './options_menu/OptionsMenu';
 import TextTypeSelector from './TextTypeSelector';
 import FontSelector from './FontSelector';
 import { ToggleIcon } from './advanced_blocks/ToggleBlock/ToggleIcon';
@@ -38,83 +36,31 @@ const MenuBar = ({ editor }) => {
   const getDivisor = () => <div className="w-px h-6 bg-gray-300 dark:bg-zinc-700 mx-1" />; // Divisor
 
   return (
-    <div className="flex flex-wrap items-center gap-2 p-2 bg-main-bg border-b border-gray-300 dark:border-zinc-700 shrink-0">
-      <div className="flex-1 invisible md:visible">
-        {/* Div to keep the menubar content adjusted in center while keeping changeThemeButton at the side */}
-      </div>
-
-      {/* Central group: All the tools */}
+    <div className="flex items-center justify-center gap-2 p-2 bg-main-bg border-b border-gray-300 dark:border-zinc-700 shrink-0">
+      {/* All tools centered */}
       <div className="flex flex-wrap items-center justify-center gap-2">
 
         { /* Text type and font selectors group */}
         <div className="flex items-center gap-2 flex-nowrap">
-          {/* Text type */}
           <TextTypeSelector editor={editor} state={state} />
-
-          {/* Fonts */}
           <FontSelector editor={editor} state={state} />
         </div>
 
-        {/* Divisor */}
         {getDivisor()}
 
-        { /* Format buttons group */}
+      { /* Format buttons group */}
         <div className="flex items-center gap-2 flex-nowrap">
-          <button
-            type="button"
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={getBtnClass(state.isBold)}
-            title={t('editor.toolbar.bold')}
-          >
-            <b>B</b>
-          </button>
-          <button
-            type="button"
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={getBtnClass(state.isItalic)}
-            title={t('editor.toolbar.italic')}
-          >
-            <i>I</i>
-          </button>
-          <button
-            type="button"
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            className={getBtnClass(state.isUnderline)}
-            title={t('editor.toolbar.underline')}
-          >
-            <u>U</u>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={getBtnClass(state.isStrike)}
-            title={t('editor.toolbar.strikethrough')}
-          >
-            <s className="decoration-2">S</s>
-          </button>
-
-          {/* Code button */}
-          <button
-            type="button"
-            onClick={() => editor.chain().focus().toggleCode().run()}
-            className={getBtnClass(state.isCode)}
-            title={t('editor.toolbar.code')}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
+          <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={getBtnClass(state.isBold)}><b>B</b></button>
+          <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={getBtnClass(state.isItalic)}><i>I</i></button>
+          <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={getBtnClass(state.isUnderline)}><u>U</u></button>
+          <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} className={getBtnClass(state.isStrike)}><s className="decoration-2">S</s></button>
+          <button type="button" onClick={() => editor.chain().focus().toggleCode().run()} className={getBtnClass(state.isCode)}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
             </svg>
           </button>
         </div>
 
-        {/* Divisor */}
         {getDivisor()}
 
         { /* Colors group */}
@@ -123,43 +69,22 @@ const MenuBar = ({ editor }) => {
           <HighlightPicker editor={editor} />
         </div>
 
-        {/* Divisor */}
         {getDivisor()}
 
         { /* Text position and lists group */}
         <div className="flex items-center gap-2 flex-nowrap">
           <AlignmentSelector editor={editor} />
-
-          {/* Lists */}
           <BulletSelector editor={editor} />
-
           <NumberedListSelector editor={editor} />
-
           <TodoList editor={editor} />
-
           <button
-            onClick={() => {
-              if (state.isToggle)
-                editor.chain().focus().unsetToggle().run()
-              else 
-                editor.chain().focus().setToggle().run()
-            }}
+            onClick={() => state.isToggle ? editor.chain().focus().unsetToggle().run() : editor.chain().focus().setToggle().run()}
             className={getBtnClass(state.isToggle)}
-            title={t('editor.toolbar.toggle_block')}
           >
             <ToggleIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
-
-      {/* Change theme button at the right side */}
-      <div className='flex-1 flex justify-end'>
-        <ChangeThemeButton />
-        <OptionsMenu editor={editor} />
-      </div>
-
-
-
     </div>
   );
 };

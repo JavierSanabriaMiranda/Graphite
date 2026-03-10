@@ -74,7 +74,7 @@ export const initializeDB = async () => {
                         workspaceUuid,
                         subnote.title,
                         subnote.body,
-                        "/" + subnote.title,
+                        "/" + welcome.title + "/" + subnote.title,
                         subnote.icon
                     ]
                 );
