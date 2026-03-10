@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import i18next, { t } from 'i18next'
 import { Trash2 } from 'lucide-react';
 
+import { EditorState } from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -49,6 +50,7 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
   const [saveStatus, setSaveStatus] = useState('saved');
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
   const saveTimeoutRef = useRef(null);
 
@@ -182,17 +184,49 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
 
   // Effect to load selected note
   useEffect(() => {
-    if (editor && activeNote) {
-      try {
-        const content = JSON.parse(activeNote.content);
-        editor.commands.setContent(content);
-      } catch (e) {
-        editor.commands.setContent(activeNote.content || '');
-      }
-    } else if (editor && !activeNote) {
-      editor.commands.setContent('');
+    if (!editor || editor.isDestroyed) return;
+
+    if (!activeNote) {
+      editor.commands.setContent('', false);
+      return;
     }
-  }, [activeNote, editor]);
+
+    // Start loading
+    setIsPageLoading(true);
+
+    const timer = setTimeout(() => {
+      try {
+        let contentToSet = activeNote.content;
+        if (typeof contentToSet === 'string' && contentToSet.trim() !== '') {
+          try {
+            contentToSet = JSON.parse(contentToSet);
+          } catch (e) {
+            // If the content is not a valid JSON put a basic paragraph with the text
+            contentToSet = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: activeNote.content }] }] };
+          }
+        }
+
+        // 2. LA SOLUCIÓN PRO: Crear un estado totalmente nuevo
+        // Esto resetea el Historial (prevTime), las Selecciones y los Plugins de golpe
+        const newState = EditorState.create({
+          doc: editor.schema.nodeFromJSON(contentToSet),
+          plugins: editor.state.plugins, // Mantenemos los plugins actuales (StarterKit, etc)
+        });
+
+        // 3. Aplicamos el nuevo estado al editor
+        editor.view.updateState(newState);
+
+        // 4. Finalizamos carga
+        setTimeout(() => setIsPageLoading(false), 20);
+
+      } catch (error) {
+        console.error("Error crítico al cargar:", error);
+        setIsPageLoading(false);
+      }
+    }, 10); // Delay to let ProseMirror load
+
+    return () => clearTimeout(timer);
+  }, [activeNote?.note_id, editor]);
 
   // Sync title when note changes
   useEffect(() => {
@@ -330,8 +364,22 @@ const TiptapEditor = ({ activeNote, onNoteUpdate }) => {
           </div>
 
           {/* Editor body */}
-          <div className="tiptap-container">
-            <EditorContent editor={editor} />
+          <div className="tiptap-container relative">
+            {/* El Skeleton se superpone al editor en lugar de reemplazarlo */}
+            {isPageLoading && (
+              <div className="absolute inset-0 z-10 bg-main-bg">
+                <div className="animate-pulse space-y-4 pt-4">
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4"></div>
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-full"></div>
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-5/6"></div>
+                </div>
+              </div>
+            )}
+
+            {/* El editor siempre está en el DOM, evitando el crash de toDOM y flushSync */}
+            <div className={isPageLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}>
+              <EditorContent editor={editor} />
+            </div>
           </div>
         </div>
       </div>

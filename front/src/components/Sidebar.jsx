@@ -74,6 +74,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId, ref
                                 note={note}
                                 onNoteSelect={onNoteSelect}
                                 activeNoteId={activeNoteId}
+                                refreshTrigger={refreshTrigger}
                             />
                         ))}
                     </ul>

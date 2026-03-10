@@ -13,7 +13,7 @@ import { noteService } from '../services/db/noteService';
  * @param {String} activeNoteId - Id of the current active note
  * @param {number} level - Level to calculate the padding of the NavItem 
  */
-const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0 }) => {
+const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0, refreshTrigger}) => {
     const { t } = useTranslation();
 
     const [isExpanded, setIsExpanded] = useState(false);
@@ -24,20 +24,19 @@ const NavItem = ({ note, onNoteSelect, activeNoteId, level = 0 }) => {
     // Verify if the note has subnotes (to know if a DropdownArrow is needed)
     useEffect(() => {
         noteService.hasSubnotes(note.note_id).then(setHasSubnotes);
-    }, [note.note_id]);
+    }, [note.note_id, refreshTrigger]);
 
     // Load subnotes just when expanded and if are not loaded yet
     useEffect(() => {
-        if (isExpanded && subnotes.length === 0) {
+        if (isExpanded) {
             setIsLoading(true);
             noteService.getSubnotes(note.note_id).then(res => {
                 setSubnotes(res);
-                // Por si acaso se borraron notas entre medias, actualizamos la flecha
                 setHasSubnotes(res.length > 0);
                 setIsLoading(false);
             });
         }
-    }, [isExpanded, note.note_id, subnotes.length]);
+    }, [isExpanded, note.note_id, subnotes.length, refreshTrigger]);
 
     const isActive = activeNoteId === note.note_id;
 
