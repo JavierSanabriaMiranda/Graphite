@@ -10,16 +10,13 @@ const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId, ref
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
 
-    // Updates notes when changing workspace or when a note changes it's icon or title
+    // Updates root notes when changing workspace or when a note changes it's icon or title
     useEffect(() => {
         if (workspace) {
-            noteService.getByWorkspace(workspace.workspace_id).then(res => {
-                setNotes(res.filter(n => !n.is_deleted));
-            });
+            noteService.getRootNotes(workspace.workspace_id).then(setNotes);
         }
     }, [workspace, refreshTrigger]);
 
-    const rootNotes = notes.filter(n => n.parent_id === null);
     // If closed but mouse on the left border show it
     const showSidebar = isOpen || isHovered;
 
@@ -71,11 +68,10 @@ const Sidebar = ({ isOpen, setIsOpen, workspace, onNoteSelect, activeNoteId, ref
 
                     <ul className="space-y-0.5">
                         {/* Notes */}
-                        {rootNotes.map(note => (
+                        {notes.map(note => (
                             <NavItem
                                 key={note.note_id}
                                 note={note}
-                                allNotes={notes}
                                 onNoteSelect={onNoteSelect}
                                 activeNoteId={activeNoteId}
                             />

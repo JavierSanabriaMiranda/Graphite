@@ -49,6 +49,21 @@ export const noteService = {
     },
 
     /**
+     * Returns true if the note whose Id is inserted as param has subnotes false otherwise
+     * 
+     * @param {String} parentId - Id of the note to evaluate children existance
+     * @returns true if the note whose Id is inserted as param has subnotes false otherwise 
+     */
+    hasSubnotes: async (parentId) => {
+        const db = await getDB();
+        const res = await db.select(
+            "SELECT EXISTS(SELECT 1 FROM NOTES WHERE parent_id = $1 AND is_deleted = 0) as has_children",
+            [parentId]
+        );
+        return res[0].has_children === 1;
+    },
+
+    /**
      * Get all subnotes of the specified note
      * 
      * @param {String} parentId - Id of the note to get it's children
