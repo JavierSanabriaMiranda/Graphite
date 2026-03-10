@@ -4,6 +4,8 @@ import { useFloating, offset, flip, shift, useInteractions, useClick, useDismiss
 import ExportButton from './ExportButton';
 import ImportButton from './ImportButton';
 import ExportModal from './ExportModal';
+import DeleteButton from './DeleteButton';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 /**
  * Button that opens a menu with multiple options related to the editor, such as exporting or importing content.
@@ -12,10 +14,11 @@ import ExportModal from './ExportModal';
  */
 const OptionsMenu = ({ editor }) => {
 
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Floating UI setup for the options menu
   const { refs, floatingStyles, context } = useFloating({
@@ -45,26 +48,36 @@ const OptionsMenu = ({ editor }) => {
         </svg>
       </button>
 
-      
-        <FloatingPortal style={{visibility: menuOpen ? 'visible' : 'hidden'}}>
-          <div
-            ref={refs.setFloating}
-            style={{ ...floatingStyles, visibility: menuOpen ? 'visible' : 'hidden'}}
-            {...getFloatingProps()}
-            className={`z-9999 min-w-40 p-1 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex flex-col `}
-          >
-            <ExportButton onOpenModal={() => {
-              setModalOpen(true); // Open export modal
-              setMenuOpen(false); // Close options menu
-            }} />
-            <ImportButton editor={editor} onDone={() => setMenuOpen(false)} />
-          </div>
-        </FloatingPortal>
-      
-      <ExportModal 
-        isOpen={modalOpen} 
-        onClose={() => setModalOpen(false)} 
-        editor={editor} 
+
+      <FloatingPortal style={{ visibility: menuOpen ? 'visible' : 'hidden' }}>
+        <div
+          ref={refs.setFloating}
+          style={{ ...floatingStyles, visibility: menuOpen ? 'visible' : 'hidden' }}
+          {...getFloatingProps()}
+          className={`z-9999 min-w-40 p-1 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex flex-col `}
+        >
+          <ExportButton onOpenModal={() => {
+            setExportModalOpen(true); // Open export modal
+            setMenuOpen(false); // Close options menu
+          }} />
+          <ImportButton editor={editor} onDone={() => setMenuOpen(false)} />
+
+          <DeleteButton onClick={() => {
+            setDeleteModalOpen(true);
+            setMenuOpen(false);
+          }} />
+        </div>
+      </FloatingPortal>
+
+      <ExportModal
+        isOpen={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        editor={editor}
+      />
+
+      <DeleteConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
       />
     </>
   );

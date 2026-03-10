@@ -1,4 +1,8 @@
 {
+    "common": {
+        "cancel": "Cancel",
+        "delete": "Delete"
+    },
     "editor": {
         "placeholder": "Escribe algo increíble...",
         "toggle_title": "Título del toggle...",
@@ -79,7 +83,15 @@
             },
             "import": "Importar",
             "import_success": "¡Documento importado con éxito!",
-            "import_error": "Error al importar el documento. Asegúrate de que el archivo es un JSON válido"
+            "import_error": "Error al importar el documento. Asegúrate de que el archivo es un JSON válido",
+            "delete": {
+                "label": "Borrar página",
+                "confirm_title": "Borrar página",
+                "confirm_description": "¿Estás seguro de que quieres borrar esta página?",
+                "success": "La página se ha borrado correctamente",
+                "error": "Error al intentar borrar la página"
+            }
+            
         }
     },
     "sidebar": {

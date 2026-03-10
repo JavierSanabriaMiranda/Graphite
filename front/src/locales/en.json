@@ -1,4 +1,8 @@
 {
+    "common": {
+        "cancel": "Cancel",
+        "delete": "Delete"
+    },
     "editor": {
         "placeholder": "Write something incredible...",
         "toggle_title": "Toggle title...",
@@ -79,7 +83,14 @@
             },
             "import": "Import",
             "import_success": "Document imported successfully!",
-            "import_error": "Error while importing the document. Make sure it is a valid JSON file"
+            "import_error": "Error while importing the document. Make sure it is a valid JSON file",
+            "delete": {
+                "label": "Delete page",
+                "confirm_title": "Delete page",
+                "confirm_description": "Are you sure you want to delete this page?",
+                "success": "Page has been successfully deleted",
+                "error": "Error while trying to delete page"
+            }
         }
     },
     "sidebar": {
