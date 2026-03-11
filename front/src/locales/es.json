@@ -12,6 +12,10 @@
         "saving": "Guardando...",
         "saved": "Guardado",
         "untitled_note": "Nueva página",
+        "empty_state": {
+            "title": "Ninguna página seleccionada",
+            "description": "No hay ninguna página seleccionada. Selecciona una o crea una nueva"
+        },
         "toolbar": {
             "block_type": {
                 "text_type": "Tipo de texto",

@@ -12,6 +12,10 @@
         "saving": "Saving...",
         "saved": "Saved",
         "untitled_note": "New page",
+        "empty_state": {
+            "title": "No page selected",
+            "description": "There's no page selected. Select one or create a new one"
+        },
         "toolbar": {
             "block_type": {
                 "text_type": "Text type",

@@ -43,6 +43,7 @@ import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
 import EmojiPicker from './util/EmojiPicker'
 import NoteIcon from './NoteIcon'
 import { PageBlock } from './advanced_blocks/PageBlockComponent';
+import EmptyState from './EmptyState';
 
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
@@ -323,6 +324,23 @@ const TiptapEditor = () => {
       setSaveStatus('saved');
     }, 1000);
   };
+
+  if (!activeNote) {
+    return (
+      <div className="h-screen w-full bg-main-bg flex flex-col">
+        <PathBar
+          saveStatus={saveStatus}
+          editor={editor}
+        />
+        <MenuBar editor={editor} />
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0" />
+
+        <div className="grow">
+          <EmptyState />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex flex-col h-screen w-full overflow-hidden bg-main-bg transition-colors duration-300">
