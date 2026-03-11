@@ -63,13 +63,13 @@ const DeleteConfirmModal = ({ isOpen, onClose, noteToDelete, onConfirm }) => {
                         <div className="flex gap-3 w-full">
                             <button
                                 onClick={onClose}
-                                className="flex-1 px-4 py-2.5 text-sm font-medium text-text-primary bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+                                className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-medium text-text-primary bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl transition-colors"
                             >
                                 {t('common.cancel')}
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-lg shadow-red-600/20"
+                                className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-lg shadow-red-600/20"
                             >
                                 {t('common.delete')}
                             </button>

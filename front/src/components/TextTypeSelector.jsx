@@ -71,7 +71,7 @@ const CheckIcon = () => (
  */
 const TextTypeSelector = ({ editor, state }) => {
     const { t } = useTranslation();
-    const { selectedNote, triggerRefresh, selectNote } = useNote();
+    const { selectNote, createSubnote } = useNote();
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -135,25 +135,11 @@ const TextTypeSelector = ({ editor, state }) => {
         else if (val === 'callout') chain.toggleCallout().run();
         else if (val === 'code') chain.toggleCodeBlock().run();
         else if (val === 'page') {
-            try {
-                // Create subnote at db
-                const newNoteId = await noteService.create(
-                    selectedNote.workspace_id,
-                    t('editor.untitled_note') || 'Untitled',
-                    selectedNote.note_id // Current note is parent
-                );
+            const newNote = await createSubnote();
 
-                const newNote = await noteService.getByNoteId(newNoteId);
-
-                // Insert the pageblock on editor using the generated Id
-                chain.insertPageBlock(newNoteId).run();
-
+            if (newNote) {
+                chain.insertPageBlock(newNote.note_id).run();
                 selectNote(newNote);
-
-                // Update sidebar that there's a new subnote
-                triggerRefresh();
-            } catch (error) {
-                console.error("Failed to create subpage:", error);
             }
         }
 

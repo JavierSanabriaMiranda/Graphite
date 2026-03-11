@@ -22,11 +22,11 @@ export const NoteProvider = ({ children, workspace }) => {
     // that a note's metadata (title, icon, etc.) has changed in the DB.
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-   /**
-    * Increments the refresh counter.
-    * Used whenever a note is updated in the database to force 
-    * data-fetching components to refresh their UI.
-    */
+    /**
+     * Increments the refresh counter.
+     * Used whenever a note is updated in the database to force 
+     * data-fetching components to refresh their UI.
+     */
     const triggerRefresh = useCallback(() => {
         setRefreshTrigger(prev => prev + 1);
     }, []);
@@ -60,6 +60,37 @@ export const NoteProvider = ({ children, workspace }) => {
         }
     }, [workspace, t, triggerRefresh]);
 
+    /**
+    * Creates a new subnote within a parent note
+    * @param {string} parentId - The ID of the parent note, if not passed use the current selected note instead
+    * @returns {Promise<Object|null>} The newly created note object
+    */
+    const createSubnote = useCallback(async (parentId = null) => {
+        // If no ID, use the current selected note
+        const effectiveParentId = parentId || selectedNote?.note_id;
+
+        if (!workspace || !effectiveParentId) {
+            console.warn("Cannot create subnote: Missing workspace or parent ID");
+            return null;
+        }
+
+        try {
+            const title = t('editor.untitled_note') || 'Untitled';
+            const newNoteId = await noteService.create(
+                workspace.workspace_id,
+                title,
+                effectiveParentId
+            );
+
+            const newNote = await noteService.getByNoteId(newNoteId);
+            triggerRefresh();
+            return newNote;
+        } catch (error) {
+            console.error("Error creating subnote:", error);
+            return null;
+        }
+    }, [workspace, selectedNote, t, triggerRefresh]);
+
     // Context value object containing the state and the updater functions
     const value = {
         selectedNote,
@@ -67,7 +98,8 @@ export const NoteProvider = ({ children, workspace }) => {
         selectNote,
         refreshTrigger,
         triggerRefresh,
-        createRootNote
+        createRootNote,
+        createSubnote
     };
 
     return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;
