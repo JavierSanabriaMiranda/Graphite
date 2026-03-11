@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { noteService } from '../../services/db/noteService';
 
 /**
  * Context object to hold the global state of the active note and UI synchronization.
@@ -12,12 +14,23 @@ const NoteContext = createContext();
  * 
  * @param {Object} props.children - The components that will have access to this context.
  */
-export const NoteProvider = ({ children }) => {
+export const NoteProvider = ({ children, workspace }) => {
+    const { t } = useTranslation();
     const [selectedNote, setSelectedNote] = useState(null);
 
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+   /**
+    * Increments the refresh counter.
+    * Used whenever a note is updated in the database to force 
+    * data-fetching components to refresh their UI.
+    */
+    const triggerRefresh = useCallback(() => {
+        setRefreshTrigger(prev => prev + 1);
+    }, []);
+
 
     /**
      * Updates the currently active note.
@@ -31,13 +44,21 @@ export const NoteProvider = ({ children }) => {
     }, [selectedNote]);
 
     /**
-     * Increments the refresh counter.
-     * Used whenever a note is updated in the database to force 
-     * data-fetching components to refresh their UI.
+     * Creates a new root note
      */
-    const triggerRefresh = useCallback(() => {
-        setRefreshTrigger(prev => prev + 1);
-    }, []);
+    const createRootNote = useCallback(async () => {
+        if (!workspace) return;
+        try {
+            const title = t('editor.untitled_note') || 'Untitled';
+            const newId = await noteService.create(workspace.workspace_id, title);
+            const newNote = await noteService.getByNoteId(newId);
+
+            setSelectedNote(newNote); // open new note
+            triggerRefresh();        // update sidebar
+        } catch (error) {
+            console.error("Error creating note from context:", error);
+        }
+    }, [workspace, t, triggerRefresh]);
 
     // Context value object containing the state and the updater functions
     const value = {
@@ -45,7 +66,8 @@ export const NoteProvider = ({ children }) => {
         setSelectedNote, // Raw setter for direct manipulation if needed
         selectNote,
         refreshTrigger,
-        triggerRefresh
+        triggerRefresh,
+        createRootNote
     };
 
     return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;

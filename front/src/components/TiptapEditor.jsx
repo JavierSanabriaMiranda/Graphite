@@ -52,7 +52,7 @@ import { useToast } from './util/ToastContext';
 const TiptapEditor = () => {
   const { showToast } = useToast();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, selectNote: onNoteSelect } = useNote();
+  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote} = useNote();
 
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
@@ -336,7 +336,7 @@ const TiptapEditor = () => {
         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0" />
 
         <div className="grow">
-          <EmptyState />
+          <EmptyState onCreateNote={createRootNote} />
         </div>
       </div>
     );
