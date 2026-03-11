@@ -19,7 +19,7 @@ const DeleteConfirmModal = ({ isOpen, onClose, noteToDelete, onConfirm }) => {
         if (!selectedNote) return;
 
         try {
-            await noteService.update(targetNote.note_id, { is_deleted: 1 });
+            await noteService.delete(targetNote.note_id);
 
             showToast(t('editor.options_menu.delete.success'), "success");
 

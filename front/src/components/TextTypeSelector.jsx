@@ -6,7 +6,6 @@ import {
 } from '@floating-ui/react';
 import DropdownArrow from './util/DropdownArrow';
 import { useNote } from './context/NoteContext';
-import { noteService } from '../services/db/noteService';
 
 const OPTIONS = [
     { id: 'p', label: 'editor.toolbar.block_type.normal_text', icon: 'M4 6h16M4 12h16M4 18h7' },
@@ -26,17 +25,17 @@ const OPTIONS = [
         icon: 'M16 9h5l-2.75 4H19a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2h0M4 5v14M5 5H3M5 19H3M11 5v14M10 5h2M10 19h2M4 12h7'
     },
     {
-        id: 'page',
-        label: 'editor.toolbar.block_type.page',
-        icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M12 18v-6 M9 15h6'
-    },
-    {
         id: 'quote',
         label: 'editor.toolbar.block_type.quote',
         icon: 'M5.315 3.401c-1.61 0-2.916 1.343-2.916 3 0 1.656 1.306 3 2.916 3 2.915 0 .972 5.799-2.916 5.799v1.4c6.939.001 9.658-13.199 2.916-13.199zm8.4 0c-1.609 0-2.915 1.343-2.915 3 0 1.656 1.306 3 2.915 3 2.916 0 .973 5.799-2.915 5.799v1.4c6.938.001 9.657-13.199 2.915-13.199z'
     },
     { id: 'callout', label: 'editor.toolbar.block_type.callout', icon: 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01' },
     { id: 'code', label: 'editor.toolbar.block_type.code_block.code_block', icon: 'M16 18l6-6-6-6M8 6l-6 6 6 6' },
+    {
+        id: 'page',
+        label: 'editor.toolbar.block_type.page',
+        icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M12 18v-6 M9 15h6'
+    },
 ];
 
 // Generic icon that receives a path

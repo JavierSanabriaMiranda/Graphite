@@ -221,9 +221,21 @@ export const noteService = {
     delete: async (noteId) => {
         const db = await getDB();
         // Delete (logical)
-        return await db.execute(
-            "UPDATE NOTES SET is_deleted = 1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE note_id = $1",
-            [noteId]
-        );
+        // Mark note and all subnotes till the end as deleted
+        return await db.execute(`
+        WITH RECURSIVE descendant_notes AS (
+            SELECT note_id FROM NOTES WHERE note_id = $1
+            UNION ALL
+            SELECT n.note_id 
+            FROM NOTES n
+            JOIN descendant_notes dn ON n.parent_id = dn.note_id
+        )
+        UPDATE NOTES 
+        SET 
+            is_deleted = 1, 
+            is_dirty = 1, 
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE note_id IN (SELECT note_id FROM descendant_notes)
+        `, [noteId]);
     }
 };
