@@ -5,5 +5,5 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=JavierSanabriaMiranda_Graphite&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=JavierSanabriaMiranda_Graphite)
 
 <p align="center">
-  <img src="front/public/app-icon-rounded-square.png" height="200">
+  <img src="front/public/app_icon_rounded_square.png" height="200">
 </p>
