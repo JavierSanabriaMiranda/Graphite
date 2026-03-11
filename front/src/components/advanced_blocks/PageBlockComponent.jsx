@@ -1,16 +1,19 @@
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import { Node, mergeAttributes } from '@tiptap/core';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { useEffect, useState } from 'react';
-import { FileText } from 'lucide-react';
+import { Trash2, FileText } from 'lucide-react';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NoteIcon from '../NoteIcon';
+import DeleteConfirmModal from '../options_menu/DeleteConfirmModal';
 
-const PageBlockComponent = ({ node, deleteNode }) => {
+const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
     const { noteId } = node.attrs;
     const { selectNote, refreshTrigger } = useNote();
     const [noteData, setNoteData] = useState(null);
     const [checking, setChecking] = useState(true);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // Checks note status to remove the node if note has been removed
     useEffect(() => {
@@ -25,7 +28,13 @@ const PageBlockComponent = ({ node, deleteNode }) => {
 
             // If note doesn't exist or marked as deleted
             if (!data || data.is_deleted === 1) {
-                deleteNode(); // Remove node from document
+                const pos = getPos();
+                // Use authorized delete
+                editor.view.dispatch(
+                    editor.state.tr
+                        .delete(pos, pos + node.nodeSize)
+                        .setMeta('forceDeletePageBlock', true)
+                );
             } else {
                 setNoteData(data);
             }
@@ -36,20 +45,34 @@ const PageBlockComponent = ({ node, deleteNode }) => {
         return () => { isMounted = false; };
     }, [noteId, refreshTrigger, deleteNode]);
 
-    const handleNavigation = (e) => {
-        e.preventDefault();
-        if (noteData) {
-            selectNote(noteData);
-        }
+    const handleConfirmedDelete = () => {
+        const pos = getPos();
+
+        // Use editor to remove
+        editor.view.dispatch(
+            editor.state.tr
+                .delete(pos, pos + node.nodeSize)
+                .setMeta('forceDeletePageBlock', true) // Key for deleting
+        );
+
+        setIsDeleteModalOpen(false);
     };
 
     if (checking || !noteData) return null;
 
     return (
-        <NodeViewWrapper className="my-1">
+        <NodeViewWrapper
+            className={`my-2 group/page select-none transition-all ${selected ? 'ring-2 ring-primary/40 rounded-xl' : ''}`}
+            contentEditable={false}
+        >
             <div
-                onClick={handleNavigation}
-                className="flex items-center gap-1 p-2 rounded-lg cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/50 group border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
+                onClick={() => selectNote(noteData)}
+                className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border
+                    ${selected
+                        ? 'bg-primary/5 border-primary/30'
+                        : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
+                    }
+                `}
             >
                 <div className="w-6 h-6 shrink-0 flex items-center justify-center text-zinc-500 group-hover:text-primary transition-colors">
                     {noteData.icon ? (
@@ -59,10 +82,27 @@ const PageBlockComponent = ({ node, deleteNode }) => {
                     )}
                 </div>
 
-                <span className="flex-1 truncate text-sm font-medium text-text-primary group-hover:text-primary transition-colors">
+                <span className="flex-1 truncate text-sm font-medium text-text-primary group-hover/page:text-primary transition-colors">
                     {noteData.title}
                 </span>
+
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation(); // Avoid navigate to page
+                        setIsDeleteModalOpen(true);
+                    }}
+                    className="opacity-0 group-hover/page:opacity-100 p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-zinc-400 hover:text-red-600 rounded-md transition-all"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </button>
             </div>
+
+            <DeleteConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                noteToDelete={noteData}
+                onConfirm={handleConfirmedDelete}
+            />
         </NodeViewWrapper>
     );
 };
@@ -74,6 +114,9 @@ export const PageBlock = Node.create({
     name: 'pageBlock',
     group: 'block',
     atom: true, // Makes the pageblock work as a single object (text inside cant be editable)
+    selectable: true,
+    draggable: true,
+    isolating: true,
 
     addAttributes() {
         return {
@@ -99,7 +142,7 @@ export const PageBlock = Node.create({
         return ReactNodeViewRenderer(PageBlockComponent);
     },
 
-    // Comand to insert a page easily
+    // Command to insert a page easily
     addCommands() {
         return {
             insertPageBlock: (noteId) => ({ commands }) => {
@@ -109,5 +152,42 @@ export const PageBlock = Node.create({
                 });
             },
         };
+    },
+
+    // Avoids delete page writing into de PageBlock or with backspace
+    addProseMirrorPlugins() {
+        const nodeType = this.type;
+
+        return [
+            new Plugin({
+                key: new PluginKey('pageBlockProtection'),
+                filterTransaction(tr, state) {
+                    if (!tr.docChanged) return true;
+
+                    // Delete must have a key called "forceDeletePageBlock"
+                    const isAuthorized = tr.getMeta('forceDeletePageBlock');
+                    if (isAuthorized) return true;
+
+                    // Count how many children has the current page
+                    let oldPages = 0;
+                    state.doc.descendants((node) => {
+                        if (node.type === nodeType) oldPages++;
+                    });
+
+                    let newPages = 0;
+                    tr.doc.descendants((node) => {
+                        if (node.type === nodeType) newPages++;
+                    });
+
+                    // If not authorized and number of children goes down, cancel
+                    if (newPages < oldPages) {
+                        // Dont let transaction take place
+                        return false;
+                    }
+
+                    return true;
+                },
+            }),
+        ];
     },
 });

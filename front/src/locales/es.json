@@ -92,7 +92,7 @@
             "delete": {
                 "label": "Borrar página",
                 "confirm_title": "Borrar página",
-                "confirm_description": "¿Estás seguro de que quieres borrar esta página?",
+                "confirm_description": "¿Estás seguro de que quieres borrar la página {{title}}?",
                 "success": "La página se ha borrado correctamente",
                 "error": "Error al intentar borrar la página"
             }

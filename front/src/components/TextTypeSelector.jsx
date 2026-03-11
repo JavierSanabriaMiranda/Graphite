@@ -71,7 +71,7 @@ const CheckIcon = () => (
  */
 const TextTypeSelector = ({ editor, state }) => {
     const { t } = useTranslation();
-    const { selectedNote, triggerRefresh } = useNote();
+    const { selectedNote, triggerRefresh, selectNote } = useNote();
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -143,8 +143,12 @@ const TextTypeSelector = ({ editor, state }) => {
                     selectedNote.note_id // Current note is parent
                 );
 
+                const newNote = await noteService.getByNoteId(newNoteId);
+
                 // Insert the pageblock on editor using the generated Id
                 chain.insertPageBlock(newNoteId).run();
+
+                selectNote(newNote);
 
                 // Update sidebar that there's a new subnote
                 triggerRefresh();

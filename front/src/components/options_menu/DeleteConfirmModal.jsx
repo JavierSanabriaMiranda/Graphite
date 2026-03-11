@@ -5,24 +5,32 @@ import { useNote } from '../context/NoteContext';
 import { useToast } from '../util/ToastContext';
 import { FloatingPortal } from '@floating-ui/react';
 
-const DeleteConfirmModal = ({ isOpen, onClose }) => {
+const DeleteConfirmModal = ({ isOpen, onClose, noteToDelete, onConfirm }) => {
     const { t } = useTranslation();
     const { selectedNote, selectNote, triggerRefresh } = useNote();
     const { showToast } = useToast();
 
     if (!isOpen) return null;
 
+    // Note specified on prop has more priority than current note
+    const targetNote = noteToDelete || selectedNote;
+
     const handleDelete = async () => {
         if (!selectedNote) return;
 
         try {
-            // Logical delete (is_deleted = 1)
-            await noteService.update(selectedNote.note_id, { is_deleted: 1 });
+            await noteService.update(targetNote.note_id, { is_deleted: 1 });
 
             showToast(t('editor.options_menu.delete.success'), "success");
 
-            // Global state cleanup
-            selectNote(null);
+            // If deleting current note, clear editor
+            if (selectedNote?.note_id === targetNote.note_id) {
+                selectNote(null);
+            }
+
+            // If there's callback, execute it
+            if (onConfirm) onConfirm();
+
             triggerRefresh();
             onClose();
         } catch (error) {
@@ -49,7 +57,7 @@ const DeleteConfirmModal = ({ isOpen, onClose }) => {
                             {t('editor.options_menu.delete.confirm_title')}
                         </h3>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-                            {t('editor.options_menu.delete.confirm_description', { title: selectedNote?.title })}
+                            {t('editor.options_menu.delete.confirm_description', { title: targetNote?.title })}
                         </p>
 
                         <div className="flex gap-3 w-full">
