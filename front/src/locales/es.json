@@ -21,6 +21,7 @@
                 "h1": "Título 1",
                 "h2": "Título 2",
                 "h3": "Título 3",
+                "page": "Página",
                 "quote": "Cita",
                 "callout": "Destacado",
                 "code_block": {

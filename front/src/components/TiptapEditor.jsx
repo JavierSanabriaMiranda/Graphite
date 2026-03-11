@@ -42,6 +42,7 @@ import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
 import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
 import EmojiPicker from './util/EmojiPicker'
 import NoteIcon from './NoteIcon'
+import { PageBlock } from './advanced_blocks/PageBlockComponent';
 
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
@@ -139,6 +140,7 @@ const TiptapEditor = () => {
       ToggleContent,
       DetailsSummary,
       DetailsContent,
+      PageBlock,
       Placeholder.configure({
         includeChildren: true,
         placeholder: ({ node, editor, pos }) => {

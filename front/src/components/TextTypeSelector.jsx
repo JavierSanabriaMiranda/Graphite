@@ -5,6 +5,8 @@ import {
     useDismiss, useRole, useInteractions, FloatingPortal, FloatingFocusManager
 } from '@floating-ui/react';
 import DropdownArrow from './util/DropdownArrow';
+import { useNote } from './context/NoteContext';
+import { noteService } from '../services/db/noteService';
 
 const OPTIONS = [
     { id: 'p', label: 'editor.toolbar.block_type.normal_text', icon: 'M4 6h16M4 12h16M4 18h7' },
@@ -22,6 +24,11 @@ const OPTIONS = [
         id: 'h3',
         label: 'editor.toolbar.block_type.h3',
         icon: 'M16 9h5l-2.75 4H19a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2h0M4 5v14M5 5H3M5 19H3M11 5v14M10 5h2M10 19h2M4 12h7'
+    },
+    {
+        id: 'page',
+        label: 'editor.toolbar.block_type.page',
+        icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M12 18v-6 M9 15h6'
     },
     {
         id: 'quote',
@@ -64,6 +71,7 @@ const CheckIcon = () => (
  */
 const TextTypeSelector = ({ editor, state }) => {
     const { t } = useTranslation();
+    const { selectedNote, triggerRefresh } = useNote();
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
 
@@ -119,13 +127,31 @@ const TextTypeSelector = ({ editor, state }) => {
      * 
      * @param {String} val that represents the text type
      */
-    const handleSelect = (val) => {
+    const handleSelect = async (val) => {
         const chain = editor.chain().focus();
         if (val === 'p') chain.setParagraph().run();
         else if (val.startsWith('h')) chain.toggleHeading({ level: parseInt(val.replace('h', '')) }).run();
         else if (val === 'quote') chain.toggleBlockquote().run();
         else if (val === 'callout') chain.toggleCallout().run();
         else if (val === 'code') chain.toggleCodeBlock().run();
+        else if (val === 'page') {
+            try {
+                // Create subnote at db
+                const newNoteId = await noteService.create(
+                    selectedNote.workspace_id,
+                    t('editor.untitled_note') || 'Untitled',
+                    selectedNote.note_id // Current note is parent
+                );
+
+                // Insert the pageblock on editor using the generated Id
+                chain.insertPageBlock(newNoteId).run();
+
+                // Update sidebar that there's a new subnote
+                triggerRefresh();
+            } catch (error) {
+                console.error("Failed to create subpage:", error);
+            }
+        }
 
         setIsOpen(false);
         setSearch('');
