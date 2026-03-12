@@ -13,6 +13,53 @@ import {
     autoUpdate
 } from '@floating-ui/react';
 
+export const NumberedListIcon = ({ className }) => (
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+    >
+        <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <text
+                x="0" y="7"
+                fontSize="9"
+                fontWeight="bold"
+                fill="currentColor"
+                stroke="none"
+                style={{ fontFamily: 'sans-serif' }}
+            >
+                1
+            </text>
+            <line x1="10" y1="5" x2="22" y2="5" />
+
+            <text
+                x="0" y="14"
+                fontSize="9"
+                fontWeight="bold"
+                fill="currentColor"
+                stroke="none"
+                style={{ fontFamily: 'sans-serif' }}
+            >
+                2
+            </text>
+            <line x1="10" y1="12" x2="22" y2="12" />
+
+            <text
+                x="0" y="21"
+                fontSize="9"
+                fontWeight="bold"
+                fill="currentColor"
+                stroke="none"
+                style={{ fontFamily: 'sans-serif' }}
+            >
+                3
+            </text>
+            <line x1="10" y1="19" x2="22" y2="19" />
+        </g>
+    </svg>
+);
+
 /**
  * NumberedListSelector component for selecting different ordered list styles in the editor.
  * 
@@ -143,7 +190,7 @@ const NumberedListSelector = ({ editor }) => {
             </button>
 
             {menuOpen && (
-                <div 
+                <div
                     ref={refs.setFloating}
                     style={floatingStyles}
                     {...getFloatingProps()}

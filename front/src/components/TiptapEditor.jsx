@@ -1,4 +1,5 @@
 import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState, useRef } from 'react'
 import i18next, { t } from 'i18next'
 import { Trash2 } from 'lucide-react';
@@ -45,15 +46,18 @@ import NoteIcon from './NoteIcon'
 import { PageBlock } from './advanced_blocks/PageBlockComponent';
 import EmptyState from './EmptyState';
 import { BlockMoving } from './extensions/BlockMoving';
+import { Commands } from './slash_commands/Commands';
+import getSuggestionConfig from './slash_commands/suggestions';
 
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
 import { useToast } from './util/ToastContext';
 
 const TiptapEditor = () => {
+  const { t } = useTranslation();
   const { showToast } = useToast();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote} = useNote();
+  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote } = useNote();
 
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
@@ -144,6 +148,9 @@ const TiptapEditor = () => {
       DetailsContent,
       PageBlock,
       BlockMoving,
+      Commands.configure({
+        suggestion: getSuggestionConfig(t, createSubnote),
+      }),
       Placeholder.configure({
         includeChildren: true,
         placeholder: ({ node, editor, pos }) => {

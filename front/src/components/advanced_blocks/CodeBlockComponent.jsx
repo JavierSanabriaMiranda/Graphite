@@ -228,7 +228,7 @@ const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
                                 )
                             })
                         ) : (
-                            <div className="px-3 py-4 text-center text-xs text-zinc-400 italic">{t('editor.toolbar.block_type.code_block.no_results')}</div>
+                            <div className="px-3 py-4 text-center text-xs text-zinc-400 italic">{t('common.no_result')}</div>
                         )}
                     </div>
                 </div>

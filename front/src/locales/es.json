@@ -1,7 +1,8 @@
 {
     "common": {
         "cancel": "Cancelar",
-        "delete": "Borrar"
+        "delete": "Borrar",
+        "no_result": "No hay resultados"
     },
     "editor": {
         "placeholder": "Escribe algo increíble...",
@@ -32,7 +33,6 @@
                     "code_block": "Código",
                     "auto_detect": "Auto-detectar",
                     "search_language": "Buscar lenguaje",
-                    "no_results": "No hay resultados",
                     "copy_content": "Copiar código",
                     "copy_success": "Código copiado al portapapeles"
                 }
@@ -99,6 +99,56 @@
         },
         "errors": {
             "name_collision": "Ya hay una página con este nombre en esta ubicación"
+        },
+        "slash": {
+            "normal_text": {
+                "title": "Texto Normal",
+                "search": "texto,normal,párrafo,p"
+            },
+            "page": {
+                "title": "Página",
+                "search": "página,pagina,subpagina,subpágina,nota"
+            },
+            "h1": {
+                "title": "Título 1",
+                "search": "h1,titulo,título,encabezado"
+            },
+            "h2": {
+                "title": "Título 2",
+                "search": "h2,titulo,título,encabezado"
+            },
+            "h3": {
+                "title": "Título 3",
+                "search": "h3,titulo,título,encabezado"
+            },
+            "code": {
+                "title": "Código",
+                "search": "código,codigo,code"
+            },
+            "quote": {
+                "title": "Cita",
+                "search": "cita"
+            },
+            "callout": {
+                "title": "Destacado",
+                "search": "destacado,callout"
+            },
+            "to-do": {
+                "title": "Lista de Tareas",
+                "search": "tareas,lista,compra"
+            },
+            "bulleted_list": {
+                "title": "Lista de Viñetas",
+                "search": "lista,viñetas,vinetas,puntos"
+            },
+            "numbered_list": {
+                "title": "Lista Numerada",
+                "search": "lista,números,numeros,ordenada,ordenado"
+            },
+            "toggle": {
+                "title": "Contenido Desplegable",
+                "search": "desplegable,oculto,toggle,contenido"
+            }
         }
     },
     "sidebar": {

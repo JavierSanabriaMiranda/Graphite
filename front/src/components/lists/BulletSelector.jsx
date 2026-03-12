@@ -13,6 +13,26 @@ import {
     autoUpdate
 } from '@floating-ui/react';
 
+export const BulletedListIcon = ({ className }) => (
+    <svg 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+        className={className} 
+    >
+        <g fill="currentColor">
+            <circle cx="4" cy="5" r="2" />
+            <circle cx="4" cy="12" r="2" />
+            <circle cx="4" cy="19" r="2" />
+        </g>
+        <g stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.7">
+            <line x1="10" y1="5" x2="21" y2="5" />
+            <line x1="10" y1="12" x2="21" y2="12" />
+            <line x1="10" y1="19" x2="21" y2="19" />
+        </g>
+    </svg>
+);
+
 /**
  * Tool that allows to select the bullet style for the bullet list.
  * 
@@ -144,8 +164,8 @@ const BulletSelector = ({ editor }) => {
                 ref={refs.setReference}
                 {...getReferenceProps()}
                 className={`cursor-pointer flex items-center gap-1 p-2 rounded-lg transition-all ${isBulletActive
-                        ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary shadow-md'
-                        : 'bg-main-bg text-text-primary hover:bg-hover-primary-bg'
+                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary shadow-md'
+                    : 'bg-main-bg text-text-primary hover:bg-hover-primary-bg'
                     }`}
                 title={t('editor.toolbar.bulleted_list.bulleted_list')}
             >
@@ -169,8 +189,8 @@ const BulletSelector = ({ editor }) => {
                             type="button"
                             onClick={() => toggleStyle(opt.id)}
                             className={`cursor-pointer p-2 rounded-lg transition-all hover:scale-105 active:scale-95 ${isBulletActive && currentStyle === opt.id
-                                    ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
-                                    : 'hover:bg-hover-primary-bg text-gray-800 dark:text-gray-300'
+                                ? 'bg-primary dark:bg-primary/10 text-white dark:text-primary'
+                                : 'hover:bg-hover-primary-bg text-gray-800 dark:text-gray-300'
                                 }`}
                             title={opt.name}
                         >

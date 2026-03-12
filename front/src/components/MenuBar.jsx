@@ -80,6 +80,7 @@ const MenuBar = ({ editor }) => {
           <button
             onClick={() => state.isToggle ? editor.chain().focus().unsetToggle().run() : editor.chain().focus().setToggle().run()}
             className={getBtnClass(state.isToggle)}
+            title={t('editor.toolbar.toggle_block')}
           >
             <ToggleIcon className="w-5 h-5" />
           </button>

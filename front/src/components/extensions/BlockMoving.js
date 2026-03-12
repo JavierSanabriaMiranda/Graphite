@@ -1,16 +1,20 @@
 import { Extension } from '@tiptap/core';
 import { NodeSelection, TextSelection } from '@tiptap/pm/state';
 
+/**
+ * Extension to allow blocks to be moved up and down on the editor. 
+ * This means swaping position with the block above or below it.
+ */
 export const BlockMoving = Extension.create({
     name: 'blockMoving',
 
     addKeyboardShortcuts() {
         return {
-            // Usamos Mod (Cmd en Mac) + Shift + Flecha
+            // Use Mod (Cmd on Mac, Ctrl on Windows) + Shift + Arrow
             'Mod-Shift-ArrowUp': () => this.editor.commands.moveBlockUp(),
             'Mod-Shift-ArrowDown': () => this.editor.commands.moveBlockDown(),
 
-            // Opcional: También habilitamos Alt + Shift + Flecha (muy común en VS Code/Notion)
+            // Use Mod (Option on Mac, Alt on Windows) + Shift + Arrow
             'Alt-Shift-ArrowUp': () => this.editor.commands.moveBlockUp(),
             'Alt-Shift-ArrowDown': () => this.editor.commands.moveBlockDown(),
         };
@@ -18,6 +22,8 @@ export const BlockMoving = Extension.create({
 
     addCommands() {
         return {
+
+            // Moves block up swaping position with the block just above 
             moveBlockUp: () => ({ state, dispatch }) => {
                 const { selection, doc } = state;
                 const currentBlockStart = selection.$from.before(1);
@@ -37,12 +43,12 @@ export const BlockMoving = Extension.create({
 
                     const newPos = prevBlockPos;
 
-                    // LÓGICA DE SELECCIÓN INTELIGENTE
+                    // Smart selection
                     if (currentBlock.isLeaf || currentBlock.type.spec.atom) {
-                        // Si es un PageBlock u otro átomo, lo seleccionamos como NODO
+                        // If atom block, select it as node
                         tr.setSelection(NodeSelection.create(tr.doc, newPos));
                     } else {
-                        // Si es un párrafo, ponemos el cursor de texto dentro
+                        // If paragraph, put cursor inside
                         tr.setSelection(TextSelection.near(tr.doc.resolve(newPos + 1)));
                     }
 
@@ -51,6 +57,7 @@ export const BlockMoving = Extension.create({
                 return true;
             },
 
+            // Moves block down swaping position with the block just below
             moveBlockDown: () => ({ state, dispatch }) => {
                 const { selection, doc } = state;
                 const currentBlockStart = selection.$from.before(1);

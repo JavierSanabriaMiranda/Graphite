@@ -99,6 +99,56 @@
         },
         "errors": {
             "name_collision": "There's already a page with this title on this location"
+        },
+        "slash": {
+            "normal_text": {
+                "title": "Text",
+                "search": "text,normal,paragraph,p"
+            },
+            "page": {
+                "title": "Page",
+                "search": "page,subpage,note,link"
+            },
+            "h1": {
+                "title": "Heading 1",
+                "search": "h1,heading,header,title,big"
+            },
+            "h2": {
+                "title": "Heading 2",
+                "search": "h2,heading,header,title,medium"
+            },
+            "h3": {
+                "title": "Heading 3",
+                "search": "h3,heading,header,title,small"
+            },
+            "code": {
+                "title": "Code Block",
+                "search": "code,coding,block,programming"
+            },
+            "quote": {
+                "title": "Quote",
+                "search": "quote,blockquote,citation"
+            },
+            "callout": {
+                "title": "Callout",
+                "search": "callout,highlight,info,alert"
+            },
+            "to-do": {
+                "title": "To-do List",
+                "search": "todo,list,task,checkbox,check"
+            },
+            "bulleted_list": {
+                "title": "Bulleted List",
+                "search": "list,bullets,bulleted,points"
+            },
+            "numbered_list": {
+                "title": "Numbered List",
+                "search": "list,numbered,numbers,ordered"
+            },
+            "toggle": {
+                "title": "Toggle",
+                "search": "toggle,expandable,hidden,collapsible"
+            }
         }
     },
     "sidebar": {
