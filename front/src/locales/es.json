@@ -1,7 +1,7 @@
 {
     "common": {
-        "cancel": "Cancel",
-        "delete": "Delete"
+        "cancel": "Cancelar",
+        "delete": "Borrar"
     },
     "editor": {
         "placeholder": "Escribe algo increíble...",

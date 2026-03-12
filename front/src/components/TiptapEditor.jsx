@@ -44,6 +44,7 @@ import EmojiPicker from './util/EmojiPicker'
 import NoteIcon from './NoteIcon'
 import { PageBlock } from './advanced_blocks/PageBlockComponent';
 import EmptyState from './EmptyState';
+import { BlockMoving } from './extensions/BlockMoving';
 
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
@@ -142,6 +143,7 @@ const TiptapEditor = () => {
       DetailsSummary,
       DetailsContent,
       PageBlock,
+      BlockMoving,
       Placeholder.configure({
         includeChildren: true,
         placeholder: ({ node, editor, pos }) => {

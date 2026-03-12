@@ -546,3 +546,13 @@ Emojis style
 .emoji-picker-content {
   font-family: var(--font-emoji) !important;
 }
+
+/* ====================
+Page Block Style
+==================== */
+
+/* Removes writing cursor when selecting page block */
+.ProseMirror:has(.ProseMirror-selectednode) {
+  caret-color: transparent !important;
+}
+
