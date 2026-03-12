@@ -33,6 +33,25 @@ const ColorPicker = ({ editor }) => {
         { name: t('editor.toolbar.color.purple'), color: '#a855f7' },
     ];
 
+    // Icon for the options
+    const ColorCircle = ({ color, isActive }) => (
+        <div
+            className={`
+                flex items-center justify-center w-7 h-7 rounded-full border transition-all
+                ${isActive ? 'border-primary ring-1 ring-primary/30' : 'border-zinc-200 dark:border-zinc-700'}
+                bg-main-bg
+            `}
+            style={{ borderColor: color }}
+        >
+            <span
+                className="text-base font-bold"
+                style={{ color: color || 'inherit' }}
+            >
+                A
+            </span>
+        </div>
+    );
+
     const currentColor = useEditorState({
         editor,
         selector: (ctx) => ctx.editor.getAttributes('textStyle').color,
@@ -60,18 +79,28 @@ const ColorPicker = ({ editor }) => {
 
     return (
         <div className="relative inline-block">
-            {/* Main button */}
+            {/* Main Button */}
             <button
                 ref={refs.setReference}
                 {...getReferenceProps()}
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="cursor-pointer flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
+                className="cursor-pointer flex items-center gap-1.5 p-1 px-2 bg-main-bg rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
                 title={t('editor.toolbar.text_color')}
             >
                 <div
-                    className={`w-6 h-6 border border-black/10 rounded-full ${!currentColor ? 'bg-checkerboard' : ''}`}
-                    style={{ backgroundColor: currentColor }}
-                />
+                    className={`
+                        flex items-center justify-center w-7 h-7 rounded-full border transition-all
+                        bg-main-bg
+                        ${!currentColor ? 'border-zinc-400 dark:border-zinc-500' : ''}
+                    `}
+                    style={{ borderColor: currentColor }}
+                >
+                    <span
+                        className={`text-base font-bold ${!currentColor ? 'text-black dark:text-white' : ''}`}
+                        style={{ color: currentColor }}
+                    >
+                        A
+                    </span>
+                </div>
                 <DropdownArrow menuOpen={menuOpen} defaultRotateAngle={0} />
             </button>
 
@@ -81,52 +110,63 @@ const ColorPicker = ({ editor }) => {
                     ref={refs.setFloating}
                     style={floatingStyles}
                     {...getFloatingProps()}
-                    className="absolute z-20 p-2 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
+                    className="z-50 p-2 bg-main-bg border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* Color presets container */}
                     <div className="flex items-center gap-1.5">
-                        {presets.map(({ name, color }) => (
-                            <button
-                                key={color}
-                                onClick={() => {
-                                    editor.chain().focus().setColor(color).run();
-                                    setMenuOpen(false); // Opcional: cerrar al elegir
-                                }}
-                                className={`cursor-pointer w-6 h-6 rounded-full border transition-all hover:scale-110 active:scale-95 ${editor.isActive('textStyle', { color })
-                                        ? 'ring-2 ring-blue-500 border-white'
-                                        : 'border-transparent'
-                                    }`}
-                                style={{ backgroundColor: color }}
-                                title={name}
-                            />
-                        ))}
-                    </div>
-
-                    {/* divisor */}
-                    <div className="w-px h-6 bg-gray-200 dark:bg-zinc-600" />
-
-                    {/* custom color selector */}
-                    <div className="flex items-center gap-2">
-                        <div className="relative w-8 h-8 overflow-hidden border border-gray-300 dark:border-zinc-500 rounded-md shadow-sm">
-                            <input
-                                type="color"
-                                onInput={e => editor.chain().focus().setColor(e.target.value).run()}
-                                value={currentColor}
-                                className="absolute inset-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer"
-                            />
-                        </div>
-
-                        {/* Reset button */}
+                        {/* Default option (Black/White based on theme) */}
                         <button
                             onClick={() => {
                                 editor.chain().focus().unsetColor().run();
                                 setMenuOpen(false);
                             }}
-                            className="cursor-pointer p-1 text-[10px] uppercase tracking-wider font-bold text-gray-400 hover:text-red-500 transition-colors"
+                            className="cursor-pointer group relative"
+                            title={t('common.default')}
                         >
-                            Reset
+                            <div className={`
+                                flex items-center justify-center w-7 h-7 rounded-full border transition-all
+                                ${!currentColor ? 'border-primary ring-1 ring-primary/30' : 'border-zinc-200 dark:border-zinc-700'}
+                                bg-white dark:bg-black
+                            `}>
+                                <span className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                                    A
+                                </span>
+                            </div>
                         </button>
+
+                        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1" />
+
+                        {/* Presets */}
+                        {presets.map(({ name, color }) => (
+                            <button
+                                key={color}
+                                onClick={() => {
+                                    editor.chain().focus().setColor(color).run();
+                                    setMenuOpen(false);
+                                }}
+                                className="cursor-pointer hover:scale-110 active:scale-95 transition-transform"
+                                title={name}
+                            >
+                                <ColorCircle
+                                    color={color}
+                                    isActive={currentColor === color}
+                                />
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700" />
+
+                    {/* Custom selector */}
+                    <div className="flex items-center gap-2">
+                        <div className="relative w-7 h-7 overflow-hidden rounded-full border border-zinc-300 dark:border-zinc-600 shadow-inner group hover:scale-110 transition-transform">
+                            <input
+                                type="color"
+                                onInput={e => editor.chain().focus().setColor(e.target.value).run()}
+                                value={currentColor || '#000000'}
+                                className="absolute inset-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer"
+                            />
+                        </div>
                     </div>
                 </div>
             )}
