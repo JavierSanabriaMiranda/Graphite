@@ -1,6 +1,6 @@
 import Database from '@tauri-apps/plugin-sql';
 import setupScript from './setup.sql?raw';
-import { getWelcomeNote } from './welcomeContent';
+import { getWelcomeNote } from './pre_designed_pages/welcomeContent';
 import i18next from 'i18next';
 
 let db = null;
