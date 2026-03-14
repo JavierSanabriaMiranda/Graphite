@@ -100,7 +100,7 @@ const getSuggestionConfig = (t, createSubnote) => ({
         searchTerms: t('editor.slash.to-do.search').split(','),
         icon: TodoIcon,
         command: ({ editor, range }) => {
-          editor.chain().focus().deleteRange(range).setToggle().run();
+          editor.chain().focus().deleteRange(range).toggleTaskList().run();
         },
       },
       {
