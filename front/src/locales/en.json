@@ -1,7 +1,9 @@
 {
     "common": {
         "cancel": "Cancel",
-        "delete": "Delete"
+        "delete": "Delete",
+        "no_result": "No results",
+        "search": "Search..."
     },
     "editor": {
         "placeholder": "Write something incredible...",

@@ -2,7 +2,8 @@
     "common": {
         "cancel": "Cancelar",
         "delete": "Borrar",
-        "no_result": "No hay resultados"
+        "no_result": "No hay resultados",
+        "search": "Buscar..."
     },
     "editor": {
         "placeholder": "Escribe algo increíble...",

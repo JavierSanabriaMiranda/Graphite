@@ -1,11 +1,7 @@
-import { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    useFloating, autoUpdate, offset, flip, shift, useClick,
-    useDismiss, useRole, useInteractions, FloatingPortal, FloatingFocusManager
-} from '@floating-ui/react';
-import DropdownArrow from './util/DropdownArrow';
 import { useNote } from './context/NoteContext';
+import SearchablePicker from './util/SearchablePicker';
 
 const OPTIONS = [
     { id: 'p', label: 'editor.toolbar.block_type.normal_text', icon: 'M4 6h16M4 12h16M4 18h7' },
@@ -53,13 +49,6 @@ const Icon = ({ d, id, className = "w-4 h-4" }) => (
     </svg>
 );
 
-// Selection check icon
-const CheckIcon = () => (
-    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="20 6 9 17 4 12" />
-    </svg>
-);
-
 /**
  * TextTypeSelector component that allows the user to select the text type of the current 
  * block (paragraph, heading 1, heading 2, callout...). Opens a floating menu to select the text type
@@ -71,55 +60,14 @@ const CheckIcon = () => (
 const TextTypeSelector = ({ editor, state }) => {
     const { t } = useTranslation();
     const { selectNote, createSubnote } = useNote();
-    const [isOpen, setIsOpen] = useState(false);
-    const [search, setSearch] = useState('');
 
-    // Floating UI setup for the floating menu
-    const { refs, floatingStyles, context } = useFloating({
-        open: isOpen,
-        onOpenChange: setIsOpen,
-        middleware: [offset(6), flip(), shift()],
-        whileElementsMounted: autoUpdate,
-    });
-
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-        useClick(context),
-        useDismiss(context),
-        useRole(context),
-    ]);
-
-    /**
-     * Normalizes text to remove accents
-     * 
-     * @param {String} text to normalize
-     * @returns 
-     */
-    const normalizeText = (text) => {
-        return text
-            .toLowerCase()
-            .normalize("NFD") // Turns 'ó' -> 'o' + '´')
-            .replace(/[\u0300-\u036f]/g, "") // Remove accent char
-            .trim();
-    };
-
-    /**
-     * Represents the options shown with the search filter (all options if not filter specified)
-     */
-    const filteredOptions = useMemo(() => {
-        // Normalizes the search
-        const normalizedSearch = normalizeText(search);
-
-        return OPTIONS.filter(opt => {
-            // Translate and normalize option label
-            const translatedLabel = t(opt.label);
-            const normalizedLabel = normalizeText(translatedLabel);
-
-            // Compare both clean texts
-            return normalizedLabel.includes(normalizedSearch);
-        });
-    }, [search, t]);
-
-    const currentOption = OPTIONS.find(opt => opt.id === state.currentTextType) || OPTIONS[0];
+    const pickerItems = useMemo(() => {
+        return OPTIONS.map(opt => ({
+            value: opt.id,
+            label: t(opt.label),
+            icon: <Icon d={opt.icon} id={opt.id} />
+        }));
+    }, [t]);
 
     /**
      * Changes the texttype on the editor
@@ -146,67 +94,20 @@ const TextTypeSelector = ({ editor, state }) => {
         setSearch('');
     };
 
+    const currentOption = OPTIONS.find(opt => opt.id === state.currentTextType) || OPTIONS[0];
+
     return (
-        <>
-            {/* Selection button */}
-            <button
-                ref={refs.setReference}
-                {...getReferenceProps()}
-                className="cursor-pointer flex items-center justify-between gap-2 min-w-30 p-1.5 px-3 bg-app-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-text-primary outline-none focus:ring-2 focus:ring-primary/50"
-                title={t('editor.toolbar.block_type.text_type')}
-            >
-                <span className="truncate">{t(currentOption.label)}</span>
-                <DropdownArrow menuOpen={isOpen} defaultRotateAngle={0} />
-            </button>
-
-            <FloatingPortal>
-                <FloatingFocusManager context={context} modal={false} style={{ visibility: isOpen ? 'visible' : 'hidden' }}>
-                    <div
-                        ref={refs.setFloating}
-                        style={{ ...floatingStyles, visibility: isOpen ? 'visible' : 'hidden' }}
-                        {...getFloatingProps()}
-                        className="z-9999 w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-2xl overflow-hidden outline-none animate-in fade-in zoom-in-95 duration-100"
-                    >
-                        {/* Searching Area */}
-                        <div className="p-2 border-b border-zinc-100 dark:border-zinc-800">
-                            <input
-                                autoFocus
-                                placeholder={t('editor.toolbar.block_type.search')}
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="w-full p-2 text-sm bg-zinc-50 dark:bg-zinc-800 border-none rounded-md outline-none focus:ring-1 focus:ring-primary dark:text-zinc-200"
-                            />
-                        </div>
-                        {/* Texttype options */}
-                        <div className="max-h-72 overflow-y-auto p-1 custom-scrollbar">
-                            {filteredOptions.length > 0 ?
-                                (
-                                    filteredOptions.map((opt) => (
-                                        <button
-                                            key={opt.id}
-                                            onClick={() => handleSelect(opt.id)}
-                                            className={`cursor-pointer w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors
-                      ${state.currentTextType === opt.id
-                                                    ? 'bg-primary/10 text-primary'
-                                                    : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-text-primary'}
-                    `}
-                                        >
-                                            <Icon d={opt.icon} id={opt.id} />
-                                            <span className="flex-1 text-left">{t(opt.label)}</span>
-                                            {state.currentTextType === opt.id && <CheckIcon />}
-                                        </button>
-                                    ))
-
-                                ) : (
-                                    <div className="p-4 text-center text-xs text-zinc-400 italic">
-                                        {t('editor.toolbar.block_type.search_not_found')}
-                                    </div>
-                                )}
-                        </div>
-                    </div>
-                </FloatingFocusManager>
-            </FloatingPortal>
-        </>
+        <SearchablePicker
+            items={pickerItems}
+            value={state.currentTextType}
+            onSelect={handleSelect}
+            buttonLabel={t(currentOption.label)}
+            placeholder={t('editor.toolbar.block_type.search')}
+            width="w-64"
+            placement="bottom-start"
+            buttonClassName="cursor-pointer flex items-center justify-between gap-2 min-w-30 p-1.5 px-3 bg-app-bg border border-zinc-200 dark:border-zinc-700 rounded-md shadow-sm text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-text-primary outline-none focus:ring-2 focus:ring-primary/50"
+            fontSize="text-sm"
+        />
     );
 };
 
