@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
 import NavItem from './NavItem';
+import SettingsModal from './configuration_menu/SettingsModal';
 
 const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
     const { t } = useTranslation();
@@ -11,6 +12,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
 
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     // Updates root notes when changing workspace or when a note changes it's icon or title
     useEffect(() => {
@@ -47,7 +49,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                     </div>
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="p-1 hover:bg-hover-primary-bg rounded transition-colors"
+                        className="cursor-pointer p-1 hover:bg-hover-primary-bg rounded transition-colors"
                     >
                         <PanelLeft
                             className={`w-4.5 h-4.5 transition-colors ${isOpen ? 'text-primary' : 'text-text-primary'}`}
@@ -56,7 +58,10 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                 </div>
 
                 <div className="p-3">
-                    <button className="w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all">
+                    <button
+                        onClick={() => setIsSettingsOpen(true)}
+                        className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
+                    >
                         <Settings className="w-4 h-4" />
                         <span>{t('sidebar.configuration')}</span>
                     </button>
@@ -84,13 +89,19 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                 <div className="p-3 border-t border-gray-300 dark:border-zinc-700">
                     <button
                         onClick={createRootNote}
-                        className="w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
+                        className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
                     >
                         <Plus className="w-3.5 h-3.5" />
                         <span>{t('sidebar.new_note')}</span>
                     </button>
                 </div>
             </aside>
+
+            {/* Settings modal */}
+            <SettingsModal
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
+            />
 
             {/* Blur effect if sidebar is floating */}
             {!isOpen && isHovered && (

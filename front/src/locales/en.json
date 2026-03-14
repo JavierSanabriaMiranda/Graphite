@@ -157,6 +157,15 @@
         "new_note": "New page",
         "loading": "Loading..."
     },
+    "settings": {
+        "title": "Settings",
+        "general": "General",
+        "language": {
+            "title": "App Language",
+            "description": "Select the language for Graphite's interface.",
+            "search": "Search language"
+        }
+    },
     "emojis": {
         "emojis": "Emoji",
         "search": "Search emoji...",

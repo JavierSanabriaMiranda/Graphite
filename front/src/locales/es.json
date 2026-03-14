@@ -157,6 +157,15 @@
         "new_note": "Nueva página",
         "loading": "Cargando..."
     },
+    "settings": {
+        "title": "Ajustes",
+        "general": "General",
+        "language": {
+            "title": "Idioma de la aplicación",
+            "description": "Selecciona el idioma para la interfaz de Graphite.",
+            "search": "Buscar idioma"
+        }
+    },
     "emojis": {
         "emoji": "Emoji",
         "search": "Buscar emoji...",
