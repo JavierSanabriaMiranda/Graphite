@@ -1,7 +1,7 @@
 import { ReactRenderer } from '@tiptap/react';
 import { computePosition, flip, shift, offset } from '@floating-ui/dom';
 import { Quote, Heading1, Heading2, Heading3, FileText, Code } from 'lucide-react';
-import { ToggleIcon } from '../advanced_blocks/ToggleBlock/ToggleIcon';
+import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
 import { TodoIcon } from '../lists/TodoList';
 import { NumberedListIcon } from '../lists/NumberedListSelector';
 import { BulletedListIcon } from '../lists/BulletSelector';

@@ -9,7 +9,7 @@ import NumberedListSelector from './lists/NumberedListSelector';
 import TodoList from './lists/TodoList';
 import TextTypeSelector from './TextTypeSelector';
 import FontSelector from './FontSelector';
-import { ToggleIcon } from './advanced_blocks/ToggleBlock/ToggleIcon';
+import { ToggleIcon } from './advanced_blocks/toggle_block/ToggleIcon';
 
 /**
  * Top menu component that allows the user to edit the written text with the given tools

@@ -38,9 +38,9 @@ import MenuBar from './MenuBar'
 import PathBar from './PathBar';
 import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
 import { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent'
-import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
-import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
-import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
+import { ToggleBlock } from './advanced_blocks/toggle_block/ToggleBlock'
+import { ToggleTitle } from './advanced_blocks/toggle_block/ToggleTitle'
+import { ToggleContent } from './advanced_blocks/toggle_block/ToggleContent'
 import EmojiPicker from './util/EmojiPicker'
 import NoteIcon from './NoteIcon'
 import { PageBlock } from './advanced_blocks/PageBlockComponent';
