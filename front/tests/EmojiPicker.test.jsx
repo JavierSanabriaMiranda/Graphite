@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import EmojiPicker from './EmojiPicker';
+import EmojiPicker from '../src/components/util/EmojiPicker';
 
 window.HTMLElement.prototype.scrollTo = vi.fn();
 
