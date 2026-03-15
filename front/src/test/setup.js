@@ -13,8 +13,10 @@ afterEach(() => {
 
 // Mock of browser APIs that JSDOM doesn't have
 // For example Floating UI sometimes needs ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
+global.ResizeObserver = vi.fn().mockImplementation(function() {
+    return {
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+    };
+});
