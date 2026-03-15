@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import SearchablePicker from '../src/components/util/SearchablePicker';
+import SearchablePicker from '../../../src/components/util/SearchablePicker';
 
 const mockItems = [
   { value: 'es', label: 'Español' },

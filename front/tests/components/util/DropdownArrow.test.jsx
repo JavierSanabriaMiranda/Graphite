@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import DropdownArrow from '../src/components/util/DropdownArrow';
+import DropdownArrow from '../../../src/components/util/DropdownArrow';
 
 describe('DropdownArrow', () => {
     
