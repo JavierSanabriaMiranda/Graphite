@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { AlertTriangle } from 'lucide-react';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
-import { useToast } from '../util/ToastContext';
+import { useToast } from '../context/ToastContext';
 import { FloatingPortal } from '@floating-ui/react';
 
 const DeleteConfirmModal = ({ isOpen, onClose, noteToDelete, onConfirm }) => {

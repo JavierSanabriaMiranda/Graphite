@@ -51,7 +51,7 @@ import getSuggestionConfig from './slash_commands/suggestions';
 
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
-import { useToast } from './util/ToastContext';
+import { useToast } from './context/ToastContext';
 
 const TiptapEditor = () => {
   const { t } = useTranslation();

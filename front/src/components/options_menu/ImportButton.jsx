@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useToast } from '../util/ToastContext';
+import { useToast } from '../context/ToastContext';
 
 /**
  * Component to import a JSON file with the content of the editor and set it as the current content. 

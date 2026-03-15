@@ -66,3 +66,8 @@ src/main/resources/secrets.properties
 ### --- OS Specific ---
 .DS_Store
 Thumbs.db
+
+# Testing and Coverage
+coverage/
+test-report.xml
+*.lcov
