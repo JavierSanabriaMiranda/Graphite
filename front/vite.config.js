@@ -12,16 +12,22 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.js',
+    setupFiles: './tests/setup.js',
+    include: ['tests/**/*.{test,spec}.{js,jsx}'],
     // Sonarqube configuration
     reporters: ['default', 'junit'],
     outputFile: {
-      junit: './test-report.xml', // Execution report
+      junit: './test-report.xml',
     },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'], // 'lcov' format for sonarqube
       reportsDirectory: './coverage',
+      exclude: [
+        'node_modules/**',
+        'tests/setup.js',
+        '**/*.test.jsx',
+      ],
     },
   }
 })

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import ChangeThemeButton from './ChangeThemeButton';
+import ChangeThemeButton from '../src/components/util/ChangeThemeButton';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
