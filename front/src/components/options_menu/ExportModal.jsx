@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FloatingPortal } from '@floating-ui/react';
-import { useToast } from '../util/ToastContext';
+import { useToast } from '../context/ToastContext';
 
 /**
  * Modal component that allows the user to export the content of the editor in different formats (JSON or HTML).

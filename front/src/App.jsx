@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import TiptapEditor from './components/TiptapEditor';
-import { ToastProvider } from './components/util/ToastContext';
+import { ToastProvider } from './components/context/ToastContext';
 import Sidebar from './components/Sidebar';
 import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';

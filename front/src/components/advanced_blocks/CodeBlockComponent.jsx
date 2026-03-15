@@ -16,7 +16,7 @@ import {
 } from '@floating-ui/react';
 import DropdownArrow from '../util/DropdownArrow';
 import SearchablePicker from '../util/SearchablePicker';
-import { useToast } from '../util/ToastContext';
+import { useToast } from '../context/ToastContext';
 
 /**
  * Custom code block component with syntax highlighting, a language selector and a copy content button
