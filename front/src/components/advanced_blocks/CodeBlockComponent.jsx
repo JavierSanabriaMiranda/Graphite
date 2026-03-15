@@ -24,7 +24,7 @@ import { useToast } from '../context/ToastContext';
  * @param {} param0 
  * @returns 
  */
-const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
+export const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
 
     const { t } = useTranslation();
     const { language } = node.attrs;

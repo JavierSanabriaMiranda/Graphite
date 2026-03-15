@@ -5,7 +5,7 @@ import DropdownArrow from "../../util/DropdownArrow";
 /**
  * Component to wrap content into a hidden structure composed by a title and the hidden content
  */
-const ToggleBlockComponent = ({ node, updateAttributes }) => {
+export const ToggleBlockComponent = ({ node, updateAttributes }) => {
   const { isOpen } = node.attrs;
 
   return (

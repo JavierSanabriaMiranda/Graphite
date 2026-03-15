@@ -6,8 +6,8 @@ import { Node } from '@tiptap/core';
 export const ToggleTitle = Node.create({
   name: 'toggleTitle',
   group: 'block',
-  content: 'inline*', // Solo texto
-  selectable: false, // Se selecciona a través del padre
+  content: 'inline*', 
+  selectable: false, 
   parseHTML: () => [{ tag: 'div[data-type="toggle-title"]' }],
   renderHTML: ({ HTMLAttributes }) => ['div', { 'data-type': 'toggle-title' }, 0],
 
@@ -21,7 +21,7 @@ export const ToggleTitle = Node.create({
 
         // Verify not text selected, cursor at the beginning of the node and is a ToggleTitle
         if (!isTitle || !empty || $from.parentOffset !== 0) {
-          return false; // No hacemos nada, que siga el borrado normal
+          return false;
         }
 
         // If not text selected, cursor at the beginning and toggleTitle, do an unsetToggle
