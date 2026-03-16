@@ -79,10 +79,20 @@ describe('TiptapEditor Component', () => {
         });
 
         mockEditor = {
-            commands: { setContent: vi.fn() },
+            commands: {
+                setContent: vi.fn(),
+                focus: vi.fn(),
+            },
             getJSON: vi.fn().mockReturnValue({ type: 'doc', content: [] }),
-            view: { updateState: vi.fn() },
-            state: { plugins: [], doc: {} },
+            view: {
+                updateState: vi.fn(),
+                dispatch: vi.fn()
+            },
+            state: {
+                plugins: [],
+                doc: {},
+                selection: { $from: { pos: 0 } }
+            },
             schema: { nodeFromJSON: vi.fn().mockReturnValue({}) },
         };
 
@@ -99,6 +109,61 @@ describe('TiptapEditor Component', () => {
             await vi.advanceTimersByTimeAsync(10);
         });
     };
+
+    it('should focus the editor at the start when a new note is loaded', async () => {
+        render(<TiptapEditor />);
+        await waitForInitialLoad();
+
+        expect(mockEditor.commands.focus).toHaveBeenCalledWith('start');
+    });
+
+    it('should navigate from Title to Editor when Enter or ArrowDown is pressed', async () => {
+        render(<TiptapEditor />);
+        await waitForInitialLoad();
+
+        const titleInput = screen.getByDisplayValue('Test Note');
+
+        // Try Enter
+        fireEvent.keyDown(titleInput, { key: 'Enter' });
+        expect(mockEditor.commands.focus).toHaveBeenCalledWith('start');
+
+        // Try ArrowDown
+        fireEvent.keyDown(titleInput, { key: 'ArrowDown' });
+        expect(mockEditor.commands.focus).toHaveBeenCalledWith('start');
+    });
+
+    it('should navigate from Editor to Title when ArrowUp is pressed at position 0', async () => {
+        render(<TiptapEditor />);
+        await waitForInitialLoad();
+
+        // get handleKeyDown
+        const editorOptions = useEditor.mock.calls[0][0];
+        const handleKeyDown = editorOptions.editorProps.handleKeyDown;
+
+        const titleInput = screen.getByDisplayValue('Test Note');
+
+        // Create spies for DOM input methods
+        const focusSpy = vi.spyOn(titleInput, 'focus');
+        const selectSpy = vi.spyOn(titleInput, 'select');
+
+        // Simulate ProseMirror event
+        const mockView = {
+            state: {
+                selection: { $from: { pos: 0 } } // We are at beginning
+            }
+        };
+        const mockEvent = { key: 'ArrowUp' };
+
+        // Execute handler
+        let handled;
+        act(() => {
+            handled = handleKeyDown(mockView, mockEvent);
+        });
+
+        expect(handled).toBe(true);
+        expect(focusSpy).toHaveBeenCalled();
+        expect(selectSpy).toHaveBeenCalled();
+    });
 
     it('should update the note title on blur', async () => {
         noteService.update.mockResolvedValue({ success: true });

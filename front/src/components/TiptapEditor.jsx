@@ -1,7 +1,7 @@
 import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState, useRef } from 'react'
-import i18next, { t } from 'i18next'
+import i18next from 'i18next'
 import { Trash2 } from 'lucide-react';
 
 import { EditorState } from '@tiptap/pm/state';
@@ -65,6 +65,7 @@ const TiptapEditor = () => {
   const [isPageLoading, setIsPageLoading] = useState(false);
 
   const saveTimeoutRef = useRef(null);
+  const titleRef = useRef(null);
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -196,6 +197,24 @@ const TiptapEditor = () => {
         // Tailwind classes for the editor content area
         class: 'prose dark:prose-invert prose-slate max-w-none focus:outline-none p-8 min-h-[500px] transition-colors duration-300',
       },
+      // When using ArrowUp at the beginning of the editor, change focus to title
+      handleKeyDown: (view, event) => {
+        if (event.key === 'ArrowUp') {
+          const { state } = view;
+          const { selection } = state;
+          const { $from } = selection;
+
+          // Check if cursor is at first block
+          // $from.pos <= 1 means we are at beginning of page
+          if ($from.pos <= 1) {
+            titleRef.current?.focus();
+            // Selects the title for easy change
+            titleRef.current?.select();
+            return true;
+          }
+        }
+        return false; 
+      },
     },
   })
 
@@ -230,8 +249,8 @@ const TiptapEditor = () => {
         });
 
         editor.view.updateState(newState);
-
         setIsPageLoading(false)
+        editor.commands.focus('start');
 
       } catch (error) {
         console.error("Critical error while loading:", error);
@@ -270,6 +289,14 @@ const TiptapEditor = () => {
   const handleTitleChange = async (e) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
+  };
+
+  // When pressing Enter or ArrowDown on title, goes to the start of editor
+  const handleTitleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      editor.commands.focus('start'); // Goes to start of editor
+    }
   };
 
   // Saves title on db
@@ -394,11 +421,12 @@ const TiptapEditor = () => {
 
             {/* Title */}
             <input
+              ref={titleRef}
               type="text"
               value={title}
               onChange={handleTitleChange}
               onBlur={saveTitle} // Save when losing focus
-              onKeyDown={(e) => e.key === 'Enter' && e.target.blur()} // Save using enter
+              onKeyDown={handleTitleKeyDown} // Save using enter
               placeholder={t('editor.no_title_placeholder')}
               className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all"
             />

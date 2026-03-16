@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import { Node, mergeAttributes } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
@@ -16,6 +17,16 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
     const [noteData, setNoteData] = useState(null);
     const [checking, setChecking] = useState(true);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    // Reference to external div to control focus
+    const containerRef = useRef(null);
+
+    // Effect to get focus when selecting page block
+    useEffect(() => {
+        if (selected && containerRef.current) {
+            containerRef.current.focus();
+        }
+    }, [selected]);
 
     // Checks note status to remove the node if note has been removed
     useEffect(() => {
@@ -63,7 +74,8 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            selectNote(note);
+            e.stopPropagation();
+            selectNote(noteData);
         }
     };
 
@@ -75,6 +87,7 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
             contentEditable={false}
         >
             <div
+                ref={containerRef}
                 role="button"
                 tabIndex={0}
                 onClick={() => selectNote(noteData)}
