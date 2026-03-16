@@ -32,6 +32,7 @@
     "@tiptap/pm": "^3.19.0",
     "@tiptap/react": "^3.19.0",
     "@tiptap/starter-kit": "^3.19.0",
+    "@tiptap/suggestion": "^3.20.2",
     "i18next": "^25.8.13",
     "i18next-browser-languagedetector": "^8.2.1",
     "lowlight": "^3.3.0",
