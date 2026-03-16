@@ -32,7 +32,7 @@ const EmptyState = ({ onCreateNote }) => {
         </h3>
         
         <p className="text-zinc-500 dark:text-zinc-500 text-sm max-w-70 text-center mb-8 italic">
-            {t('editor.empty_state.description') || 'Selecciona una nota para empezar a escribir'}
+            {t('editor.empty_state.description') || 'Choose a page to start writing'}
         </p>
 
         <button
