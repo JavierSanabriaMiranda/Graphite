@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 
@@ -17,10 +17,21 @@ const NoteContext = createContext();
 export const NoteProvider = ({ children, workspace }) => {
     const { t } = useTranslation();
     const [selectedNote, setSelectedNote] = useState(null);
-
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    const selectedNoteRef = useRef(selectedNote);
+    const workspaceRef = useRef(workspace)
+
+    // sync refs when state changes
+    useEffect(() => {
+        selectedNoteRef.current = selectedNote;
+    }, [selectedNote]);
+
+    useEffect(() => {
+        workspaceRef.current = workspace;
+    }, [workspace]);
 
     /**
      * Increments the refresh counter.
@@ -67,17 +78,21 @@ export const NoteProvider = ({ children, workspace }) => {
     */
     const createSubnote = useCallback(async (parentId = null) => {
         // If no ID, use the current selected note
-        const effectiveParentId = parentId || selectedNote?.note_id;
+        const currentWorkspace = workspaceRef.current;
+        const effectiveParentId = parentId || selectedNoteRef.current?.note_id;
 
-        if (!workspace || !effectiveParentId) {
-            console.warn("Cannot create subnote: Missing workspace or parent ID");
+        if (!currentWorkspace || !effectiveParentId) {
+            console.warn("Cannot create subnote: Missing workspace or parent ID", {
+                workspace: !!currentWorkspace,
+                parentId: !!effectiveParentId
+            });
             return null;
         }
 
         try {
             const title = t('editor.untitled_note') || 'Untitled';
             const newNoteId = await noteService.create(
-                workspace.workspace_id,
+                currentWorkspace.workspace_id,
                 title,
                 effectiveParentId
             );
@@ -89,7 +104,7 @@ export const NoteProvider = ({ children, workspace }) => {
             console.error("Error creating subnote:", error);
             return null;
         }
-    }, [workspace, selectedNote, t, triggerRefresh]);
+    }, [t, triggerRefresh]);
 
     // Context value object containing the state and the updater functions
     const value = {

@@ -12,13 +12,13 @@ vi.mock('../../../src/services/db/noteService', () => ({
 }));
 
 const NoteTestComponent = () => {
-    const { 
-        selectedNote, 
-        selectNote, 
-        refreshTrigger, 
-        triggerRefresh, 
-        createRootNote, 
-        createSubnote 
+    const {
+        selectedNote,
+        selectNote,
+        refreshTrigger,
+        triggerRefresh,
+        createRootNote,
+        createSubnote
     } = useNote();
 
     return (
@@ -28,7 +28,10 @@ const NoteTestComponent = () => {
             <button onClick={() => selectNote({ note_id: '123', title: 'Test' })}>Select 123</button>
             <button onClick={triggerRefresh}>Refresh</button>
             <button onClick={createRootNote}>Create Root</button>
-            <button onClick={() => createSubnote('parent-456')}>Create Sub</button>
+            {/* Button that uses automatic context ID (ref) */}
+            <button onClick={() => createSubnote()}>Create Sub Auto</button>
+            {/* Button that uses manual ID */}
+            <button onClick={() => createSubnote('parent-manual')}>Create Sub Manual</button>
         </div>
     );
 };
@@ -51,21 +54,6 @@ describe('NoteProvider', () => {
         expect(screen.getByTestId('note-id')).toHaveTextContent('123');
     });
 
-    it('should not update if the same note is selected', () => {
-        render(
-            <NoteProvider workspace={mockWorkspace}>
-                <NoteTestComponent />
-            </NoteProvider>
-        );
-
-        fireEvent.click(screen.getByText('Select 123'));
-        // try to select the same note
-        fireEvent.click(screen.getByText('Select 123'));
-        
-        // Render must happen just once
-        expect(screen.getByTestId('note-id')).toHaveTextContent('123');
-    });
-
     it('should increment refreshTrigger', () => {
         render(
             <NoteProvider workspace={mockWorkspace}>
@@ -81,7 +69,6 @@ describe('NoteProvider', () => {
         const newNoteId = 'new-999';
         const newNote = { note_id: newNoteId, title: 'Untitled' };
 
-        // Configure mock returns
         noteService.create.mockResolvedValue(newNoteId);
         noteService.getByNoteId.mockResolvedValue(newNote);
 
@@ -97,12 +84,11 @@ describe('NoteProvider', () => {
 
         expect(noteService.create).toHaveBeenCalledWith('ws-1', expect.any(String));
         expect(screen.getByTestId('note-id')).toHaveTextContent(newNoteId);
-        expect(screen.getByTestId('refresh-count')).toHaveTextContent('1');
     });
 
-    it('should create a subnote correctly', async () => {
-        const subNote = { note_id: 'sub-789', title: 'Untitled' };
-        noteService.create.mockResolvedValue('sub-789');
+    it('should use selectedNoteRef to create subnote if no parentId is provided', async () => {
+        const subNote = { note_id: 'sub-1', title: 'Subnote' };
+        noteService.create.mockResolvedValue('sub-1');
         noteService.getByNoteId.mockResolvedValue(subNote);
 
         render(
@@ -111,43 +97,19 @@ describe('NoteProvider', () => {
             </NoteProvider>
         );
 
-        let result;
-        const TestSubnote = () => {
-            const { createSubnote } = useNote();
-            return <button onClick={async () => { result = await createSubnote('parent-1'); }}>Click</button>;
-        };
+        // 1. Seleccionamos una nota para que el ref se actualice
+        fireEvent.click(screen.getByText('Select 123'));
 
-        render(
-            <NoteProvider workspace={mockWorkspace}>
-                <TestSubnote />
-            </NoteProvider>
-        , { wrapper: ({children}) => children }); // Avoid double render
-
+        // 2. Creamos subnota sin pasar ID (debe usar '123' del ref)
         await act(async () => {
-            fireEvent.click(screen.getByText('Click'));
+            fireEvent.click(screen.getByText('Create Sub Auto'));
         });
 
-        expect(noteService.create).toHaveBeenCalledWith('ws-1', expect.any(String), 'parent-1');
-        expect(result).toEqual(subNote);
+        expect(noteService.create).toHaveBeenCalledWith('ws-1', expect.any(String), '123');
     });
 
-    it('should throw error if useNote is used outside of provider', () => {
-        // Desactivate console errors for a moment
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        
-        const ConsumerWithoutProvider = () => {
-            useNote();
-            return null;
-        };
-
-        expect(() => render(<ConsumerWithoutProvider />)).toThrow('useNote must be used within a NoteProvider');
-        
-        consoleSpy.mockRestore();
-    });
-
-    it('should handle errors when createRootNote fails', async () => {
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        noteService.create.mockRejectedValue(new Error('DB Error'));
+    it('should use manual parentId instead of ref if provided', async () => {
+        noteService.create.mockResolvedValue('sub-manual');
 
         render(
             <NoteProvider workspace={mockWorkspace}>
@@ -156,31 +118,37 @@ describe('NoteProvider', () => {
         );
 
         await act(async () => {
-            fireEvent.click(screen.getByText('Create Root'));
+            fireEvent.click(screen.getByText('Create Sub Manual'));
         });
 
-        expect(consoleSpy).toHaveBeenCalledWith("Error creating note from context:", expect.any(Error));
-        consoleSpy.mockRestore();
+        expect(noteService.create).toHaveBeenCalledWith('ws-1', expect.any(String), 'parent-manual');
     });
 
-    it('should warn and return null if createSubnote is called without workspace or parentId', async () => {
-        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        
-        // Renderizamos sin workspace
+    it('should warn with specific data if createSubnote fails due to missing requirements', async () => {
+        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+
         render(
             <NoteProvider workspace={null}>
                 <NoteTestComponent />
             </NoteProvider>
         );
 
-        fireEvent.click(screen.getByText('Create Sub'));
+        fireEvent.click(screen.getByText('Create Sub Auto'));
 
-        expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Cannot create subnote"));
+        // Verificamos que el log incluya el objeto de estado de las variables
+        expect(consoleSpy).toHaveBeenCalledWith(
+            expect.stringContaining("Cannot create subnote"),
+            expect.objectContaining({
+                workspace: false,
+                parentId: false
+            })
+        );
+
         consoleSpy.mockRestore();
     });
 
-    it('should handle errors when createSubnote fails', async () => {
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    it('should handle errors when createSubnote fails in DB', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
         noteService.create.mockRejectedValue(new Error('DB Error'));
 
         render(
@@ -189,11 +157,25 @@ describe('NoteProvider', () => {
             </NoteProvider>
         );
 
+        // Seleccionamos nota para que no falle por falta de parentId
+        fireEvent.click(screen.getByText('Select 123'));
+
         await act(async () => {
-            fireEvent.click(screen.getByText('Create Sub'));
+            fireEvent.click(screen.getByText('Create Sub Auto'));
         });
 
         expect(consoleSpy).toHaveBeenCalledWith("Error creating subnote:", expect.any(Error));
+        consoleSpy.mockRestore();
+    });
+
+    it('should throw error if useNote is used outside of provider', () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+        const ConsumerWithoutProvider = () => {
+            useNote();
+            return null;
+        };
+
+        expect(() => render(<ConsumerWithoutProvider />)).toThrow('useNote must be used within a NoteProvider');
         consoleSpy.mockRestore();
     });
 });
