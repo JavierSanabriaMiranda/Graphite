@@ -33,8 +33,6 @@ export const TodoIcon = () => {
  * @param {Object} editor - The editor instance
  */
 const TodoList = ({ editor }) => {
-    if (!editor) return null;
-
     const { t } = useTranslation();
 
     const isTodoListActive = useEditorState({
@@ -42,16 +40,18 @@ const TodoList = ({ editor }) => {
         selector: (ctx) => ctx.editor.isActive('taskList'),
     });
 
+    if (!editor) return null;
+
     return (
         <button
             type="button"
             onClick={() => editor.chain().focus().toggleTaskList().run()}
             className={`cursor-pointer p-2 rounded-lg transition-colors ${isTodoListActive
-                    ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-md'
-                    : 'text-black dark:text-white hover:bg-hover-primary-bg'}`}
+                ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-md'
+                : 'text-black dark:text-white hover:bg-hover-primary-bg'}`}
             title={t('editor.toolbar.todo_list')}
         >
-            <TodoIcon/>
+            <TodoIcon />
         </button>
     );
 }

@@ -17,14 +17,14 @@ import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
  * @param {Object} editor - The editor instance
  */
 const MenuBar = ({ editor }) => {
-  if (!editor) return null;
-
   const { t } = useTranslation();
 
   const state = useEditorState({
     editor,
     selector: menuBarStateSelector,
   });
+
+  if (!editor) return null;
 
   const getBtnClass = (isActive) => `
     cursor-pointer px-3 py-1.5 rounded transition-all duration-200 text-sm font-medium
@@ -48,7 +48,7 @@ const MenuBar = ({ editor }) => {
 
         {getDivisor()}
 
-      { /* Format buttons group */}
+        { /* Format buttons group */}
         <div className="flex items-center gap-2 flex-nowrap">
           <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={getBtnClass(state.isBold)}><b>B</b></button>
           <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={getBtnClass(state.isItalic)}><i>I</i></button>

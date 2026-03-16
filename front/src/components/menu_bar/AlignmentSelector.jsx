@@ -19,32 +19,7 @@ import {
  * @param {Object} editor - The editor instance 
  */
 const AlignmentSelector = ({ editor }) => {
-    if (!editor) return null;
-
     const { t } = useTranslation();
-
-    const alignments = [
-        { 
-            name: 'Left', 
-            value: 'left', 
-            icon: <path d="M3 6h18M3 12h10M3 18h18" /> 
-        },
-        { 
-            name: 'Center', 
-            value: 'center', 
-            icon: <path d="M3 6h18M7 12h10M3 18h18" /> 
-        },
-        { 
-            name: 'Right', 
-            value: 'right', 
-            icon: <path d="M3 6h18M11 12h10M3 18h18" /> 
-        },
-        { 
-            name: 'Justified', 
-            value: 'justify', 
-            icon: <path d="M3 6h18M3 12h18M3 18h18" /> 
-        },
-    ];
 
     // Detect current alignment state
     const currentAlign = useEditorState({
@@ -58,6 +33,31 @@ const AlignmentSelector = ({ editor }) => {
     });
 
     const [menuOpen, setMenuOpen] = useState(false);
+
+    if (!editor) return null;
+
+    const alignments = [
+        {
+            name: 'Left',
+            value: 'left',
+            icon: <path d="M3 6h18M3 12h10M3 18h18" />
+        },
+        {
+            name: 'Center',
+            value: 'center',
+            icon: <path d="M3 6h18M7 12h10M3 18h18" />
+        },
+        {
+            name: 'Right',
+            value: 'right',
+            icon: <path d="M3 6h18M11 12h10M3 18h18" />
+        },
+        {
+            name: 'Justified',
+            value: 'justify',
+            icon: <path d="M3 6h18M3 12h18M3 18h18" />
+        },
+    ];
 
     const currentIcon = alignments.find(a => a.value === currentAlign)?.icon;
 
@@ -90,15 +90,15 @@ const AlignmentSelector = ({ editor }) => {
                 className="cursor-pointer flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
                 title={t('editor.toolbar.alignment')}
             >
-                <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="20" height="20" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="text-text-primary"
                 >
                     {currentIcon}
@@ -123,21 +123,20 @@ const AlignmentSelector = ({ editor }) => {
                                 editor.chain().focus().setTextAlign(align.value).run();
                                 setMenuOpen(false);
                             }}
-                            className={`cursor-pointer p-2 rounded-lg transition-all flex items-center justify-center ${
-                                currentAlign === align.value
+                            className={`cursor-pointer p-2 rounded-lg transition-all flex items-center justify-center ${currentAlign === align.value
                                     ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-sm'
                                     : 'hover:bg-hover-primary-bg text-text-primary'
-                            }`}
+                                }`}
                             title={align.name}
                         >
-                            <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                width="20" height="20" 
-                                viewBox="0 0 24 24" 
-                                fill="none" 
-                                stroke="currentColor" 
-                                strokeWidth="2" 
-                                strokeLinecap="round" 
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20" height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
                                 strokeLinejoin="round"
                             >
                                 {align.icon}

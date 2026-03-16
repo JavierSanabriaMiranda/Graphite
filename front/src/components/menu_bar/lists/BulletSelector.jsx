@@ -14,11 +14,11 @@ import {
 } from '@floating-ui/react';
 
 export const BulletedListIcon = ({ className }) => (
-    <svg 
-        viewBox="0 0 24 24" 
-        fill="none" 
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={className} 
+        className={className}
     >
         <g fill="currentColor">
             <circle cx="4" cy="5" r="2" />
@@ -39,9 +39,20 @@ export const BulletedListIcon = ({ className }) => (
  * @param {Object} editor - The editor instance 
  */
 const BulletSelector = ({ editor }) => {
-    if (!editor) return null;
-
     const { t } = useTranslation();
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const currentStyle = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.getAttributes('bulletList').listStyle || 'default',
+    });
+
+    const isBulletActive = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.isActive('bulletList'),
+    });
+
+    if (!editor) return null;
 
     // Icons for the different bullet styles
     const options = [
@@ -113,18 +124,6 @@ const BulletSelector = ({ editor }) => {
             )
         },
     ];
-
-    const currentStyle = useEditorState({
-        editor,
-        selector: (ctx) => ctx.editor.getAttributes('bulletList').listStyle || 'default',
-    });
-
-    const isBulletActive = useEditorState({
-        editor,
-        selector: (ctx) => ctx.editor.isActive('bulletList'),
-    });
-
-    const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleStyle = (styleId) => {
         if (!isBulletActive) {

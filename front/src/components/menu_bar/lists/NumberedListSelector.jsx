@@ -66,9 +66,21 @@ export const NumberedListIcon = ({ className }) => (
  * @param {Object} editor - The editor instance 
  */
 const NumberedListSelector = ({ editor }) => {
-    if (!editor) return null;
-
     const { t } = useTranslation();
+
+    const currentStyle = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.getAttributes('orderedList').listStyle || 'default',
+    });
+
+    const isOrderedActive = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.isActive('orderedList'),
+    });
+
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    if (!editor) return null;
 
     const options = [
         {
@@ -128,18 +140,6 @@ const NumberedListSelector = ({ editor }) => {
             )
         },
     ];
-
-    const currentStyle = useEditorState({
-        editor,
-        selector: (ctx) => ctx.editor.getAttributes('orderedList').listStyle || 'default',
-    });
-
-    const isOrderedActive = useEditorState({
-        editor,
-        selector: (ctx) => ctx.editor.isActive('orderedList'),
-    });
-
-    const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleStyle = (styleId) => {
         if (!isOrderedActive) {

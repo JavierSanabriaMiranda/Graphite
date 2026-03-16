@@ -21,9 +21,15 @@ import {
  * @returns 
  */
 const HighlightPicker = ({ editor }) => {
-    if (!editor) return null;
-
     const { t } = useTranslation();
+    const currentColor = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.getAttributes('highlight').color,
+    });
+
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    if (!editor) return null;
 
     const presets = [
         { name: t('editor.toolbar.color.red'), color: '#ef4444' },
@@ -44,7 +50,7 @@ const HighlightPicker = ({ editor }) => {
             style={!isReset ? { borderColor: color } : {}}
         >
             {/* Background layer (Color or Checkerboard) */}
-            <div 
+            <div
                 className={`absolute inset-0 ${isReset ? 'bg-checkerboard' : ''}`}
                 style={{ backgroundColor: color, opacity: isReset ? 1 : 0.7 }}
             />
@@ -59,13 +65,6 @@ const HighlightPicker = ({ editor }) => {
             )}
         </div>
     );
-
-    const currentColor = useEditorState({
-        editor,
-        selector: (ctx) => ctx.editor.getAttributes('highlight').color,
-    });
-
-    const [menuOpen, setMenuOpen] = useState(false);
 
     // Positioning and interactions with Floating UI
     const { refs, floatingStyles, context } = useFloating({

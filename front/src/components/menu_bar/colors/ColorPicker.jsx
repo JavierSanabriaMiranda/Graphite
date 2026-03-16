@@ -21,9 +21,16 @@ import {
  * @returns 
  */
 const ColorPicker = ({ editor }) => {
-    if (!editor) return null;
-
     const { t } = useTranslation();
+
+    const currentColor = useEditorState({
+        editor,
+        selector: (ctx) => ctx.editor.getAttributes('textStyle').color,
+    });
+
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    if (!editor) return null;
 
     const presets = [
         { name: t('editor.toolbar.color.red'), color: '#ef4444' },
@@ -51,13 +58,6 @@ const ColorPicker = ({ editor }) => {
             </span>
         </div>
     );
-
-    const currentColor = useEditorState({
-        editor,
-        selector: (ctx) => ctx.editor.getAttributes('textStyle').color,
-    });
-
-    const [menuOpen, setMenuOpen] = useState(false);
 
     // Positioning and interactions with Floating UI
     const { refs, floatingStyles, context } = useFloating({
