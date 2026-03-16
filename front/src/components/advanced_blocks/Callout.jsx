@@ -8,7 +8,7 @@ import EmojiPicker from '../util/EmojiPicker';
  * It can be toggled with the "toggleCallout" command, which will wrap the selected text
  * into a callout or take it out if it's already inside one.
  */
-const CalloutComponent = (props) => {
+export const CalloutComponent = (props) => {
   const { node, updateAttributes } = props;
   const emojiValue = node.attrs.emoji || '💡';
   const isSvg = emojiValue.length > 10;

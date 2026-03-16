@@ -34,17 +34,17 @@ import { Callout } from './advanced_blocks/Callout'
 
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
-import MenuBar from './MenuBar'
+import MenuBar from './menu_bar/MenuBar'
 import PathBar from './PathBar';
 import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
 import { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent'
-import { ToggleBlock } from './advanced_blocks/ToggleBlock/ToggleBlock'
-import { ToggleTitle } from './advanced_blocks/ToggleBlock/ToggleTitle'
-import { ToggleContent } from './advanced_blocks/ToggleBlock/ToggleContent'
+import { ToggleBlock } from './advanced_blocks/toggle_block/ToggleBlock'
+import { ToggleTitle } from './advanced_blocks/toggle_block/ToggleTitle'
+import { ToggleContent } from './advanced_blocks/toggle_block/ToggleContent'
 import EmojiPicker from './util/EmojiPicker'
-import NoteIcon from './NoteIcon'
+import NoteIcon from './util/NoteIcon'
 import { PageBlock } from './advanced_blocks/PageBlockComponent';
-import EmptyState from './EmptyState';
+import EmptyState from './util/EmptyState';
 import { BlockMoving } from './extensions/BlockMoving';
 import { Commands } from './slash_commands/Commands';
 import getSuggestionConfig from './slash_commands/suggestions';

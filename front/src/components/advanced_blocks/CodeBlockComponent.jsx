@@ -1,40 +1,19 @@
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react';
 import { mergeAttributes } from '@tiptap/core'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    useFloating,
-    offset,
-    flip,
-    shift,
-    autoUpdate,
-    useInteractions,
-    useClick,
-    useDismiss,
-    FloatingPortal
-} from '@floating-ui/react';
-import DropdownArrow from '../util/DropdownArrow';
 import SearchablePicker from '../util/SearchablePicker';
 import { useToast } from '../context/ToastContext';
 
 /**
  * Custom code block component with syntax highlighting, a language selector and a copy content button
- * 
- * @param {} param0 
- * @returns 
  */
-const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
+export const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
 
     const { t } = useTranslation();
     const { language } = node.attrs;
     const { showToast } = useToast();
-
-    const [isOpen, setIsOpen] = useState(false);
-    const [search, setSearch] = useState('');
-    const [activeIndex, setActiveIndex] = useState(0); // For navigating with arrow keys
-    const inputRef = useRef(null);
-    const scrollRef = useRef(null);
 
     const languageNames = {
         'c': 'C',
