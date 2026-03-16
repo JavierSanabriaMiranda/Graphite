@@ -21,10 +21,11 @@ vi.mock('../../../src/services/db/noteService', () => ({
 }));
 
 vi.mock('../../../src/components/options_menu/DeleteConfirmModal', () => ({
+    // Asegúrate de que los botones tengan nombres claros
     default: ({ isOpen, onConfirm, onClose }) => isOpen ? (
         <div data-testid="modal">
-            <button onClick={onConfirm}>Confirm</button>
-            <button onClick={onClose}>Close</button>
+            <button onClick={onConfirm}>Confirm Delete</button>
+            <button onClick={onClose}>Cancel</button>
         </div>
     ) : null,
 }));
@@ -92,7 +93,7 @@ describe('PageBlockComponent', () => {
         noteService.getByNoteId.mockResolvedValue(noteData);
 
         render(<PageBlockComponent {...mockProps} />);
-        
+
         const block = await screen.findByText('Test');
         fireEvent.click(block);
 
@@ -103,15 +104,19 @@ describe('PageBlockComponent', () => {
         noteService.getByNoteId.mockResolvedValue({ note_id: 'note-123', title: 'Test' });
 
         render(<PageBlockComponent {...mockProps} />);
-        
-        const trashBtn = await screen.findByRole('button'); // Trash button
+
+        const trashBtn = await screen.findByRole('button', { name: /common.delete/i });
         fireEvent.click(trashBtn);
 
-        // Confirm on modal
-        const confirmBtn = screen.getByText('Confirm');
+        // Verify modal has been opened
+        expect(screen.getByTestId('modal')).toBeInTheDocument();
+
+        const confirmBtn = screen.getByRole('button', { name: /confirm delete/i });
         fireEvent.click(confirmBtn);
 
         expect(mockProps.editor.view.dispatch).toHaveBeenCalled();
+
+        expect(mockProps.editor.state.tr.setMeta).toHaveBeenCalledWith('forceDeletePageBlock', true);
     });
 });
 
@@ -133,9 +138,9 @@ describe('PageBlock Extension & Protection Plugin', () => {
         });
 
         it('should allow transaction if forceDeletePageBlock meta is present', () => {
-            const tr = { 
-                docChanged: true, 
-                getMeta: vi.fn().mockReturnValue(true) 
+            const tr = {
+                docChanged: true,
+                getMeta: vi.fn().mockReturnValue(true)
             };
             const result = plugin.spec.filterTransaction(tr, {});
             expect(result).toBe(true);
@@ -146,10 +151,10 @@ describe('PageBlock Extension & Protection Plugin', () => {
             const state = {
                 doc: { descendants: (cb) => { cb({ type: nodeType }); cb({ type: nodeType }); } }
             };
-            const tr = { 
-                docChanged: true, 
+            const tr = {
+                docChanged: true,
                 getMeta: vi.fn().mockReturnValue(false),
-                doc: { descendants: (cb) => { cb({ type: nodeType }); } } 
+                doc: { descendants: (cb) => { cb({ type: nodeType }); } }
             };
 
             const result = plugin.spec.filterTransaction(tr, state);

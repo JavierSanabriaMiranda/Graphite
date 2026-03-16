@@ -45,12 +45,13 @@ describe('SettingsModal Component', () => {
         expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it('should call onClose when the backdrop is clicked', () => {
-        const { container } = render(<SettingsModal isOpen={true} onClose={mockOnClose} />);
+    it('should call onClose when the backdrop is clicked', async () => {
+        const mockOnClose = vi.fn();
+        render(<SettingsModal isOpen={true} onClose={mockOnClose} />);
 
-        // El backdrop es el primer div dentro del contenedor fijo
-        const backdrop = container.querySelector('.bg-black\\/40');
-        fireEvent.click(backdrop);
+        const backdrop = document.querySelector('.animate-in');
+
+        fireEvent.mouseDown(backdrop);
 
         expect(mockOnClose).toHaveBeenCalledTimes(1);
     });

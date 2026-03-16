@@ -125,12 +125,19 @@ describe('DeleteConfirmModal', () => {
         consoleSpy.mockRestore();
     });
 
-    it('should call onClose when clicking the backdrop', () => {
-        const { container } = render(<DeleteConfirmModal isOpen={true} onClose={mockOnClose} />);
+    it('should call onClose when clicking the backdrop', async () => {
+        const mockOnClose = vi.fn();
+        render(
+            <DeleteConfirmModal
+                isOpen={true}
+                onClose={mockOnClose}
+                noteToDelete={{ title: 'Test Note' }}
+            />
+        );
+        const backdrop = document.querySelector('.animate-in');
 
-        const backdrop = container.querySelector('.bg-black\\/60');
-        fireEvent.click(backdrop);
+        fireEvent.mouseDown(backdrop);
 
-        expect(mockOnClose).toHaveBeenCalled();
+        expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 });

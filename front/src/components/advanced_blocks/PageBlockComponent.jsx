@@ -3,12 +3,14 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { useEffect, useState } from 'react';
 import { Trash2, FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NoteIcon from '../util/NoteIcon';
 import DeleteConfirmModal from '../options_menu/DeleteConfirmModal';
 
 const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
+    const { t } = useTranslation();
     const { noteId } = node.attrs;
     const { selectNote, refreshTrigger } = useNote();
     const [noteData, setNoteData] = useState(null);
@@ -101,7 +103,8 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
                         e.stopPropagation(); // Avoid navigate to page
                         setIsDeleteModalOpen(true);
                     }}
-                    className="opacity-0 group-hover/page:opacity-100 p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-zinc-400 hover:text-red-600 rounded-md transition-all"
+                    className="cursor-pointer opacity-0 group-hover/page:opacity-100 p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-zinc-400 hover:text-red-600 rounded-md transition-all"
+                    title={t('common.delete') || "Delete"}
                 >
                     <Trash2 className="w-4 h-4" />
                 </button>
