@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { noteService } from '../../../src/services/db/noteService';
 import { getDB } from '../../../src/services/db';
 
-vi.mock('../../../src/services/db/index', () => ({
+vi.mock('../../../src/services/db', () => ({
     getDB: vi.fn(),
 }));
 

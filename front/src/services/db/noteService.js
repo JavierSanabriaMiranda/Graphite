@@ -1,4 +1,4 @@
-import { getDB } from './index';
+import { getDB } from '.';
 
 const emptyContent = JSON.stringify({
     type: 'doc',

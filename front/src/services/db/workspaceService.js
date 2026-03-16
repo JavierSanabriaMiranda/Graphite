@@ -1,4 +1,4 @@
-import { getDB } from './index';
+import { getDB } from '.';
 
 /**
  * Service for CRUD operations in Workspaces table

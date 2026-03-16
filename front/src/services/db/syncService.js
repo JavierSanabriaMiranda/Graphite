@@ -1,4 +1,4 @@
-import { getDB } from './index';
+import { getDB } from '.';
 
 /**
  * syncService - Handles integrity and cleans the syncronized data

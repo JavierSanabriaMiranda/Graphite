@@ -16,31 +16,44 @@ const splitSqlCommands = (sqlScript) => {
     let currentStatement = '';
     let inString = false;
     let blockLevel = 0;
+    let i = 0;
 
-    // Remove SQL comments to avoid confusion during parsing
-    const cleanScript = sqlScript.replace(/--.*$/gm, '');
+    while (i < sqlScript.length) {
+        const char = sqlScript[i];
 
-    for (let i = 0; i < cleanScript.length; i++) {
-        const char = cleanScript[i];
+        // 1. Handle single-line comments (-- comment)
+        // If we find '--' and we are not inside a string, skip until newline
+        if (!inString && char === '-' && sqlScript[i + 1] === '-') {
+            while (i < sqlScript.length && sqlScript[i] !== '\n') {
+                i++;
+            }
+            continue;
+        }
 
-        // Check for strings
+        // 2. Handle strings ('text')
         if (char === "'") {
             inString = !inString;
         }
 
-        // Check for BEGIN/END blocks (case insensitive)
+        // 3. Handle BEGIN/END blocks (case insensitive)
         if (!inString) {
-            const nextFive = cleanScript.substring(i, i + 5).toUpperCase();
-            const nextThree = cleanScript.substring(i, i + 3).toUpperCase();
+            const nextFive = sqlScript.substring(i, i + 5).toUpperCase();
+            const nextThree = sqlScript.substring(i, i + 3).toUpperCase();
 
             if (nextFive === 'BEGIN') {
                 blockLevel++;
+                currentStatement += nextFive;
+                i += 5;
+                continue;
             } else if (nextThree === 'END') {
                 blockLevel--;
+                currentStatement += nextThree;
+                i += 3;
+                continue;
             }
         }
 
-        // Split logic
+        // 4. Split logic (Semicolon)
         if (char === ';' && !inString && blockLevel <= 0) {
             if (currentStatement.trim()) {
                 statements.push(currentStatement.trim());
@@ -49,6 +62,8 @@ const splitSqlCommands = (sqlScript) => {
         } else {
             currentStatement += char;
         }
+
+        i++;
     }
 
     if (currentStatement.trim()) {

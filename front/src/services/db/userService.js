@@ -1,4 +1,4 @@
-import { getDB } from './index';
+import { getDB } from '.';
 
 /**
  * userService - Manages the local identity and links it with cloud

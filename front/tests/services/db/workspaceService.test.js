@@ -3,7 +3,7 @@ import { workspaceService } from '../../../src/services/db/workspaceService';
 import { getDB } from '../../../src/services/db';
 
 // 1. Mock DB connection
-vi.mock('../../../src/services/db/index', () => ({
+vi.mock('../../../src/services/db', () => ({
     getDB: vi.fn(),
 }));
 
