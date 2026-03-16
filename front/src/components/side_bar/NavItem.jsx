@@ -14,7 +14,7 @@ import { useNote } from '../context/NoteContext';
  * @param {String} activeNoteId - Id of the current active note
  * @param {number} level - Level to calculate the padding of the NavItem 
  */
-const NavItem = ({ note, level = 0}) => {
+const NavItem = ({ note, level = 0 }) => {
     const { t } = useTranslation();
 
     const { selectedNote, selectNote, refreshTrigger } = useNote();
@@ -41,15 +41,25 @@ const NavItem = ({ note, level = 0}) => {
         }
     }, [isExpanded, note.note_id, subnotes.length, refreshTrigger]);
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectNote(note);
+        }
+    };
+
     const isActive = selectedNote?.note_id === note.note_id;
 
     return (
         <li>
             <div
+                role="button"
+                tabIndex={0}
                 className={`flex items-center gap-1 px-2 py-1 rounded-md cursor-pointer transition-all group
           ${isActive ? 'bg-primary/10 text-primary' : 'text-text-primary hover:bg-hover-primary-bg'}`}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
                 onClick={() => selectNote(note)}
+                onKeyDown={handleKeyDown}
             >
                 <button
                     onClick={(e) => {

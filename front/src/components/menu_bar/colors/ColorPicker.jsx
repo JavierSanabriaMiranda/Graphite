@@ -111,7 +111,6 @@ const ColorPicker = ({ editor }) => {
                     style={floatingStyles}
                     {...getFloatingProps()}
                     className="z-50 p-2 bg-main-bg border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-150"
-                    onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex items-center gap-1.5">
                         {/* Default option (Black/White based on theme) */}

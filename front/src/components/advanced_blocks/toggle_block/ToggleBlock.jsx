@@ -11,13 +11,14 @@ export const ToggleBlockComponent = ({ node, updateAttributes }) => {
   return (
     <NodeViewWrapper className={`toggle-block my-2 ${isOpen ? 'is-open' : 'is-closed'}`}>
       <div className="flex items-start">
-        <div
+        <button
+          type="button"
           contentEditable={false}
           onClick={() => updateAttributes({ isOpen: !isOpen })}
           className="mt-1 p-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded cursor-pointer shrink-0"
         >
           <DropdownArrow menuOpen={isOpen} defaultRotateAngle={-90} rotateAngle={0} />
-        </div>
+        </button>
 
         {/* NodeViewContent renderizará ToggleTitle y ToggleContent aquí */}
         <NodeViewContent className="flex-1" />
@@ -44,8 +45,8 @@ export const ToggleBlock = Node.create({
 
   renderHTML({ HTMLAttributes }) {
     return [
-      'div', 
-      mergeAttributes(HTMLAttributes, { 'data-type': 'toggle-block', class: 'toggle-block' }), 
+      'div',
+      mergeAttributes(HTMLAttributes, { 'data-type': 'toggle-block', class: 'toggle-block' }),
       0
     ];
   },

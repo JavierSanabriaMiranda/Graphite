@@ -113,7 +113,6 @@ const AlignmentSelector = ({ editor }) => {
                     style={floatingStyles}
                     {...getFloatingProps()}
                     className="absolute z-20 p-1.5 bg-main-bg border border-gray-200 dark:border-zinc-700 rounded-xl shadow-xl flex items-center gap-1 animate-in fade-in zoom-in duration-150"
-                    onClick={(e) => e.stopPropagation()}
                 >
                     {alignments.map((align) => (
                         <button
