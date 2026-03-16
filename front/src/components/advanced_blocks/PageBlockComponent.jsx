@@ -58,6 +58,13 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
         setIsDeleteModalOpen(false);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectNote(note);
+        }
+    };
+
     if (checking || !noteData) return null;
 
     return (
@@ -66,7 +73,10 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
             contentEditable={false}
         >
             <div
+                role="button"
+                tabIndex={0}
                 onClick={() => selectNote(noteData)}
+                onKeyDown={handleKeyDown}
                 className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border
                     ${selected
                         ? 'bg-primary/5 border-primary/30'

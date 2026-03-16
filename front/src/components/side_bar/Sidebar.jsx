@@ -29,6 +29,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
             {/* Sensor to detect mouse on left side */}
             {!isOpen && (
                 <div
+                    role="button"
                     onMouseEnter={() => setIsHovered(true)}
                     className="fixed top-0 left-0 z-40 h-full w-4 cursor-e-resize"
                 />

@@ -31,20 +31,25 @@ const SlashMenuList = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         onKeyDown: ({ event }) => {
+            if (props.items.length === 0) return false;
+
             if (event.key === 'ArrowUp') {
-                selectedIndex === 0 ? true :
-                setSelectedIndex((selectedIndex + props.items.length - 1) % props.items.length);
+                // Circular navigation: if at top, goes to bottom
+                setSelectedIndex(prev => (prev + props.items.length - 1) % props.items.length);
                 return true;
             }
+
             if (event.key === 'ArrowDown') {
-                selectedIndex === props.items.length-1 ? true :
-                setSelectedIndex((selectedIndex + 1) % props.items.length);
+                // Circular navigation: if at bottom, goes to top
+                setSelectedIndex(prev => (prev + 1) % props.items.length);
                 return true;
             }
+
             if (event.key === 'Enter') {
                 selectItem(selectedIndex);
                 return true;
             }
+
             return false;
         },
     }));

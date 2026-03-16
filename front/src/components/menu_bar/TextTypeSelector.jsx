@@ -77,7 +77,7 @@ const TextTypeSelector = ({ editor, state }) => {
     const handleSelect = async (val) => {
         const chain = editor.chain().focus();
         if (val === 'p') chain.setParagraph().run();
-        else if (val.startsWith('h')) chain.toggleHeading({ level: parseInt(val.replace('h', '')) }).run();
+        else if (val.startsWith('h')) chain.toggleHeading({ level: Number.parseInt(val.replace('h', '')) }).run();
         else if (val === 'quote') chain.toggleBlockquote().run();
         else if (val === 'callout') chain.toggleCallout().run();
         else if (val === 'code') chain.toggleCodeBlock().run();

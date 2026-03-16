@@ -48,11 +48,11 @@ const PathBar = ({ saveStatus, editor }) => {
         if (parts.length > 3) {
             return (
                 <div className="flex items-center gap-1.5 text-zinc-500 text-xs overflow-hidden">
-                    <span onClick={() => handlePathClick(parts, 0)} className="truncate max-w-45 hover:text-text-primary transition-colors cursor-default">{parts[0]}</span>
+                    <button onClick={() => handlePathClick(parts, 0)} className="truncate max-w-45 hover:text-text-primary transition-colors cursor-default">{parts[0]}</button>
                     <ChevronRight className="w-3 h-3 shrink-0 opacity-50" />
                     <span className="opacity-50">...</span>
                     <ChevronRight className="w-3 h-3 shrink-0 opacity-50" />
-                    <span onClick={() => handlePathClick(parts, part.length - 2)} className="truncate max-w-45 hover:text-text-primary transition-colors cursor-default">{parts[parts.length - 2]}</span>
+                    <button onClick={() => handlePathClick(parts, part.length - 2)} className="truncate max-w-45 hover:text-text-primary transition-colors cursor-default">{parts[parts.length - 2]}</button>
                     <ChevronRight className="w-3 h-3 shrink-0 text-primary/50" />
                     <span className="text-text-primary font-semibold truncate">{parts[parts.length - 1]}</span>
                 </div>
@@ -65,12 +65,12 @@ const PathBar = ({ saveStatus, editor }) => {
                     const isLast = index === parts.length - 1;
                     return (
                         <div key={index} className="flex items-center gap-1">
-                            <span
+                            <button
                                 className={segmentClass(isLast)}
                                 onClick={() => handlePathClick(parts, index)}
                             >
                                 {part}
-                            </span>
+                            </button>
                             {!isLast && <ChevronRight className="w-3 h-3 shrink-0 opacity-50" />}
                         </div>
                     );
