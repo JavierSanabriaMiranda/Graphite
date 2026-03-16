@@ -34,8 +34,6 @@ const AlignmentSelector = ({ editor }) => {
 
     const [menuOpen, setMenuOpen] = useState(false);
 
-    if (!editor) return null;
-
     const alignments = [
         {
             name: 'Left',
@@ -78,6 +76,8 @@ const AlignmentSelector = ({ editor }) => {
     const click = useClick(context);
     const dismiss = useDismiss(context);
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
+    if (!editor) return null;
 
     return (
         <div className="relative inline-block" >

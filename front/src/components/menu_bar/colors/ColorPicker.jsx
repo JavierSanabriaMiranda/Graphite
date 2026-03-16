@@ -30,8 +30,6 @@ const ColorPicker = ({ editor }) => {
 
     const [menuOpen, setMenuOpen] = useState(false);
 
-    if (!editor) return null;
-
     const presets = [
         { name: t('editor.toolbar.color.red'), color: '#ef4444' },
         { name: t('editor.toolbar.color.blue'), color: '#3b82f6' },
@@ -76,6 +74,8 @@ const ColorPicker = ({ editor }) => {
     const click = useClick(context);
     const dismiss = useDismiss(context);
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
+    if (!editor) return null;
 
     return (
         <div className="relative inline-block">

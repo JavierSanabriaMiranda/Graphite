@@ -52,8 +52,6 @@ const BulletSelector = ({ editor }) => {
         selector: (ctx) => ctx.editor.isActive('bulletList'),
     });
 
-    if (!editor) return null;
-
     // Icons for the different bullet styles
     const options = [
         {
@@ -153,6 +151,8 @@ const BulletSelector = ({ editor }) => {
     const click = useClick(context);
     const dismiss = useDismiss(context);
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
+    if (!editor) return null;
 
     return (
         <div className="relative inline-block" >

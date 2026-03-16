@@ -24,8 +24,6 @@ const MenuBar = ({ editor }) => {
     selector: menuBarStateSelector,
   });
 
-  if (!editor) return null;
-
   const getBtnClass = (isActive) => `
     cursor-pointer px-3 py-1.5 rounded transition-all duration-200 text-sm font-medium
     ${isActive
@@ -34,6 +32,8 @@ const MenuBar = ({ editor }) => {
   `;
 
   const getDivisor = () => <div className="w-px h-6 bg-gray-300 dark:bg-zinc-700 mx-1" />; // Divisor
+
+  if (!editor) return null;
 
   return (
     <div className="flex items-center justify-center gap-2 p-2 bg-main-bg border-b border-gray-300 dark:border-zinc-700 shrink-0">

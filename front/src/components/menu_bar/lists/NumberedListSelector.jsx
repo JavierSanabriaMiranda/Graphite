@@ -80,8 +80,6 @@ const NumberedListSelector = ({ editor }) => {
 
     const [menuOpen, setMenuOpen] = useState(false);
 
-    if (!editor) return null;
-
     const options = [
         {
             id: 'default',
@@ -169,6 +167,8 @@ const NumberedListSelector = ({ editor }) => {
     const click = useClick(context);
     const dismiss = useDismiss(context);
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
+    if (!editor) return null;
 
     return (
         <div className="relative inline-block">
