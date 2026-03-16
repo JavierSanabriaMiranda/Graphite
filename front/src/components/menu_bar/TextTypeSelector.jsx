@@ -89,9 +89,6 @@ const TextTypeSelector = ({ editor, state }) => {
                 selectNote(newNote);
             }
         }
-
-        setIsOpen(false);
-        setSearch('');
     };
 
     const currentOption = OPTIONS.find(opt => opt.id === state.currentTextType) || OPTIONS[0];
