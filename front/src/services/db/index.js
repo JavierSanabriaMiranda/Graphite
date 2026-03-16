@@ -6,6 +6,59 @@ import i18next from 'i18next';
 let db = null;
 
 /**
+ * Safely splits SQL commands by semicolon, ignoring semicolons inside
+ * single quotes and BEGIN...END blocks to prevent ReDoS attacks.
+ * * @param {string} sqlScript - The full SQL setup script
+ * @returns {string[]} Array of individual SQL statements
+ */
+const splitSqlCommands = (sqlScript) => {
+    const statements = [];
+    let currentStatement = '';
+    let inString = false;
+    let blockLevel = 0;
+
+    // Remove SQL comments to avoid confusion during parsing
+    const cleanScript = sqlScript.replace(/--.*$/gm, '');
+
+    for (let i = 0; i < cleanScript.length; i++) {
+        const char = cleanScript[i];
+
+        // Check for strings
+        if (char === "'") {
+            inString = !inString;
+        }
+
+        // Check for BEGIN/END blocks (case insensitive)
+        if (!inString) {
+            const nextFive = cleanScript.substring(i, i + 5).toUpperCase();
+            const nextThree = cleanScript.substring(i, i + 3).toUpperCase();
+
+            if (nextFive === 'BEGIN') {
+                blockLevel++;
+            } else if (nextThree === 'END') {
+                blockLevel--;
+            }
+        }
+
+        // Split logic
+        if (char === ';' && !inString && blockLevel <= 0) {
+            if (currentStatement.trim()) {
+                statements.push(currentStatement.trim());
+            }
+            currentStatement = '';
+        } else {
+            currentStatement += char;
+        }
+    }
+
+    if (currentStatement.trim()) {
+        statements.push(currentStatement.trim());
+    }
+
+    return statements;
+};
+
+/**
  * Connects to db and executes setup script
  */
 export const initializeDB = async () => {
@@ -22,9 +75,7 @@ export const initializeDB = async () => {
             if (tableExists.length === 0) {
                 console.log("Executing setup script...");
 
-                const queries = setupScript
-                    .split(/;(?=(?:[^']*'[^']*')*[^']*$)(?!(?:[^]*BEGIN[^]*?END)*[^]*?END)/gi)
-                    .filter(query => query.trim() !== '');
+                const queries = splitSqlCommands(setupScript);
 
                 for (const query of queries) {
                     await db.execute(query);
