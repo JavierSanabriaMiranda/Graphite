@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEditorState } from '@tiptap/react';
 import { useTranslation } from 'react-i18next';
-import DropdownArrow from '../util/DropdownArrow';
+import DropdownArrow from '../../util/DropdownArrow';
 import {
     useFloating,
     offset,

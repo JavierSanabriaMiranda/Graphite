@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import TodoList, { TodoIcon } from '../../../src/components/lists/TodoList';
+import TodoList, { TodoIcon } from '../../../../src/components/menu_bar/lists/TodoList';
 import { useEditorState } from '@tiptap/react';
 
 vi.mock('@tiptap/react', async () => {

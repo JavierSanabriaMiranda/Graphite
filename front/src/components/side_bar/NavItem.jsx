@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileText } from 'lucide-react';
-import DropdownArrow from './util/DropdownArrow';
-import NoteIcon from './NoteIcon';
-import { noteService } from '../services/db/noteService';
-import { useNote } from './context/NoteContext';
+import DropdownArrow from '../util/DropdownArrow';
+import NoteIcon from '../util/NoteIcon';
+import { noteService } from '../../services/db/noteService';
+import { useNote } from '../context/NoteContext';
 
 /**
  * Component that represents a page with its subnotes in the sidebar

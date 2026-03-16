@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNote } from './context/NoteContext';
-import SearchablePicker from './util/SearchablePicker';
+import { useNote } from '../context/NoteContext';
+import SearchablePicker from '../util/SearchablePicker';
 
 const OPTIONS = [
     { id: 'p', label: 'editor.toolbar.block_type.normal_text', icon: 'M4 6h16M4 12h16M4 18h7' },

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import HighlightPicker from '../../../src/components/colors/HighlightPicker';
+import HighlightPicker from '../../../../src/components/menu_bar/colors/HighlightPicker';
 import { useEditorState } from '@tiptap/react';
 
 vi.mock('@tiptap/react', async () => {

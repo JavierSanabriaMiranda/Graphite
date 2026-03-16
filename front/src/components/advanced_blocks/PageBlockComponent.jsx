@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Trash2, FileText } from 'lucide-react';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
-import NoteIcon from '../NoteIcon';
+import NoteIcon from '../util/NoteIcon';
 import DeleteConfirmModal from '../options_menu/DeleteConfirmModal';
 
 const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {

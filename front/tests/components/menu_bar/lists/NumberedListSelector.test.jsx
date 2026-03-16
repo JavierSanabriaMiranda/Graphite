@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import NumberedListSelector, { NumberedListIcon } from '../../../src/components/lists/NumberedListSelector';
+import NumberedListSelector, { NumberedListIcon } from '../../../../src/components/menu_bar/lists/NumberedListSelector';
 import { useEditorState } from '@tiptap/react';
 
 vi.mock('@tiptap/react', async () => {

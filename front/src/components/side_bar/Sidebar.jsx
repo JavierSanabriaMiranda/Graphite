@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { PanelLeft, Settings, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { noteService } from '../services/db/noteService';
-import { useNote } from './context/NoteContext';
+import { noteService } from '../../services/db/noteService';
+import { useNote } from '../context/NoteContext';
 import NavItem from './NavItem';
-import SettingsModal from './configuration_menu/SettingsModal';
+import SettingsModal from '../configuration_menu/SettingsModal';
 
 const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
     const { t } = useTranslation();

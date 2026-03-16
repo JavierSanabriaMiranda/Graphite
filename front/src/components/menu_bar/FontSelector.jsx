@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import SearchablePicker from './util/SearchablePicker';
+import SearchablePicker from '../util/SearchablePicker';
 
 const FONTS = [
     { id: 'Inter', label: 'Inter', type: 'sans' },
