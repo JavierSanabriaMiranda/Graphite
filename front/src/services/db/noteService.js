@@ -163,6 +163,7 @@ export const noteService = {
      */
     update: async (noteId, data) => {
         const db = await getDB();
+        const now = new Date().toISOString();
 
         // Path logic (if parent or title changes)
         if (data.title || 'parent_id' in data) {
@@ -186,14 +187,31 @@ export const noteService = {
                 return { error: 'COLLISION', message: 'Path already exists' };
             }
 
-            data.note_path = newPath;
+            // Update subnotes path
+            const oldPath = current.note_path;
+            if (oldPath !== newPath) {
+                await db.execute(`
+                UPDATE NOTES 
+                SET 
+                    note_path = $1 || SUBSTR(note_path, $2),
+                    is_dirty = 1,
+                    updated_at = $3
+                WHERE note_path LIKE $4 AND workspace_id = $5
+            `, [
+                    newPath,
+                    oldPath.length + 1,
+                    now,
+                    `${oldPath}/%`,
+                    current.workspace_id
+                ]);
+            }
 
-            // TODO: Update also path of the children
+            data.note_path = newPath;
         }
 
         // Mark as dirty when updating
         data.is_dirty = 1;
-        data.updated_at = new Date().toISOString();
+        data.updated_at = now;
 
         const fields = [];
         const values = [];

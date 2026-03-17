@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight } from 'lucide-react';
 import ChangeThemeButton from './util/ChangeThemeButton';
@@ -10,14 +11,30 @@ import { useNote } from './context/NoteContext';
  */
 const PathBar = ({ saveStatus, editor }) => {
     const { t } = useTranslation();
-    const { selectedNote: activeNote, selectNote: onNoteSelect } = useNote();
+    const { selectedNote: activeNote, selectNote: onNoteSelect, refreshTrigger } = useNote();
+    const [displayNote, setDisplayNote] = useState(activeNote);
+
+    // When selected note changes or refreshTrigger
+    // look for path on db
+    useEffect(() => {
+        const syncNoteData = async () => {
+            if (activeNote?.note_id) {
+                const freshNote = await noteService.getByNoteId(activeNote.note_id);
+                setDisplayNote(freshNote);
+            } else {
+                setDisplayNote(null);
+            }
+        };
+
+        syncNoteData();
+    }, [activeNote?.note_id, refreshTrigger]);
 
     // Handles the click on a path part to redirect to that note
     const handlePathClick = async (parts, index) => {
         // If current note (last part), do nothing
         if (index === parts.length - 1) return;
 
-        // Reconstruimos el path: ["Raiz", "Carpeta"] -> "/Raiz/Carpeta"
+        // Rebuild path: ["Root", "Folder"] -> "/Root/Folder"
         const subPathParts = parts.slice(0, index + 1);
         const targetPath = "/" + subPathParts.join("/");
 
@@ -27,38 +44,51 @@ const PathBar = ({ saveStatus, editor }) => {
                 onNoteSelect(targetNote);
             }
         } catch (error) {
-            console.error("Error al navegar por el path:", error);
+            console.error("Error while navigating :", error);
         }
     };
 
     // Logic for formatting path
     const renderBreadcrumbs = () => {
-        if (!activeNote?.note_path) return null;
+        if (!displayNote?.note_path) return null;
 
-        const parts = activeNote.note_path.split('/').filter(p => p !== '');
+        const parts = displayNote.note_path.split('/').filter(p => p !== '');
 
         const segmentClass = (isLast) => `
-            truncate transition-colors max-w-45
+            truncate transition-colors max-w-[180px]
             ${isLast
                 ? "text-text-primary font-semibold cursor-default"
                 : "hover:text-primary hover:bg-primary/10 px-1.5 py-0.5 rounded-md cursor-pointer"}
         `;
 
-        // If path is too deep, format it like this: "Root / ... / Parent / Current note"
+        // Case: Deep route (Breadcrumbs collapsed)
         if (parts.length > 3) {
             return (
                 <div className="flex items-center gap-1.5 text-zinc-500 text-xs overflow-hidden">
-                    <button onClick={() => handlePathClick(parts, 0)} className="truncate max-w-45 hover:text-text-primary transition-colors cursor-default">{parts[0]}</button>
+                    <button
+                        onClick={() => handlePathClick(parts, 0)}
+                        className="truncate max-w-37.5 hover:text-text-primary transition-colors"
+                    >
+                        {parts[0]}
+                    </button>
                     <ChevronRight className="w-3 h-3 shrink-0 opacity-50" />
-                    <span className="opacity-50">...</span>
+                    <span className="opacity-50 px-1">...</span>
                     <ChevronRight className="w-3 h-3 shrink-0 opacity-50" />
-                    <button onClick={() => handlePathClick(parts, part.length - 2)} className="truncate max-w-45 hover:text-text-primary transition-colors cursor-default">{parts[parts.length - 2]}</button>
+                    <button
+                        onClick={() => handlePathClick(parts, parts.length - 2)}
+                        className="truncate max-w-37.5 hover:text-text-primary transition-colors"
+                    >
+                        {parts[parts.length - 2]}
+                    </button>
                     <ChevronRight className="w-3 h-3 shrink-0 text-primary/50" />
-                    <span className="text-text-primary font-semibold truncate">{parts[parts.length - 1]}</span>
+                    <span className="text-text-primary font-semibold truncate">
+                        {parts[parts.length - 1]}
+                    </span>
                 </div>
             );
         }
 
+        // Caso: Normal route
         return (
             <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
                 {parts.map((part, index) => {
