@@ -164,7 +164,8 @@ describe('PathBar Component', () => {
         consoleSpy.mockRestore();
     });
 
-    it('should return null if there is no note path', async () => {
+    it('should not render any breadcrumb buttons if there is no note path', async () => {
+        // Setup mock state without path
         useNote.mockReturnValue({
             selectedNote: { note_path: null },
             selectNote: mockOnNoteSelect,
@@ -172,12 +173,22 @@ describe('PathBar Component', () => {
         });
         noteService.getByNoteId.mockResolvedValue({ note_path: null });
 
+        // Render component
         await act(async () => {
             render(<PathBar saveStatus="saved" editor={{}} />);
         });
 
-        // The first child of the component is the breadcrumb div
-        const breadcrumbZone = screen.queryByRole('button');
-        expect(breadcrumbZone).not.toBeInTheDocument();
+        // Check taht the only buttons present are the "Action" buttons (Theme and Options).
+        const allButtons = screen.getAllByRole('button');
+
+        // Filter buttons that are NOT the theme or options mocks
+        const breadcrumbButtons = allButtons.filter(btn =>
+            btn.textContent !== 'ThemeBtn' && btn.textContent !== 'Options'
+        );
+
+        // There should be 0 buttons belonging to the breadcrumb logic
+        expect(breadcrumbButtons).toHaveLength(0);
+
+        expect(screen.queryByText('Root')).not.toBeInTheDocument();
     });
 });

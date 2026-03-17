@@ -7,7 +7,6 @@ import { NumberedListIcon } from '../menu_bar/lists/NumberedListSelector';
 import { BulletedListIcon } from '../menu_bar/lists/BulletSelector';
 import SlashMenuList from './SlashMenuList';
 
-
 /**
  * Generates the configuration for the Tiptap Suggestion utility.
  * This factory function injects external dependencies needed for item localization 
@@ -15,9 +14,10 @@ import SlashMenuList from './SlashMenuList';
  *
  * @param {Function} t - The i18next translation function for localizing titles and search terms.
  * @param {Function} createSubnote - Asynchronous function to handle the creation of sub-pages in the database.
+ * @param {Function} selectNote - Function to handle changing note
  * @returns {Object} A configuration object containing 'items' (filtering logic) and 'render' (UI/Floating UI logic).
  */
-const getSuggestionConfig = (t, createSubnote) => ({
+const getSuggestionConfig = (t, createSubnote, selectNote) => ({
   items: ({ query }) => {
     const items = [
       {
@@ -60,6 +60,9 @@ const getSuggestionConfig = (t, createSubnote) => ({
           const newNote = await createSubnote();
           if (newNote) {
             editor.chain().focus().deleteRange(range).insertPageBlock(newNote.note_id).run();
+            if (selectNote) {
+              selectNote(newNote);
+            }
           }
         },
       },

@@ -57,7 +57,7 @@ const TiptapEditor = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote } = useNote();
+  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote } = useNote();
 
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
@@ -150,7 +150,7 @@ const TiptapEditor = () => {
       PageBlock,
       BlockMoving,
       Commands.configure({
-        suggestion: getSuggestionConfig(t, createSubnote),
+        suggestion: getSuggestionConfig(t, createSubnote, selectNote),
       }),
       Placeholder.configure({
         includeChildren: true,
