@@ -19,6 +19,7 @@
             "description": "No hay ninguna página seleccionada. Selecciona una o crea una nueva"
         },
         "toolbar": {
+            "tools": "Herramientas",
             "block_type": {
                 "text_type": "Tipo de texto",
                 "search": "Buscar estilo...",

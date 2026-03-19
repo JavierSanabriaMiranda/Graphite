@@ -19,6 +19,7 @@
             "description": "There's no page selected. Select one or create a new one"
         },
         "toolbar": {
+            "tools": "Tools",
             "block_type": {
                 "text_type": "Text type",
                 "search": "Search style...",

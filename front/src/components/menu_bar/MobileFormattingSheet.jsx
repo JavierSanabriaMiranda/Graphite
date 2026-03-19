@@ -1,27 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEditorState } from '@tiptap/react';
 import { useTranslation } from 'react-i18next';
 import {
-    Type, Bold, Italic, Underline, List, CheckSquare,
-    ChevronUp, Palette, Highlighter, AlignLeft, Strikethrough, Code, CodeXml, Heading1, Heading2, Heading3
+    TriangleAlert, Bold, Italic, Underline, List, CheckSquare, Quote,
+    FileText, Strikethrough, Code, CodeXml, Heading1, Heading2, Heading3
 } from 'lucide-react';
 import { ListOrderedIcon } from 'lucide-react';
 import { menuBarStateSelector } from '../util/menuBarStateSelector';
+import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
 import DropdownArrow from '../util/DropdownArrow';
+import { useNote } from '../context/NoteContext';
 
 const MobileFormattingSheet = ({ editor }) => {
     const { t } = useTranslation();
+    const { selectNote, createSubnote } = useNote();
     const [isExpanded, setIsExpanded] = useState(false);
+    const [bottomOffset, setBottomOffset] = useState(20);
     const state = useEditorState({ editor, selector: menuBarStateSelector });
+
+    // Use effect for adding bottom margin when keyboard has been opened
+    useEffect(() => {
+        if (!window.visualViewport) return;
+
+        const handleResize = () => {
+            const viewportHeight = window.visualViewport.height;
+            const windowHeight = window.innerHeight;
+
+            const offset = windowHeight - viewportHeight;
+            setBottomOffset(offset > 0 ? bottomOffset + 20 : 20);
+        };
+
+        window.visualViewport.addEventListener('resize', handleResize);
+        window.visualViewport.addEventListener('scroll', handleResize);
+
+        return () => {
+            window.visualViewport.removeEventListener('resize', handleResize);
+            window.visualViewport.removeEventListener('scroll', handleResize);
+        };
+    }, []);
 
     if (!editor) return null;
 
-    // Función para ejecutar comando y cerrar si es necesario
-    const run = (callback) => {
-        callback();
-        // Opcional: setIsExpanded(false); 
-    };
-
+    // Function to execute a command and close menu
     const handleGridItemClick = (action) => {
         action();
         setIsExpanded(false);
@@ -38,10 +58,13 @@ const MobileFormattingSheet = ({ editor }) => {
     const quickAccessItemClass = (isActive) => `p-2 rounded-lg ${isActive ? 'bg-primary/10 text-primary' : 'text-text-primary'}`
 
     return (
-        <div className="fixed bottom-5 left-0 w-full z-60 flex flex-col pointer-events-none">
+        <div
+            className="fixed left-0 w-full z-60 flex flex-col pointer-events-none transition-all duration-200 ease-out bottom-0"
+        >
 
-            {/* 1. BARRA DE ACCESO RÁPIDO (Sticky above keyboard area) */}
-            <div className="w-full bg-main-bg backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 p-2 flex items-center justify-around pointer-events-auto">
+            {/* Quickaccess bar */}
+            <div className="w-full bg-main-bg backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 p-2 flex items-center justify-around pointer-events-auto"
+                style={{ paddingBottom: `${bottomOffset}px` }} >
                 <button onClick={() => editor.chain().focus().toggleBold().run()} className={quickAccessItemClass(state.isBold)}>
                     <Bold className="w-4 h-4" />
                 </button>
@@ -66,7 +89,7 @@ const MobileFormattingSheet = ({ editor }) => {
                 </button>
             </div>
 
-            {/* 2. CAJÓN DE FORMATO (Grid 2 columnas) */}
+            {/* Menu with 2 columns */}
             {isExpanded && (
                 <div className="custom-scrollbar w-full bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-4 pointer-events-auto animate-in slide-in-from-bottom-full duration-300 ease-out h-[350px] overflow-y-auto">
                     <div className="flex justify-between items-center mb-4 px-2">
@@ -74,8 +97,8 @@ const MobileFormattingSheet = ({ editor }) => {
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                        {/* Grupo Títulos */}
-                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleHeading({ level: 1 }).run())}  className={gridItemClass(editor.isActive('heading', { level: 1 }))}>
+                        {/* Titles */}
+                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleHeading({ level: 1 }).run())} className={gridItemClass(editor.isActive('heading', { level: 1 }))}>
                             <Heading1 className="w-5 h-5" /> {t('editor.slash.h1.title')}
                         </button>
                         <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleHeading({ level: 2 }).run())} className={gridItemClass(editor.isActive('heading', { level: 2 }))}>
@@ -85,24 +108,42 @@ const MobileFormattingSheet = ({ editor }) => {
                             <Heading3 className="w-5 h-5" /> {t('editor.slash.h3.title')}
                         </button>
 
-                        {/* Grupo Bloques */}
-                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleCodeBlock().run())} className={gridItemClass(state.isCodeBlock)}>
+                        {/* Blocks */}
+                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleBlockquote().run())} className={gridItemClass(state.currentTextType === 'quote')}>
+                            <Quote className="w-4 h-4" /> {t('editor.slash.quote.title')}
+                        </button>
+                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleCodeBlock().run())} className={gridItemClass(state.currentTextType === 'codeBlock')}>
                             <Code className="w-4 h-4" /> {t('editor.slash.code.title')}
                         </button>
-                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleTaskList().run())} className={gridItemClass(state.isTaskList)}>
-                            <CheckSquare className="w-4 h-4" /> {t('editor.toolbar.todo_list')}
+                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleCallout().run())} className={gridItemClass(state.currentTextType === 'callout')}>
+                            <TriangleAlert className="w-4 h-4" /> {t('editor.slash.callout.title')}
+                        </button>
+                        <button onClick={() => handleGridItemClick(async () => {
+                            const newNote = await createSubnote();
+
+                            if (newNote) {
+                                editor.chain().insertPageBlock(newNote.note_id).run();
+                                selectNote(newNote);
+                            }
+                        })} className={gridItemClass(false)}>
+                            <FileText className="w-4 h-4" /> {t('editor.slash.page.title')}
                         </button>
 
-                        {/* Grupo Listas */}
+                        {/* Lists */}
                         <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleBulletList().run())} className={gridItemClass(state.isBulletList)}>
                             <List className="w-4 h-4" /> {t('editor.toolbar.bulleted_list.bulleted_list')}
                         </button>
                         <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleOrderedList().run())} className={gridItemClass(state.isOrderedList)}>
                             <ListOrderedIcon className="w-4 h-4" /> {t('editor.toolbar.ordered_list.ordered_list')}
                         </button>
+                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().toggleTaskList().run())} className={gridItemClass(state.isTaskList)}>
+                            <CheckSquare className="w-4 h-4" /> {t('editor.toolbar.todo_list')}
+                        </button>
+                        <button onClick={() => handleGridItemClick(() => state.isToggle ? editor.chain().focus().unsetToggle().run() : editor.chain().focus().setToggle().run())} className={gridItemClass(state.isToggle)}>
+                            <ToggleIcon className="w-4 h-4" /> {t('editor.toolbar.toggle_block')}
+                        </button>
                     </div>
 
-                    {/* Espaciador inferior para evitar que el sistema de navegación del móvil tape botones */}
                     <div className="h-8" />
                 </div>
             )}
