@@ -197,7 +197,7 @@ const TiptapEditor = () => {
     editorProps: {
       attributes: {
         // Tailwind classes for the editor content area
-        class: 'prose dark:prose-invert prose-slate max-w-none focus:outline-none p-8 min-h-[500px] transition-colors duration-300',
+        class: 'prose dark:prose-invert prose-slate max-w-none focus:outline-none p-8 min-h-[500px] transition-colors duration-300 break-words',
       },
       // When using ArrowUp at the beginning of the editor, change focus to title
       handleKeyDown: (view, event) => {
@@ -422,15 +422,17 @@ const TiptapEditor = () => {
             </div>
 
             {/* Title */}
-            <input
+            <textarea
               ref={titleRef}
-              type="text"
+              rows={1} // Start with just one row
               value={title}
               onChange={handleTitleChange}
-              onBlur={saveTitle} // Save when losing focus
-              onKeyDown={handleTitleKeyDown} // Save using enter
+              onBlur={saveTitle}
+              onKeyDown={handleTitleKeyDown}
               placeholder={t('editor.no_title_placeholder')}
-              className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all"
+              className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all resize-none overflow-hidden"
+              /* Makes text area grow */
+              style={{ fieldSizing: 'content' }}
             />
           </div>
 
