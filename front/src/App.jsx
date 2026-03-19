@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import TiptapEditor from './components/TiptapEditor';
 import { ToastProvider } from './components/context/ToastContext';
-import Sidebar from './components/side_bar/Sidebar';
+import Sidebar from './components/navigation/Sidebar';
 import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
 import { NoteProvider } from './components/context/NoteContext';

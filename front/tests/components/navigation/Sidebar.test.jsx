@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Sidebar from '../../../src/components/side_bar/Sidebar';
+import Sidebar from '../../../src/components/navigation/Sidebar';
 import { useNote } from '../../../src/components/context/NoteContext';
 import { noteService } from '../../../src/services/db/noteService';
 
@@ -19,7 +19,7 @@ vi.mock('../../../src/services/db/noteService', () => ({
 }));
 
 // Mock child components
-vi.mock('../../../src/components/side_bar/NavItem', () => ({
+vi.mock('../../../src/components/navigation/NavItem', () => ({
     default: ({ note }) => <div data-testid="nav-item">{note.title}</div>,
 }));
 
