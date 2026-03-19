@@ -56,6 +56,30 @@ const PathBar = ({ saveStatus, editor }) => {
 
         const parts = displayNote.note_path.split('/').filter(p => p !== '');
 
+        if (isMobile) {
+            const parentName = parts.length > 1 ? parts[parts.length - 2] : null;
+            const currentName = parts[parts.length - 1];
+
+            return (
+                <div className="flex items-center gap-1 text-xs overflow-hidden">
+                    {parentName && (
+                        <>
+                            <button
+                                onClick={() => handlePathClick(parts, parts.length - 2)}
+                                className="text-zinc-500 truncate max-w-20"
+                            >
+                                {parentName}
+                            </button>
+                            <ChevronRight className="w-3 h-3 shrink-0 opacity-30" />
+                        </>
+                    )}
+                    <span className="text-text-primary font-bold truncate">
+                        {currentName}
+                    </span>
+                </div>
+            );
+        }
+
         const segmentClass = (isLast) => `
             truncate transition-colors max-w-[180px]
             ${isLast
@@ -123,9 +147,11 @@ const PathBar = ({ saveStatus, editor }) => {
                 {/* Save status*/}
                 <div className="flex items-center gap-2">
                     <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${saveStatus === 'saving' ? 'bg-amber-500 animate-pulse' : 'bg-primary'}`} />
-                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
-                        {saveStatus === 'saving' ? t('editor.saving') : t('editor.saved')}
-                    </span>
+                    {!isMobile && (
+                        <span className="text-[10px] uppercase tracking-widest text-zinc-400 font-bold">
+                            {saveStatus === 'saving' ? t('editor.saving') : t('editor.saved')}
+                        </span>
+                    )}
                 </div>
 
                 {/* Actions */}
