@@ -430,8 +430,7 @@ const TiptapEditor = () => {
               onBlur={saveTitle}
               onKeyDown={handleTitleKeyDown}
               placeholder={t('editor.no_title_placeholder')}
-              className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all resize-none overflow-hidden"
-              /* Makes text area grow */
+              className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all resize-none overflow-hidden py-2 leading-tight"
               style={{ fieldSizing: 'content' }}
             />
           </div>

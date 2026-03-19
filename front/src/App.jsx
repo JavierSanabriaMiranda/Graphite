@@ -37,7 +37,7 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
       <main className={`
         flex-1 relative transition-all duration-300 flex flex-col min-w-0
         ${!isMobile && isSidebarPinned ? 'pl-64' : 'pl-0'}
-        ${isMobile ? 'pb-16' : ''} /* Espacio para la BottomNav */
+        ${isMobile ? 'pb-16' : ''}
       `}>
         <ToastProvider>
           {/* Aquí podrías alternar componentes según activeTab */}

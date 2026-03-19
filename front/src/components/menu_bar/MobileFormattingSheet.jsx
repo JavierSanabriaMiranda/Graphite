@@ -71,13 +71,13 @@ const MobileFormattingSheet = ({ editor }) => {
                 <button onClick={() => editor.chain().focus().toggleItalic().run()} className={quickAccessItemClass(state.isItalic)}>
                     <Italic className="w-4 h-4" />
                 </button>
-                <button onClick={() => run(() => editor.chain().focus().toggleUnderline().run())} className={quickAccessItemClass(state.isUnderline)}>
+                <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={quickAccessItemClass(state.isUnderline)}>
                     <Underline className="w-4 h-4" />
                 </button>
-                <button onClick={() => run(() => editor.chain().focus().toggleStrike().run())} className={quickAccessItemClass(state.isStrike)}>
+                <button onClick={() => editor.chain().focus().toggleStrike().run()} className={quickAccessItemClass(state.isStrike)}>
                     <Strikethrough className="w-4 h-4" />
                 </button>
-                <button onClick={() => run(() => editor.chain().focus().toggleCode().run())} className={quickAccessItemClass(state.isCode)}>
+                <button onClick={() => editor.chain().focus().toggleCode().run()} className={quickAccessItemClass(state.isCode)}>
                     <CodeXml className="w-4 h-4" />
                 </button>
                 <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-1" />
