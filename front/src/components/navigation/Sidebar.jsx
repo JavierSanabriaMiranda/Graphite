@@ -72,7 +72,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                 {/* BODY: Notes list */}
                 <nav className="flex-1 overflow-y-auto p-3 custom-scrollbar">
                     <div className="flex items-center justify-between text-zinc-500 mb-2 px-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider">{t('sidebar.notes')}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{t('sidebar.pages')}</span>
                     </div>
 
                     <ul className="space-y-0.5">

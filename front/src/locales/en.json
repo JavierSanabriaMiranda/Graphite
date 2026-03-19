@@ -156,7 +156,7 @@
     },
     "sidebar": {
         "configuration": "Configuration",
-        "notes": "Notes",
+        "pages": "Pages",
         "new_note": "New page",
         "loading": "Loading..."
     },
@@ -168,6 +168,12 @@
             "description": "Select the language for Graphite's interface.",
             "search": "Search language"
         }
+    },
+    "nav": {
+        "editor": "Editor",
+        "search": "Search",
+        "browse": "Browse",
+        "settings": "Settings"
     },
     "emojis": {
         "emojis": "Emoji",

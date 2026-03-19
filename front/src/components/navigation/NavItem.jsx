@@ -66,7 +66,7 @@ const NavItem = ({ note, level = 0 }) => {
                         e.stopPropagation();
                         if (hasSubnotes) setIsExpanded(!isExpanded);
                     }}
-                    className={`p-0.5 hover:bg-zinc-800 rounded transition-transform ${!hasSubnotes ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                    className={`cursor-pointer p-0.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-transform ${!hasSubnotes ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                 >
                     <DropdownArrow menuOpen={isExpanded} defaultRotateAngle={-90} rotateAngle={0} />
                 </button>

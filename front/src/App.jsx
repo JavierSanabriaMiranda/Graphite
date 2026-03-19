@@ -9,6 +9,7 @@ import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
 import SettingsModal from './components/configuration_menu/SettingsModal';
+import MobileBrowseView from './components/navigation/MobileBrowseView';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWorkspace }) => {
@@ -43,7 +44,13 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
           {/* Aquí podrías alternar componentes según activeTab */}
           {activeTab === 'editor' && <TiptapEditor />}
           {activeTab === 'search' && <div className="p-8">Sección de Búsqueda</div>}
-          {activeTab === 'browse' && <div className="p-8">Explorador de Notas</div>}
+          {activeTab === 'browse' && (
+            isMobile ? (
+              <MobileBrowseView workspace={currentWorkspace} />
+            ) : (
+              <TiptapEditor />
+            )
+          )}
         </ToastProvider>
       </main>
 
@@ -80,9 +87,9 @@ function App() {
   return (
     <UIProvider>
       <NoteProvider workspace={currentWorkspace}>
-        <AppContent 
-          isMobile={isMobile} 
-          isSidebarPinned={isSidebarPinned} 
+        <AppContent
+          isMobile={isMobile}
+          isSidebarPinned={isSidebarPinned}
           setIsSidebarPinned={setIsSidebarPinned}
           currentWorkspace={currentWorkspace}
         />

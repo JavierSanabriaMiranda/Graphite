@@ -7,8 +7,8 @@ const BottomNavbar = ({ activeTab = 'editor', onTabChange }) => {
 
     const tabs = [
         { id: 'editor', label: t('nav.editor'), icon: <PenLine size={20} /> },
-        { id: 'search', label: t('nav.search'), icon: <Search size={20} /> },
         { id: 'browse', label: t('nav.browse'), icon: <Folder size={20} /> },
+        { id: 'search', label: t('nav.search'), icon: <Search size={20} /> },
         { id: 'settings', label: t('nav.settings'), icon: <Settings size={20} /> },
     ];
 

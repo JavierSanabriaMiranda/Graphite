@@ -155,7 +155,7 @@
     },
     "sidebar": {
         "configuration": "Configuración",
-        "notes": "Notas",
+        "pages": "Páginas",
         "new_note": "Nueva página",
         "loading": "Cargando..."
     },
@@ -167,6 +167,12 @@
             "description": "Selecciona el idioma para la interfaz de Graphite.",
             "search": "Buscar idioma"
         }
+    },
+    "nav": {
+        "editor": "Editor",
+        "search": "Buscar",
+        "browse": "Navegar",
+        "settings": "Ajustes"
     },
     "emojis": {
         "emoji": "Emoji",
