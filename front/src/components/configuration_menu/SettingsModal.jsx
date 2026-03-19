@@ -87,7 +87,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="cursor-pointer p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all active:rotate-90"
+                                className="cursor-pointer p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
                                 aria-label={t('common.close')}
                             >
                                 <X className="w-6 h-6 text-zinc-500" />

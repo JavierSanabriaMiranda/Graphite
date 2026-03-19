@@ -4,15 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NavItem from './NavItem';
-import SettingsModal from '../configuration_menu/SettingsModal';
+import { useUI } from '../context/UIContext';
 
 const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
     const { t } = useTranslation();
     const { refreshTrigger, createRootNote } = useNote();
 
+    const { openSettings } = useUI();
+
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     // Updates root notes when changing workspace or when a note changes it's icon or title
     useEffect(() => {
@@ -60,7 +61,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
 
                 <div className="p-3">
                     <button
-                        onClick={() => setIsSettingsOpen(true)}
+                        onClick={() => openSettings()}
                         className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
                     >
                         <Settings className="w-4 h-4" />
@@ -97,13 +98,6 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                     </button>
                 </div>
             </aside>
-
-            {/* Settings modal */}
-            <SettingsModal
-                isOpen={isSettingsOpen}
-                onClose={() => setIsSettingsOpen(false)}
-            />
-
             {/* Blur effect if sidebar is floating */}
             {!isOpen && isHovered && (
                 <div className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[0.5px] transition-opacity" />

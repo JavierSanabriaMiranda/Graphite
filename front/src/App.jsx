@@ -5,8 +5,60 @@ import Sidebar from './components/navigation/Sidebar';
 import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
 import { NoteProvider } from './components/context/NoteContext';
+import { useIsMobile } from './hooks/useIsMobile';
+import BottomNavbar from './components/navigation/BottomNavBar';
+import { UIProvider, useUI } from './components/context/UIContext';
+import SettingsModal from './components/configuration_menu/SettingsModal';
+
+// Component to access to the context inside the app
+const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWorkspace }) => {
+  const { isSettingsOpen, closeSettings, activeTab, setActiveTab, openSettings } = useUI();
+
+  const handleTabChange = (tabId) => {
+    if (tabId === 'settings') {
+      openSettings();
+    } else {
+      setActiveTab(tabId);
+    }
+  };
+
+  return (
+    <div className="flex h-dvh bg-main-bg text-text-primary overflow-hidden">
+      {/* SIDEBAR: just in desktop */}
+      {!isMobile && (
+        <Sidebar
+          isOpen={isSidebarPinned}
+          setIsOpen={setIsSidebarPinned}
+          workspace={currentWorkspace}
+        />
+      )}
+
+      {/* Main Content */}
+      <main className={`
+        flex-1 relative transition-all duration-300 flex flex-col min-w-0
+        ${!isMobile && isSidebarPinned ? 'pl-64' : 'pl-0'}
+        ${isMobile ? 'pb-16' : ''} /* Espacio para la BottomNav */
+      `}>
+        <ToastProvider>
+          {/* Aquí podrías alternar componentes según activeTab */}
+          {activeTab === 'editor' && <TiptapEditor />}
+          {activeTab === 'search' && <div className="p-8">Sección de Búsqueda</div>}
+          {activeTab === 'browse' && <div className="p-8">Explorador de Notas</div>}
+        </ToastProvider>
+      </main>
+
+      {/* Global components (Portals) */}
+      <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
+
+      {isMobile && (
+        <BottomNavbar activeTab={activeTab} onTabChange={handleTabChange} />
+      )}
+    </div>
+  );
+};
 
 function App() {
+  const isMobile = useIsMobile()
   const [isSidebarPinned, setIsSidebarPinned] = useState(true);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
 
@@ -21,22 +73,22 @@ function App() {
     init();
   }, []);
 
+  useEffect(() => {
+    setIsSidebarPinned(!isMobile)
+  }, [isMobile])
+
   return (
-    <NoteProvider workspace={currentWorkspace}>
-      <div className="flex 100dvh bg-zinc-950 text-zinc-200">
-        <Sidebar
-          isOpen={isSidebarPinned}
-          setIsOpen={setIsSidebarPinned}
-          workspace={currentWorkspace}
+    <UIProvider>
+      <NoteProvider workspace={currentWorkspace}>
+        <AppContent 
+          isMobile={isMobile} 
+          isSidebarPinned={isSidebarPinned} 
+          setIsSidebarPinned={setIsSidebarPinned}
+          currentWorkspace={currentWorkspace}
         />
-        <main className={`flex-1 transition-all duration-300 ${isSidebarPinned ? 'pl-64' : 'pl-0'}`}>
-          <ToastProvider>
-            <TiptapEditor />
-          </ToastProvider>
-        </main>
-      </div>
-    </NoteProvider>
-  )
+      </NoteProvider>
+    </UIProvider>
+  );
 }
 
 export default App

@@ -47,7 +47,7 @@ const MobileFormattingSheet = ({ editor }) => {
         setIsExpanded(false);
     }
 
-    // Estilo para los items de la cuadrícula
+    // Grid style
     const gridItemClass = (isActive) => `
         flex items-center text-left gap-3 w-full p-4 rounded-xl transition-all active:scale-95
         ${isActive
@@ -59,7 +59,7 @@ const MobileFormattingSheet = ({ editor }) => {
 
     return (
         <div
-            className="fixed left-0 w-full z-60 flex flex-col pointer-events-none transition-all duration-200 ease-out bottom-0"
+            className="fixed left-0 w-full z-60 flex flex-col pointer-events-none transition-all duration-200 ease-out bottom-16"
         >
 
             {/* Quickaccess bar */}
@@ -91,7 +91,7 @@ const MobileFormattingSheet = ({ editor }) => {
 
             {/* Menu with 2 columns */}
             {isExpanded && (
-                <div className="custom-scrollbar w-full bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-4 pointer-events-auto animate-in slide-in-from-bottom-full duration-300 ease-out h-[350px] overflow-y-auto">
+                <div className="custom-scrollbar w-full bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-4 pointer-events-auto animate-in slide-in-from-bottom-full duration-300 ease-out h-87.5 overflow-y-auto">
                     <div className="flex justify-between items-center mb-4 px-2">
                         <span className="text-xs font-black uppercase tracking-widest text-zinc-400">{t('editor.toolbar.tools')}</span>
                     </div>
