@@ -36,8 +36,7 @@ import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import MenuBar from './menu_bar/MenuBar'
 import PathBar from './PathBar';
-import CodeBlockComponent from './advanced_blocks/CodeBlockComponent';
-import { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent'
+import CodeBlockComponent, { CustomCodeBlock } from './advanced_blocks/CodeBlockComponent';
 import { ToggleBlock } from './advanced_blocks/toggle_block/ToggleBlock'
 import { ToggleTitle } from './advanced_blocks/toggle_block/ToggleTitle'
 import { ToggleContent } from './advanced_blocks/toggle_block/ToggleContent'
@@ -48,10 +47,12 @@ import EmptyState from './util/EmptyState';
 import { BlockMoving } from './extensions/BlockMoving';
 import { Commands } from './slash_commands/Commands';
 import getSuggestionConfig from './slash_commands/suggestions';
+import MobileFormattingSheet from './menu_bar/MobileFormattingSheet';
 
 import { noteService } from '../services/db/noteService';
 import { useNote } from './context/NoteContext';
 import { useToast } from './context/ToastContext';
+import { useIsMobile } from '../hooks/useIsMobile'
 
 const TiptapEditor = () => {
   const { t } = useTranslation();
@@ -59,6 +60,7 @@ const TiptapEditor = () => {
 
   const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote } = useNote();
 
+  const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
   const [saveStatus, setSaveStatus] = useState('saved');
@@ -213,7 +215,7 @@ const TiptapEditor = () => {
             return true;
           }
         }
-        return false; 
+        return false;
       },
     },
   })
@@ -368,7 +370,7 @@ const TiptapEditor = () => {
           saveStatus={saveStatus}
           editor={editor}
         />
-        <MenuBar editor={editor} />
+        {!isMobile && <MenuBar editor={editor} />}
         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0" />
 
         <div className="grow">
@@ -384,7 +386,7 @@ const TiptapEditor = () => {
         saveStatus={saveStatus}
         editor={editor}
       />
-      <MenuBar editor={editor} />
+      {isMobile ? <MobileFormattingSheet editor={editor} /> : <MenuBar editor={editor} />}
 
       <div className="grow overflow-y-auto editor-scrollbar">
         <div className={`max-w-5xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
@@ -445,9 +447,10 @@ const TiptapEditor = () => {
               </div>
             )}
 
-            <div className={isPageLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}>
+            <div className={`grow overflow-y-auto editor-scrollbar ${isMobile ? 'pb-32' : 'pb-16'}`}>
               <EditorContent editor={editor} />
             </div>
+
           </div>
         </div>
       </div>

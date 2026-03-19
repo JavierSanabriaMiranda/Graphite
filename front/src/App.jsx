@@ -23,7 +23,7 @@ function App() {
 
   return (
     <NoteProvider workspace={currentWorkspace}>
-      <div className="flex h-screen bg-zinc-950 text-zinc-200">
+      <div className="flex 100dvh bg-zinc-950 text-zinc-200">
         <Sidebar
           isOpen={isSidebarPinned}
           setIsOpen={setIsSidebarPinned}

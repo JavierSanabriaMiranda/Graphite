@@ -5,12 +5,14 @@ import ChangeThemeButton from './util/ChangeThemeButton';
 import OptionsMenu from './options_menu/OptionsMenu';
 import { noteService } from '../services/db/noteService'
 import { useNote } from './context/NoteContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /**
  * PathBar - Topbar for navigation and note state
  */
 const PathBar = ({ saveStatus, editor }) => {
     const { t } = useTranslation();
+    const isMobile = useIsMobile();
     const { selectedNote: activeNote, selectNote: onNoteSelect, refreshTrigger } = useNote();
     const [displayNote, setDisplayNote] = useState(activeNote);
 
@@ -110,7 +112,7 @@ const PathBar = ({ saveStatus, editor }) => {
     };
 
     return (
-        <div className="flex items-center justify-between px-4 py-2 bg-main-bg h-10 shrink-0 z-20">
+        <div className={`flex items-center justify-between px-4 py-2 bg-main-bg h-10 shrink-0 z-20 ${isMobile ? 'mt-10' : ''}`}>
             {/* Left side: Note path*/}
             <div className="flex items-center gap-2 overflow-hidden flex-1 mr-4">
                 {renderBreadcrumbs()}
