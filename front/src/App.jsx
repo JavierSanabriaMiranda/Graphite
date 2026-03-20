@@ -43,7 +43,11 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
         <ToastProvider>
           {/* Aquí podrías alternar componentes según activeTab */}
           {activeTab === 'editor' && <TiptapEditor />}
-          {activeTab === 'search' && <div className="p-8">Sección de Búsqueda</div>}
+          {activeTab === 'search' && (isMobile ? (
+            <div className="p-8">Sección de Búsqueda</div>
+          ) : (
+            <TiptapEditor />
+          ))}
           {activeTab === 'browse' && (
             isMobile ? (
               <MobileBrowseView workspace={currentWorkspace} />
