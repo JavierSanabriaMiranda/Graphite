@@ -45,13 +45,23 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
             >
                 {/* HEADER: Workspace name */}
                 <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-zinc-700">
-                    <div className="flex items-center gap-2 overflow-hidden">
-                        <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white">G</div>
-                        <h2 className="font-semibold text-text-primary truncate">{workspace?.name || '...'}</h2>
-                    </div>
+                    {/* Workspace button */}
+                    <button
+                        className="group flex items-center gap-2 overflow-hidden hover:bg-hover-primary-bg p-1 -ml-1 rounded-lg transition-all cursor-pointer flex-1 mr-2"
+                        onClick={() => { /* TODO: Open workspace selector */ }}
+                    >
+                        <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
+                            {workspace?.name?.charAt(0).toUpperCase() || 'W'}
+                        </div>
+                        <h2 className="font-semibold text-text-primary truncate text-left">
+                            {workspace?.name || '...'}
+                        </h2>
+                    </button>
+
+                    {/* Collapse button */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="cursor-pointer p-1 hover:bg-hover-primary-bg rounded transition-colors"
+                        className="cursor-pointer p-1 hover:bg-hover-primary-bg rounded transition-colors shrink-0"
                     >
                         <PanelLeft
                             className={`w-4.5 h-4.5 transition-colors ${isOpen ? 'text-primary' : 'text-text-primary'}`}
