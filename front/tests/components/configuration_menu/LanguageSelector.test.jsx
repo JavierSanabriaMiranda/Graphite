@@ -17,8 +17,8 @@ vi.mock('../../../src/components/util/SearchablePicker', () => ({
             <div data-testid="label-content">{buttonLabel}</div>
             {items.map(item => (
                 <button
-                    key={item.code}
-                    onClick={() => onSelect(item.code)}
+                    key={item.value}
+                    onClick={() => onSelect(item.value)}
                 >
                     {item.label}
                 </button>

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import SearchablePicker from '../../../src/components/util/SearchablePicker';
 
@@ -6,6 +6,12 @@ const mockItems = [
   { value: 'es', label: 'Español' },
   { value: 'en', label: 'English' },
 ];
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key) => key,
+  }),
+}));
 
 // Mock for scrollIntoView function
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -92,15 +98,25 @@ describe('SearchablePicker', () => {
     expect(screen.queryByPlaceholderText(/search/i)).not.toBeVisible();
   });
 
-  it('should close the menu when pressing Escape', () => {
-    render(<SearchablePicker items={mockItems} buttonLabel="Picker" />);
-    fireEvent.click(screen.getByText('Picker'));
+  it('should close the menu when pressing Escape', async () => {
+    render(
+      <SearchablePicker
+        items={[{ value: '1', label: 'Option 1' }]}
+        onSelect={vi.fn()}
+        buttonLabel="Select"
+      />
+    );
 
-    const input = screen.getByPlaceholderText(/search/i);
-    fireEvent.keyDown(input, { key: 'Escape' });
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
 
-    const floatingMenu = input.closest('.z-1000');
-    expect(floatingMenu).toHaveStyle({ visibility: 'hidden' });
+    const input = screen.getByPlaceholderText('common.search');
+
+    await act(async () => {
+      fireEvent.keyDown(input, { key: 'Escape', code: 'Escape' });
+    });
+
+    expect(input).not.toBeVisible();
   });
 
   it('should change active index on mouse enter', () => {
