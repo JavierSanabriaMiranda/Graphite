@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import PathBar from '../../src/components/PathBar';
 import { useNote } from '../../src/components/context/NoteContext';
 import { noteService } from '../../src/services/db/noteService';
+import { useIsMobile } from '../../src/hooks/useIsMobile';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
@@ -17,6 +18,10 @@ vi.mock('../../src/services/db/noteService', () => ({
         getNoteByPath: vi.fn(),
         getByNoteId: vi.fn(),
     },
+}));
+
+vi.mock('../../src/hooks/useIsMobile', () => ({
+    useIsMobile: vi.fn(),
 }));
 
 // Mock child components
@@ -34,6 +39,8 @@ describe('PathBar Component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         // Default mock implementation for useNote including refreshTrigger
+        vi.mocked(useIsMobile).mockReturnValue(false);
+
         useNote.mockReturnValue({
             selectedNote: mockActiveNote,
             selectNote: mockOnNoteSelect,
@@ -190,5 +197,91 @@ describe('PathBar Component', () => {
         expect(breadcrumbButtons).toHaveLength(0);
 
         expect(screen.queryByText('Root')).not.toBeInTheDocument();
+    });
+
+    describe('Mobile Specific Logic', () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            // Forzamos que useIsMobile devuelva siempre true en este bloque
+            vi.mocked(useIsMobile).mockReturnValue(true);
+
+            // Setup básico de la nota
+            useNote.mockReturnValue({
+                selectedNote: { note_id: 'n1', workspace_id: 'ws1', note_path: '/Root/Folder/Current' },
+                selectNote: vi.fn(),
+                refreshTrigger: 0,
+            });
+            noteService.getByNoteId.mockResolvedValue({
+                note_id: 'n1',
+                note_path: '/Root/Folder/Current'
+            });
+        });
+
+        it('should render only the immediate parent and current note on mobile', async () => {
+            const deepNote = {
+                note_id: 'deep1',
+                note_path: '/Root/Folder1/Folder2/CurrentNote',
+            };
+            noteService.getByNoteId.mockResolvedValue(deepNote);
+            useNote.mockReturnValue({
+                selectedNote: deepNote,
+                selectNote: vi.fn(),
+                refreshTrigger: 0
+            });
+
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            // Esperamos a que se procese el useEffect y cambie el estado a la nota profunda
+            expect(await screen.findByText('Folder2')).toBeInTheDocument();
+            expect(screen.getByText('CurrentNote')).toBeInTheDocument();
+
+            // IMPORTANTE: Al ser móvil, estos NO deben existir
+            expect(screen.queryByText('Root')).not.toBeInTheDocument();
+            expect(screen.queryByText('Folder1')).not.toBeInTheDocument();
+        });
+
+        it('should hide save status text and apply extra margin on mobile', async () => {
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            // Verificamos que el texto no existe (solo en móvil)
+            expect(screen.queryByText('editor.saved')).not.toBeInTheDocument();
+
+            // Buscamos el contenedor principal que tiene el margen
+            // En tu código: className={`... ${isMobile ? 'mt-10' : ''}`}
+            const container = screen.getByText('Current').closest('.flex.items-center.justify-between');
+            expect(container).toHaveClass('mt-10');
+        });
+
+        it('should not show parent button if note is at root level on mobile', async () => {
+            const rootNote = {
+                note_id: 'root1',
+                note_path: '/OnlyRoot',
+            };
+            noteService.getByNoteId.mockResolvedValue(rootNote);
+            useNote.mockReturnValue({
+                selectedNote: rootNote,
+                selectNote: vi.fn(),
+                refreshTrigger: 0
+            });
+
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            expect(await screen.findByText('OnlyRoot')).toBeInTheDocument();
+
+            // En móvil, si solo hay una parte, no se renderiza el bloque del parentName
+            // Filtramos botones que no sean los de utilidades
+            const buttons = screen.getAllByRole('button');
+            const breadcrumbButtons = buttons.filter(btn =>
+                btn.textContent !== 'ThemeBtn' && btn.textContent !== 'Options'
+            );
+
+            expect(breadcrumbButtons).toHaveLength(0);
+        });
     });
 });

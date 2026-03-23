@@ -3,9 +3,8 @@ import { useEditorState } from '@tiptap/react';
 import { useTranslation } from 'react-i18next';
 import {
     TriangleAlert, Bold, Italic, Underline, List, CheckSquare, Quote,
-    FileText, Strikethrough, Code, CodeXml, Heading1, Heading2, Heading3
+    FileText, Strikethrough, Code, CodeXml, Heading1, Heading2, Heading3, ListOrderedIcon
 } from 'lucide-react';
-import { ListOrderedIcon } from 'lucide-react';
 import { menuBarStateSelector } from '../util/menuBarStateSelector';
 import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
 import DropdownArrow from '../util/DropdownArrow';
