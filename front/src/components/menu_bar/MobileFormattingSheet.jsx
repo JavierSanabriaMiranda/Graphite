@@ -65,19 +65,39 @@ const MobileFormattingSheet = ({ editor }) => {
             {/* Quickaccess bar */}
             <div className="w-full bg-main-bg backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 p-2 flex items-center justify-around pointer-events-auto"
                 style={{ paddingBottom: `${bottomOffset}px` }} >
-                <button onClick={() => editor.chain().focus().toggleBold().run()} className={quickAccessItemClass(state.isBold)}>
+                <button 
+                    aria-label="bold"
+                    onClick={() => editor.chain().focus().toggleBold().run()} 
+                    className={quickAccessItemClass(state.isBold)}
+                >
                     <Bold className="w-4 h-4" />
                 </button>
-                <button onClick={() => editor.chain().focus().toggleItalic().run()} className={quickAccessItemClass(state.isItalic)}>
+                <button 
+                    aria-label="italic"
+                    onClick={() => editor.chain().focus().toggleItalic().run()} 
+                    className={quickAccessItemClass(state.isItalic)}
+                >
                     <Italic className="w-4 h-4" />
                 </button>
-                <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={quickAccessItemClass(state.isUnderline)}>
+                <button 
+                    aria-label="underline"
+                    onClick={() => editor.chain().focus().toggleUnderline().run()} 
+                    className={quickAccessItemClass(state.isUnderline)}
+                >
                     <Underline className="w-4 h-4" />
                 </button>
-                <button onClick={() => editor.chain().focus().toggleStrike().run()} className={quickAccessItemClass(state.isStrike)}>
+                <button 
+                    aria-label="strikethrough"
+                    onClick={() => editor.chain().focus().toggleStrike().run()} 
+                    className={quickAccessItemClass(state.isStrike)}
+                >
                     <Strikethrough className="w-4 h-4" />
                 </button>
-                <button onClick={() => editor.chain().focus().toggleCode().run()} className={quickAccessItemClass(state.isCode)}>
+                <button 
+                    aria-label="code"
+                    onClick={() => editor.chain().focus().toggleCode().run()} 
+                    className={quickAccessItemClass(state.isCode)}
+                >
                     <CodeXml className="w-4 h-4" />
                 </button>
                 <div className="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-1" />
