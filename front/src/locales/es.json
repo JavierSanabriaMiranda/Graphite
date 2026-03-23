@@ -157,7 +157,8 @@
         "configuration": "Configuración",
         "pages": "Páginas",
         "new_note": "Nueva página",
-        "loading": "Cargando..."
+        "loading": "Cargando...",
+        "workspace": "Espacio de Trabajo"
     },
     "settings": {
         "title": "Ajustes",

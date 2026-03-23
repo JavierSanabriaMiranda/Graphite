@@ -158,7 +158,8 @@
         "configuration": "Configuration",
         "pages": "Pages",
         "new_note": "New page",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "workspace": "Workspace"
     },
     "settings": {
         "title": "Settings",
