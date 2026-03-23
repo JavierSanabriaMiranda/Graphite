@@ -8,6 +8,7 @@ export default defineConfig({
   server: {
     port: 1420,      // Force port 1420
     strictPort: true, // If port is being used fail instead of changing port
+    host: '0.0.0.0'
   },
   test: {
     globals: true,

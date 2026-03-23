@@ -5,12 +5,14 @@ import ChangeThemeButton from './util/ChangeThemeButton';
 import OptionsMenu from './options_menu/OptionsMenu';
 import { noteService } from '../services/db/noteService'
 import { useNote } from './context/NoteContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /**
  * PathBar - Topbar for navigation and note state
  */
 const PathBar = ({ saveStatus, editor }) => {
     const { t } = useTranslation();
+    const isMobile = useIsMobile();
     const { selectedNote: activeNote, selectNote: onNoteSelect, refreshTrigger } = useNote();
     const [displayNote, setDisplayNote] = useState(activeNote);
 
@@ -53,6 +55,30 @@ const PathBar = ({ saveStatus, editor }) => {
         if (!displayNote?.note_path) return null;
 
         const parts = displayNote.note_path.split('/').filter(p => p !== '');
+
+        if (isMobile) {
+            const parentName = parts.length > 1 ? parts[parts.length - 2] : null;
+            const currentName = parts[parts.length - 1];
+
+            return (
+                <div className="flex items-center gap-1 text-xs overflow-hidden">
+                    {parentName && (
+                        <>
+                            <button
+                                onClick={() => handlePathClick(parts, parts.length - 2)}
+                                className="text-zinc-500 truncate max-w-20"
+                            >
+                                {parentName}
+                            </button>
+                            <ChevronRight className="w-3 h-3 shrink-0 opacity-30" />
+                        </>
+                    )}
+                    <span className="text-text-primary font-bold truncate">
+                        {currentName}
+                    </span>
+                </div>
+            );
+        }
 
         const segmentClass = (isLast) => `
             truncate transition-colors max-w-[180px]
@@ -110,7 +136,7 @@ const PathBar = ({ saveStatus, editor }) => {
     };
 
     return (
-        <div className="flex items-center justify-between px-4 py-2 bg-main-bg h-10 shrink-0 z-20">
+        <div className={`flex items-center justify-between px-4 py-2 bg-main-bg h-10 shrink-0 z-20 ${isMobile ? 'mt-10' : ''}`}>
             {/* Left side: Note path*/}
             <div className="flex items-center gap-2 overflow-hidden flex-1 mr-4">
                 {renderBreadcrumbs()}
@@ -121,9 +147,11 @@ const PathBar = ({ saveStatus, editor }) => {
                 {/* Save status*/}
                 <div className="flex items-center gap-2">
                     <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${saveStatus === 'saving' ? 'bg-amber-500 animate-pulse' : 'bg-primary'}`} />
-                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
-                        {saveStatus === 'saving' ? t('editor.saving') : t('editor.saved')}
-                    </span>
+                    {!isMobile && (
+                        <span className="text-[10px] uppercase tracking-widest text-zinc-400 font-bold">
+                            {saveStatus === 'saving' ? t('editor.saving') : t('editor.saved')}
+                        </span>
+                    )}
                 </div>
 
                 {/* Actions */}

@@ -4,15 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NavItem from './NavItem';
-import SettingsModal from '../configuration_menu/SettingsModal';
+import { useUI } from '../context/UIContext';
 
 const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
     const { t } = useTranslation();
     const { refreshTrigger, createRootNote } = useNote();
 
+    const { openSettings } = useUI();
+
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     // Updates root notes when changing workspace or when a note changes it's icon or title
     useEffect(() => {
@@ -44,13 +45,23 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
             >
                 {/* HEADER: Workspace name */}
                 <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-zinc-700">
-                    <div className="flex items-center gap-2 overflow-hidden">
-                        <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white">G</div>
-                        <h2 className="font-semibold text-text-primary truncate">{workspace?.name || '...'}</h2>
-                    </div>
+                    {/* Workspace button */}
+                    <button
+                        className="group flex items-center gap-2 overflow-hidden hover:bg-hover-primary-bg p-1 -ml-1 rounded-lg transition-all cursor-pointer flex-1 mr-2"
+                        onClick={() => { /* TODO: Open workspace selector */ }}
+                    >
+                        <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
+                            {workspace?.name?.charAt(0).toUpperCase() || 'W'}
+                        </div>
+                        <h2 className="font-semibold text-text-primary truncate text-left">
+                            {workspace?.name || '...'}
+                        </h2>
+                    </button>
+
+                    {/* Collapse button */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="cursor-pointer p-1 hover:bg-hover-primary-bg rounded transition-colors"
+                        className="cursor-pointer p-1 hover:bg-hover-primary-bg rounded transition-colors shrink-0"
                     >
                         <PanelLeft
                             className={`w-4.5 h-4.5 transition-colors ${isOpen ? 'text-primary' : 'text-text-primary'}`}
@@ -60,7 +71,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
 
                 <div className="p-3">
                     <button
-                        onClick={() => setIsSettingsOpen(true)}
+                        onClick={() => openSettings()}
                         className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
                     >
                         <Settings className="w-4 h-4" />
@@ -71,7 +82,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                 {/* BODY: Notes list */}
                 <nav className="flex-1 overflow-y-auto p-3 custom-scrollbar">
                     <div className="flex items-center justify-between text-zinc-500 mb-2 px-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider">{t('sidebar.notes')}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{t('sidebar.pages')}</span>
                     </div>
 
                     <ul className="space-y-0.5">
@@ -97,13 +108,6 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                     </button>
                 </div>
             </aside>
-
-            {/* Settings modal */}
-            <SettingsModal
-                isOpen={isSettingsOpen}
-                onClose={() => setIsSettingsOpen(false)}
-            />
-
             {/* Blur effect if sidebar is floating */}
             {!isOpen && isHovered && (
                 <div className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[0.5px] transition-opacity" />

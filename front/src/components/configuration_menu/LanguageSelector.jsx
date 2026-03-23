@@ -7,18 +7,18 @@ const LanguageSelector = () => {
 
     // language data
     const languages = useMemo(() => [
-        { code: 'en', label: 'English', icon: '🇺🇸' },
-        { code: 'es', label: 'Español', icon: '🇪🇸' },
+        { value: 'en', label: 'English', icon: '🇺🇸' },
+        { value: 'es', label: 'Español', icon: '🇪🇸' },
     ], []);
 
     // Find current language for button label
-    const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
+    const currentLanguage = languages.find(l => l.value === i18n.language) || languages[0];
 
     return (
         <SearchablePicker
             items={languages}
             value={i18n.language}
-            onSelect={(code) => i18n.changeLanguage(code)}
+            onSelect={(value) => i18n.changeLanguage(value)}
             buttonLabel={
                 <div className="flex items-center gap-2">
                     <span>{currentLanguage.icon}</span>

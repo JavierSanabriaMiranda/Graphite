@@ -19,6 +19,7 @@
             "description": "There's no page selected. Select one or create a new one"
         },
         "toolbar": {
+            "tools": "Tools",
             "block_type": {
                 "text_type": "Text type",
                 "search": "Search style...",
@@ -155,9 +156,10 @@
     },
     "sidebar": {
         "configuration": "Configuration",
-        "notes": "Notes",
+        "pages": "Pages",
         "new_note": "New page",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "workspace": "Workspace"
     },
     "settings": {
         "title": "Settings",
@@ -167,6 +169,12 @@
             "description": "Select the language for Graphite's interface.",
             "search": "Search language"
         }
+    },
+    "nav": {
+        "editor": "Editor",
+        "search": "Search",
+        "browse": "Browse",
+        "settings": "Settings"
     },
     "emojis": {
         "emojis": "Emoji",

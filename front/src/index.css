@@ -76,6 +76,28 @@ html, body, #root {
 }
 
 /* ====================
+Style for breaking words
+==================== */
+
+.tiptap, .prose, textarea {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+
+h1, h2, h3, .tiptap h1, .tiptap h2, .tiptap h3 {
+  max-width: 100%;
+  white-space: pre-wrap; 
+}
+
+textarea {
+  max-width: 100%;
+  display: block;
+}
+
+
+/* ====================
 Code style
 ==================== */
 

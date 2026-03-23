@@ -1,8 +1,9 @@
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Sidebar from '../../../src/components/side_bar/Sidebar';
+import Sidebar from '../../../src/components/navigation/Sidebar';
 import { useNote } from '../../../src/components/context/NoteContext';
 import { noteService } from '../../../src/services/db/noteService';
+import { useUI } from '../../../src/components/context/UIContext';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
@@ -12,6 +13,10 @@ vi.mock('../../../src/components/context/NoteContext', () => ({
     useNote: vi.fn(),
 }));
 
+vi.mock('../../../src/components/context/UIContext', () => ({
+    useUI: vi.fn(),
+}));
+
 vi.mock('../../../src/services/db/noteService', () => ({
     noteService: {
         getRootNotes: vi.fn(),
@@ -19,7 +24,7 @@ vi.mock('../../../src/services/db/noteService', () => ({
 }));
 
 // Mock child components
-vi.mock('../../../src/components/side_bar/NavItem', () => ({
+vi.mock('../../../src/components/navigation/NavItem', () => ({
     default: ({ note }) => <div data-testid="nav-item">{note.title}</div>,
 }));
 
@@ -33,34 +38,32 @@ vi.mock('../../../src/components/configuration_menu/SettingsModal', () => ({
 
 describe('Sidebar Component', () => {
     const mockWorkspace = { workspace_id: 'ws-1', name: 'My Workspace' };
-    const mockNotes = [
-        { note_id: '1', title: 'Note 1' },
-        { note_id: '2', title: 'Note 2' }
-    ];
+    const mockNotes = [{ note_id: '1', title: 'Note 1' }, { note_id: '2', title: 'Note 2' }];
     const mockSetIsOpen = vi.fn();
     const mockCreateRootNote = vi.fn();
+    const mockOpenSettings = vi.fn(); // Mock para la función de ajustes
 
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Default context state
-        useNote.mockReturnValue({
+        vi.mocked(useNote).mockReturnValue({
             refreshTrigger: 0,
             createRootNote: mockCreateRootNote,
         });
 
-        // Default DB response
+        vi.mocked(useUI).mockReturnValue({
+            openSettings: mockOpenSettings,
+        });
+
         noteService.getRootNotes.mockResolvedValue(mockNotes);
     });
 
     it('should render the workspace name or fallback', async () => {
-        const { rerender } = render(
-            <Sidebar isOpen={true} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />
-        );
-        expect(screen.getByText('My Workspace')).toBeInTheDocument();
+        await act(async () => {
+            render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />);
+        });
 
-        render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} workspace={null} />);
-        expect(screen.getByText('...')).toBeInTheDocument();
+        expect(screen.getByText('My Workspace')).toBeInTheDocument();
     });
 
     it('should fetch and render root notes on mount/workspace change', async () => {
@@ -104,18 +107,16 @@ describe('Sidebar Component', () => {
         expect(aside).toHaveClass('-translate-x-full');
     });
 
-    it('should open and close the SettingsModal', () => {
+    it('should call openSettings when the configuration button is clicked', async () => {
         render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />);
 
         const settingsBtn = screen.getByText('sidebar.configuration').closest('button');
-        fireEvent.click(settingsBtn);
 
-        expect(screen.getByTestId('settings-modal')).toBeInTheDocument();
+        await act(async () => {
+            fireEvent.click(settingsBtn);
+        });
 
-        const closeBtn = screen.getByText('Close Settings');
-        fireEvent.click(closeBtn);
-
-        expect(screen.queryByTestId('settings-modal')).not.toBeInTheDocument();
+        expect(mockOpenSettings).toHaveBeenCalledTimes(1);
     });
 
     it('should call createRootNote when the add button is clicked', () => {

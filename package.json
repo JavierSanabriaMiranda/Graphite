@@ -7,7 +7,11 @@
     "tauri": "tauri",
     "dev": "tauri dev",
     "build": "tauri build",
-    "front:dev": "npm run dev --prefix front"
+    "front:dev": "npm run dev --prefix front",
+    
+    "android:prep": "xcopy /s /y /i tauri\\resources\\android\\res tauri\\gen\\android\\app\\src\\main\\res",
+    "android:dev": "npm run android:prep && tauri android dev",
+    "android:build": "npm run android:prep && tauri android build"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0"
