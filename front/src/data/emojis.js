@@ -223,11 +223,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "face_in_clouds",
-    "char": "😶‍🌫️",
-    "category": "people"
-  },
-  {
     "id": "smirk",
     "char": "😏",
     "category": "people"
@@ -260,16 +255,6 @@ export const EMOJI_DATA = [
   {
     "id": "shaking_face",
     "char": "🫨",
-    "category": "people"
-  },
-  {
-    "id": "head_shaking_horizontally",
-    "char": "🙂‍↔️",
-    "category": "people"
-  },
-  {
-    "id": "head_shaking_vertically",
-    "char": "🙂‍↕️",
     "category": "people"
   },
   {
@@ -718,16 +703,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "heart_on_fire",
-    "char": "❤️‍🔥",
-    "category": "people"
-  },
-  {
-    "id": "mending_heart",
-    "char": "❤️‍🩹",
-    "category": "people"
-  },
-  {
     "id": "heart",
     "char": "❤️",
     "category": "people"
@@ -830,11 +805,6 @@ export const EMOJI_DATA = [
   {
     "id": "speech_balloon",
     "char": "💬",
-    "category": "people"
-  },
-  {
-    "id": "eye-in-speech-bubble",
-    "char": "👁️‍🗨️",
     "category": "people"
   },
   {
@@ -1203,16 +1173,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man_with_beard",
-    "char": "🧔‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_with_beard",
-    "char": "🧔‍♀️",
-    "category": "people"
-  },
-  {
     "id": "red_haired_man",
     "char": "👨‍🦰",
     "category": "people"
@@ -1278,16 +1238,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "blond-haired-woman",
-    "char": "👱‍♀️",
-    "category": "people"
-  },
-  {
-    "id": "blond-haired-man",
-    "char": "👱‍♂️",
-    "category": "people"
-  },
-  {
     "id": "older_adult",
     "char": "🧓",
     "category": "people"
@@ -1308,28 +1258,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-frowning",
-    "char": "🙍‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-frowning",
-    "char": "🙍‍♀️",
-    "category": "people"
-  },
-  {
     "id": "person_with_pouting_face",
     "char": "🙎",
-    "category": "people"
-  },
-  {
-    "id": "man-pouting",
-    "char": "🙎‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-pouting",
-    "char": "🙎‍♀️",
     "category": "people"
   },
   {
@@ -1338,28 +1268,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-gesturing-no",
-    "char": "🙅‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-gesturing-no",
-    "char": "🙅‍♀️",
-    "category": "people"
-  },
-  {
     "id": "ok_woman",
     "char": "🙆",
-    "category": "people"
-  },
-  {
-    "id": "man-gesturing-ok",
-    "char": "🙆‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-gesturing-ok",
-    "char": "🙆‍♀️",
     "category": "people"
   },
   {
@@ -1368,28 +1278,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-tipping-hand",
-    "char": "💁‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-tipping-hand",
-    "char": "💁‍♀️",
-    "category": "people"
-  },
-  {
     "id": "raising_hand",
     "char": "🙋",
-    "category": "people"
-  },
-  {
-    "id": "man-raising-hand",
-    "char": "🙋‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-raising-hand",
-    "char": "🙋‍♀️",
     "category": "people"
   },
   {
@@ -1398,28 +1288,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "deaf_man",
-    "char": "🧏‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "deaf_woman",
-    "char": "🧏‍♀️",
-    "category": "people"
-  },
-  {
     "id": "bow",
     "char": "🙇",
-    "category": "people"
-  },
-  {
-    "id": "man-bowing",
-    "char": "🙇‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-bowing",
-    "char": "🙇‍♀️",
     "category": "people"
   },
   {
@@ -1428,43 +1298,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-facepalming",
-    "char": "🤦‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-facepalming",
-    "char": "🤦‍♀️",
-    "category": "people"
-  },
-  {
     "id": "shrug",
     "char": "🤷",
-    "category": "people"
-  },
-  {
-    "id": "man-shrugging",
-    "char": "🤷‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-shrugging",
-    "char": "🤷‍♀️",
-    "category": "people"
-  },
-  {
-    "id": "health_worker",
-    "char": "🧑‍⚕️",
-    "category": "people"
-  },
-  {
-    "id": "male-doctor",
-    "char": "👨‍⚕️",
-    "category": "people"
-  },
-  {
-    "id": "female-doctor",
-    "char": "👩‍⚕️",
     "category": "people"
   },
   {
@@ -1495,21 +1330,6 @@ export const EMOJI_DATA = [
   {
     "id": "female-teacher",
     "char": "👩‍🏫",
-    "category": "people"
-  },
-  {
-    "id": "judge",
-    "char": "🧑‍⚖️",
-    "category": "people"
-  },
-  {
-    "id": "male-judge",
-    "char": "👨‍⚖️",
-    "category": "people"
-  },
-  {
-    "id": "female-judge",
-    "char": "👩‍⚖️",
     "category": "people"
   },
   {
@@ -1648,21 +1468,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "pilot",
-    "char": "🧑‍✈️",
-    "category": "people"
-  },
-  {
-    "id": "male-pilot",
-    "char": "👨‍✈️",
-    "category": "people"
-  },
-  {
-    "id": "female-pilot",
-    "char": "👩‍✈️",
-    "category": "people"
-  },
-  {
     "id": "astronaut",
     "char": "🧑‍🚀",
     "category": "people"
@@ -1698,43 +1503,13 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "male-police-officer",
-    "char": "👮‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female-police-officer",
-    "char": "👮‍♀️",
-    "category": "people"
-  },
-  {
     "id": "sleuth_or_spy",
     "char": "🕵️",
     "category": "people"
   },
   {
-    "id": "male-detective",
-    "char": "🕵️‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female-detective",
-    "char": "🕵️‍♀️",
-    "category": "people"
-  },
-  {
     "id": "guardsman",
     "char": "💂",
-    "category": "people"
-  },
-  {
-    "id": "male-guard",
-    "char": "💂‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female-guard",
-    "char": "💂‍♀️",
     "category": "people"
   },
   {
@@ -1745,16 +1520,6 @@ export const EMOJI_DATA = [
   {
     "id": "construction_worker",
     "char": "👷",
-    "category": "people"
-  },
-  {
-    "id": "male-construction-worker",
-    "char": "👷‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female-construction-worker",
-    "char": "👷‍♀️",
     "category": "people"
   },
   {
@@ -1778,16 +1543,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-wearing-turban",
-    "char": "👳‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-wearing-turban",
-    "char": "👳‍♀️",
-    "category": "people"
-  },
-  {
     "id": "man_with_gua_pi_mao",
     "char": "👲",
     "category": "people"
@@ -1803,28 +1558,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man_in_tuxedo",
-    "char": "🤵‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_in_tuxedo",
-    "char": "🤵‍♀️",
-    "category": "people"
-  },
-  {
     "id": "bride_with_veil",
     "char": "👰",
-    "category": "people"
-  },
-  {
-    "id": "man_with_veil",
-    "char": "👰‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_with_veil",
-    "char": "👰‍♀️",
     "category": "people"
   },
   {
@@ -1888,28 +1623,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "male_superhero",
-    "char": "🦸‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_superhero",
-    "char": "🦸‍♀️",
-    "category": "people"
-  },
-  {
     "id": "supervillain",
     "char": "🦹",
-    "category": "people"
-  },
-  {
-    "id": "male_supervillain",
-    "char": "🦹‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_supervillain",
-    "char": "🦹‍♀️",
     "category": "people"
   },
   {
@@ -1918,28 +1633,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "male_mage",
-    "char": "🧙‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_mage",
-    "char": "🧙‍♀️",
-    "category": "people"
-  },
-  {
     "id": "fairy",
     "char": "🧚",
-    "category": "people"
-  },
-  {
-    "id": "male_fairy",
-    "char": "🧚‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_fairy",
-    "char": "🧚‍♀️",
     "category": "people"
   },
   {
@@ -1948,28 +1643,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "male_vampire",
-    "char": "🧛‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_vampire",
-    "char": "🧛‍♀️",
-    "category": "people"
-  },
-  {
     "id": "merperson",
     "char": "🧜",
-    "category": "people"
-  },
-  {
-    "id": "merman",
-    "char": "🧜‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "mermaid",
-    "char": "🧜‍♀️",
     "category": "people"
   },
   {
@@ -1978,43 +1653,13 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "male_elf",
-    "char": "🧝‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_elf",
-    "char": "🧝‍♀️",
-    "category": "people"
-  },
-  {
     "id": "genie",
     "char": "🧞",
     "category": "people"
   },
   {
-    "id": "male_genie",
-    "char": "🧞‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_genie",
-    "char": "🧞‍♀️",
-    "category": "people"
-  },
-  {
     "id": "zombie",
     "char": "🧟",
-    "category": "people"
-  },
-  {
-    "id": "male_zombie",
-    "char": "🧟‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "female_zombie",
-    "char": "🧟‍♀️",
     "category": "people"
   },
   {
@@ -2028,28 +1673,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-getting-massage",
-    "char": "💆‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-getting-massage",
-    "char": "💆‍♀️",
-    "category": "people"
-  },
-  {
     "id": "haircut",
     "char": "💇",
-    "category": "people"
-  },
-  {
-    "id": "man-getting-haircut",
-    "char": "💇‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-getting-haircut",
-    "char": "💇‍♀️",
     "category": "people"
   },
   {
@@ -2058,43 +1683,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-walking",
-    "char": "🚶‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-walking",
-    "char": "🚶‍♀️",
-    "category": "people"
-  },
-  {
-    "id": "person_walking_facing_right",
-    "char": "🚶‍➡️",
-    "category": "people"
-  },
-  {
-    "id": "woman_walking_facing_right",
-    "char": "🚶‍♀️‍➡️",
-    "category": "people"
-  },
-  {
-    "id": "man_walking_facing_right",
-    "char": "🚶‍♂️‍➡️",
-    "category": "people"
-  },
-  {
     "id": "standing_person",
     "char": "🧍",
-    "category": "people"
-  },
-  {
-    "id": "man_standing",
-    "char": "🧍‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_standing",
-    "char": "🧍‍♀️",
     "category": "people"
   },
   {
@@ -2103,38 +1693,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man_kneeling",
-    "char": "🧎‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_kneeling",
-    "char": "🧎‍♀️",
-    "category": "people"
-  },
-  {
-    "id": "person_kneeling_facing_right",
-    "char": "🧎‍➡️",
-    "category": "people"
-  },
-  {
-    "id": "woman_kneeling_facing_right",
-    "char": "🧎‍♀️‍➡️",
-    "category": "people"
-  },
-  {
-    "id": "man_kneeling_facing_right",
-    "char": "🧎‍♂️‍➡️",
-    "category": "people"
-  },
-  {
     "id": "person_with_probing_cane",
     "char": "🧑‍🦯",
-    "category": "people"
-  },
-  {
-    "id": "person_with_white_cane_facing_right",
-    "char": "🧑‍🦯‍➡️",
     "category": "people"
   },
   {
@@ -2143,18 +1703,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man_with_white_cane_facing_right",
-    "char": "👨‍🦯‍➡️",
-    "category": "people"
-  },
-  {
     "id": "woman_with_probing_cane",
     "char": "👩‍🦯",
-    "category": "people"
-  },
-  {
-    "id": "woman_with_white_cane_facing_right",
-    "char": "👩‍🦯‍➡️",
     "category": "people"
   },
   {
@@ -2163,18 +1713,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "person_in_motorized_wheelchair_facing_right",
-    "char": "🧑‍🦼‍➡️",
-    "category": "people"
-  },
-  {
     "id": "man_in_motorized_wheelchair",
     "char": "👨‍🦼",
-    "category": "people"
-  },
-  {
-    "id": "man_in_motorized_wheelchair_facing_right",
-    "char": "👨‍🦼‍➡️",
     "category": "people"
   },
   {
@@ -2183,18 +1723,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "woman_in_motorized_wheelchair_facing_right",
-    "char": "👩‍🦼‍➡️",
-    "category": "people"
-  },
-  {
     "id": "person_in_manual_wheelchair",
     "char": "🧑‍🦽",
-    "category": "people"
-  },
-  {
-    "id": "person_in_manual_wheelchair_facing_right",
-    "char": "🧑‍🦽‍➡️",
     "category": "people"
   },
   {
@@ -2203,48 +1733,13 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man_in_manual_wheelchair_facing_right",
-    "char": "👨‍🦽‍➡️",
-    "category": "people"
-  },
-  {
     "id": "woman_in_manual_wheelchair",
     "char": "👩‍🦽",
     "category": "people"
   },
   {
-    "id": "woman_in_manual_wheelchair_facing_right",
-    "char": "👩‍🦽‍➡️",
-    "category": "people"
-  },
-  {
     "id": "runner",
     "char": "🏃",
-    "category": "people"
-  },
-  {
-    "id": "man-running",
-    "char": "🏃‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-running",
-    "char": "🏃‍♀️",
-    "category": "people"
-  },
-  {
-    "id": "person_running_facing_right",
-    "char": "🏃‍➡️",
-    "category": "people"
-  },
-  {
-    "id": "woman_running_facing_right",
-    "char": "🏃‍♀️‍➡️",
-    "category": "people"
-  },
-  {
-    "id": "man_running_facing_right",
-    "char": "🏃‍♂️‍➡️",
     "category": "people"
   },
   {
@@ -2268,43 +1763,13 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "men-with-bunny-ears-partying",
-    "char": "👯‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "women-with-bunny-ears-partying",
-    "char": "👯‍♀️",
-    "category": "people"
-  },
-  {
     "id": "person_in_steamy_room",
     "char": "🧖",
     "category": "people"
   },
   {
-    "id": "man_in_steamy_room",
-    "char": "🧖‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_in_steamy_room",
-    "char": "🧖‍♀️",
-    "category": "people"
-  },
-  {
     "id": "person_climbing",
     "char": "🧗",
-    "category": "people"
-  },
-  {
-    "id": "man_climbing",
-    "char": "🧗‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_climbing",
-    "char": "🧗‍♀️",
     "category": "people"
   },
   {
@@ -2333,28 +1798,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-golfing",
-    "char": "🏌️‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-golfing",
-    "char": "🏌️‍♀️",
-    "category": "people"
-  },
-  {
     "id": "surfer",
     "char": "🏄",
-    "category": "people"
-  },
-  {
-    "id": "man-surfing",
-    "char": "🏄‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-surfing",
-    "char": "🏄‍♀️",
     "category": "people"
   },
   {
@@ -2363,28 +1808,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-rowing-boat",
-    "char": "🚣‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-rowing-boat",
-    "char": "🚣‍♀️",
-    "category": "people"
-  },
-  {
     "id": "swimmer",
     "char": "🏊",
-    "category": "people"
-  },
-  {
-    "id": "man-swimming",
-    "char": "🏊‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-swimming",
-    "char": "🏊‍♀️",
     "category": "people"
   },
   {
@@ -2393,28 +1818,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-bouncing-ball",
-    "char": "⛹️‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-bouncing-ball",
-    "char": "⛹️‍♀️",
-    "category": "people"
-  },
-  {
     "id": "weight_lifter",
     "char": "🏋️",
-    "category": "people"
-  },
-  {
-    "id": "man-lifting-weights",
-    "char": "🏋️‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-lifting-weights",
-    "char": "🏋️‍♀️",
     "category": "people"
   },
   {
@@ -2423,28 +1828,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-biking",
-    "char": "🚴‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-biking",
-    "char": "🚴‍♀️",
-    "category": "people"
-  },
-  {
     "id": "mountain_bicyclist",
     "char": "🚵",
-    "category": "people"
-  },
-  {
-    "id": "man-mountain-biking",
-    "char": "🚵‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-mountain-biking",
-    "char": "🚵‍♀️",
     "category": "people"
   },
   {
@@ -2453,28 +1838,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-cartwheeling",
-    "char": "🤸‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-cartwheeling",
-    "char": "🤸‍♀️",
-    "category": "people"
-  },
-  {
     "id": "wrestlers",
     "char": "🤼",
-    "category": "people"
-  },
-  {
-    "id": "man-wrestling",
-    "char": "🤼‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-wrestling",
-    "char": "🤼‍♀️",
     "category": "people"
   },
   {
@@ -2483,28 +1848,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-playing-water-polo",
-    "char": "🤽‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-playing-water-polo",
-    "char": "🤽‍♀️",
-    "category": "people"
-  },
-  {
     "id": "handball",
     "char": "🤾",
-    "category": "people"
-  },
-  {
-    "id": "man-playing-handball",
-    "char": "🤾‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-playing-handball",
-    "char": "🤾‍♀️",
     "category": "people"
   },
   {
@@ -2513,28 +1858,8 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-juggling",
-    "char": "🤹‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman-juggling",
-    "char": "🤹‍♀️",
-    "category": "people"
-  },
-  {
     "id": "person_in_lotus_position",
     "char": "🧘",
-    "category": "people"
-  },
-  {
-    "id": "man_in_lotus_position",
-    "char": "🧘‍♂️",
-    "category": "people"
-  },
-  {
-    "id": "woman_in_lotus_position",
-    "char": "🧘‍♀️",
     "category": "people"
   },
   {
@@ -2578,16 +1903,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "man-kiss-man",
-    "char": "👨‍❤️‍💋‍👨",
-    "category": "people"
-  },
-  {
-    "id": "woman-kiss-woman",
-    "char": "👩‍❤️‍💋‍👩",
-    "category": "people"
-  },
-  {
     "id": "couple_with_heart",
     "char": "💑",
     "category": "people"
@@ -2595,16 +1910,6 @@ export const EMOJI_DATA = [
   {
     "id": "woman-heart-man",
     "char": "👩‍❤️‍👨",
-    "category": "people"
-  },
-  {
-    "id": "man-heart-man",
-    "char": "👨‍❤️‍👨",
-    "category": "people"
-  },
-  {
-    "id": "woman-heart-woman",
-    "char": "👩‍❤️‍👩",
     "category": "people"
   },
   {
@@ -2755,26 +2060,6 @@ export const EMOJI_DATA = [
   {
     "id": "family",
     "char": "👪",
-    "category": "people"
-  },
-  {
-    "id": "family_adult_adult_child",
-    "char": "🧑‍🧑‍🧒",
-    "category": "people"
-  },
-  {
-    "id": "family_adult_adult_child_child",
-    "char": "🧑‍🧑‍🧒‍🧒",
-    "category": "people"
-  },
-  {
-    "id": "family_adult_child",
-    "char": "🧑‍🧒",
-    "category": "people"
-  },
-  {
-    "id": "family_adult_child_child",
-    "char": "🧑‍🧒‍🧒",
     "category": "people"
   },
   {
@@ -3098,11 +2383,6 @@ export const EMOJI_DATA = [
     "category": "animals_and_nature"
   },
   {
-    "id": "polar_bear",
-    "char": "🐻‍❄️",
-    "category": "animals_and_nature"
-  },
-  {
     "id": "koala",
     "char": "🐨",
     "category": "animals_and_nature"
@@ -3238,18 +2518,8 @@ export const EMOJI_DATA = [
     "category": "animals_and_nature"
   },
   {
-    "id": "black_bird",
-    "char": "🐦‍⬛",
-    "category": "animals_and_nature"
-  },
-  {
     "id": "goose",
     "char": "🪿",
-    "category": "animals_and_nature"
-  },
-  {
-    "id": "phoenix",
-    "char": "🐦‍🔥",
     "category": "animals_and_nature"
   },
   {
@@ -3633,11 +2903,6 @@ export const EMOJI_DATA = [
     "category": "food"
   },
   {
-    "id": "lime",
-    "char": "🍋‍🟩",
-    "category": "food"
-  },
-  {
     "id": "banana",
     "char": "🍌",
     "category": "food"
@@ -3790,11 +3055,6 @@ export const EMOJI_DATA = [
   {
     "id": "pea_pod",
     "char": "🫛",
-    "category": "food"
-  },
-  {
-    "id": "brown_mushroom",
-    "char": "🍄‍🟫",
     "category": "food"
   },
   {
@@ -6823,11 +6083,6 @@ export const EMOJI_DATA = [
     "category": "objects"
   },
   {
-    "id": "broken_chain",
-    "char": "⛓️‍💥",
-    "category": "objects"
-  },
-  {
     "id": "chains",
     "char": "⛓️",
     "category": "objects"
@@ -7773,71 +7028,6 @@ export const EMOJI_DATA = [
     "category": "symbols"
   },
   {
-    "id": "hash",
-    "char": "#️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "keycap_star",
-    "char": "*️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "zero",
-    "char": "0️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "one",
-    "char": "1️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "two",
-    "char": "2️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "three",
-    "char": "3️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "four",
-    "char": "4️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "five",
-    "char": "5️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "six",
-    "char": "6️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "seven",
-    "char": "7️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "eight",
-    "char": "8️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "nine",
-    "char": "9️⃣",
-    "category": "symbols"
-  },
-  {
-    "id": "keycap_ten",
-    "char": "🔟",
-    "category": "symbols"
-  },
-  {
     "id": "capital_abcd",
     "char": "🔠",
     "category": "symbols"
@@ -8228,21 +7418,6 @@ export const EMOJI_DATA = [
     "category": "flags"
   },
   {
-    "id": "rainbow-flag",
-    "char": "🏳️‍🌈",
-    "category": "flags"
-  },
-  {
-    "id": "transgender_flag",
-    "char": "🏳️‍⚧️",
-    "category": "flags"
-  },
-  {
-    "id": "pirate_flag",
-    "char": "🏴‍☠️",
-    "category": "flags"
-  },
-  {
     "id": "flag-ac",
     "char": "🇦🇨",
     "category": "flags"
@@ -8498,11 +7673,6 @@ export const EMOJI_DATA = [
     "category": "flags"
   },
   {
-    "id": "flag-sark",
-    "char": "🇨🇶",
-    "category": "flags"
-  },
-  {
     "id": "flag-cr",
     "char": "🇨🇷",
     "category": "flags"
@@ -8602,11 +7772,7 @@ export const EMOJI_DATA = [
     "char": "🇪🇷",
     "category": "flags"
   },
-  {
-    "id": "es",
-    "char": "🇪🇸",
-    "category": "flags"
-  },
+
   {
     "id": "flag-et",
     "char": "🇪🇹",
