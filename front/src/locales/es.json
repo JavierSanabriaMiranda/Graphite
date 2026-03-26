@@ -175,6 +175,26 @@
         "browse": "Navegar",
         "settings": "Ajustes"
     },
+    "identification": {
+        "email": "CORREO ELECTRÓNICO",
+        "email_placeholder": "Introduce tu correo electrónico...",
+        "password": "CONTRASEÑA",
+        "password_placeholder": "Introduce tu contraseña...",
+        "confirm_password":"CONFIRMA CONTRASEÑA",
+        "invalid_credentials": "Credenciales incorrectas",
+        "login": {
+            "login": "INICIA SESION",
+            "title": "¡Bienvenido de nuevo!",
+            "register_footer": "¿No tienes cuenta? ",
+            "button": "INICIAR SESIÓN"
+        },
+        "register": {
+            "register": "REGISTRATE",
+            "title": "¡Unete a Graphite!",
+            "login_footer": "¿Ya tienes cuenta? ",
+            "button": "CREAR CUENTA"
+        }
+    },
     "emojis": {
         "emoji": "Emoji",
         "search": "Buscar emoji...",

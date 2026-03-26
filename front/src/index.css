@@ -38,6 +38,7 @@ html, body, #root {
 /* Register themes variables on the Tailwind v4 engine */
 @theme {
   --color-main-bg: var(--color-app-bg);
+  --color-main-bg-darker: color-mix(in srgb, var(--color-main-bg), black 20%);
   --color-primary: var(--color-primary);
   --color-hover-primary-bg: var(--color-hover-primary-bg);
   --color-text-primary: var(--color-text-primary);
@@ -575,5 +576,15 @@ Page Block Style
 /* Removes writing cursor when selecting page block */
 .ProseMirror:has(.ProseMirror-selectednode) {
   caret-color: transparent !important;
+}
+
+/* ====================
+Password Style
+==================== */
+
+/* Removes eye icon for password revealing */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
 }
 

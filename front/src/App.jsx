@@ -10,10 +10,17 @@ import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
 import SettingsModal from './components/configuration_menu/SettingsModal';
 import MobileBrowseView from './components/navigation/MobileBrowseView';
+import { useAuth, AuthProvider } from './components/context/AuthContext';
+import AuthenticationView from './components/views/AuthenticationView';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWorkspace }) => {
   const { isSettingsOpen, closeSettings, activeTab, setActiveTab, openSettings } = useUI();
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginView />;
+  }
 
   const handleTabChange = (tabId) => {
     if (tabId === 'settings') {
@@ -68,25 +75,52 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
   );
 };
 
-function App() {
-  const isMobile = useIsMobile()
+// Middle component to handle data loading from user just after login
+const DataWrapper = ({ isMobile }) => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [isSidebarPinned, setIsSidebarPinned] = useState(true);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
-    const init = async () => {
-      const user = await userService.getCurrentUser();
-      if (user) {
-        const workspaces = await workspaceService.getByUser(user.user_id);
-        if (workspaces.length > 0) setCurrentWorkspace(workspaces[0]);
+    const initData = async () => {
+      if (isAuthenticated) {
+        try {
+          const user = await userService.getCurrentUser();
+          if (user) {
+            const workspaces = await workspaceService.getByUser(user.user_id);
+            if (workspaces.length > 0) setCurrentWorkspace(workspaces[0]);
+          }
+        } catch (e) {
+          console.error("Error cargando datos:", e);
+        }
       }
+      setDataLoading(false);
     };
-    init();
-  }, []);
+    initData();
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    setIsSidebarPinned(!isMobile)
-  }, [isMobile])
+    setIsSidebarPinned(!isMobile);
+  }, [isMobile]);
+
+  // While stronghold is opening
+  if (authLoading) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-main-bg text-primary">
+        <Loader2 className="w-10 h-10 animate-spin mb-4" />
+        <p className="text-xs font-black uppercase tracking-widest opacity-50">Desbloqueando Graphite...</p>
+      </div>
+    );
+  }
+
+  // If there's no session, go to login
+  if (!isAuthenticated) {
+    return <AuthenticationView />;
+  }
+
+  // If authenticated but loading workspace
+  if (dataLoading) return null;
 
   return (
     <UIProvider>
@@ -100,6 +134,16 @@ function App() {
       </NoteProvider>
     </UIProvider>
   );
+};
+
+function App() {
+  const isMobile = useIsMobile();
+
+  return (
+    <AuthProvider>
+      <DataWrapper isMobile={isMobile} />
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
