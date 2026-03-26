@@ -8,7 +8,6 @@
     "dev": "tauri dev",
     "build": "tauri build",
     "front:dev": "npm run dev --prefix front",
-    
     "android:prep": "xcopy /s /y /i tauri\\resources\\android\\res tauri\\gen\\android\\app\\src\\main\\res",
     "android:dev": "npm run android:prep && tauri android dev",
     "android:build": "npm run android:prep && tauri android build"
@@ -18,6 +17,7 @@
   },
   "dependencies": {
     "@tauri-apps/plugin-sql": "^2.3.2",
+    "@tauri-apps/plugin-stronghold": "^2.3.1",
     "@tiptap/suggestion": "^3.20.1"
   }
 }

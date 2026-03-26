@@ -8,7 +8,7 @@ import PasswordInput from '../util/PasswordInput';
 
 const AuthenticationView = () => {
     const { t } = useTranslation();
-    const { login } = useAuth();
+    const { login, signUp } = useAuth();
     const isMobile = useIsMobile();
 
     const [authMode, setAuthMode] = useState('login');
@@ -27,28 +27,13 @@ const AuthenticationView = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (authMode === 'signup' && password !== confirmPassword) {
-            setStatus('password_mismatch');
-            return;
-        }
         setStatus('loading');
 
         try {
             if (authMode === 'login') {
-                const tempSalt = "salt-de-prueba-sustituir-por-api";
-                setTimeout(async () => {
-                    const mockToken = "eyJhbGciOiJIUzI1...";
-                    const mockWrappedDEK = "base64...";
-                    const mockIv = "base64...";
-                    try {
-                        await login(mockToken, mockWrappedDEK, mockIv, tempSalt, password);
-                    } catch (err) {
-                        setStatus('error');
-                    }
-                }, 1000);
+                await login(email, password); 
             } else {
-                console.log("Registrando usuario...");
-                setTimeout(() => setStatus('idle'), 1000);
+                await signUp(email, password); 
             }
         } catch (error) {
             setStatus('error');
