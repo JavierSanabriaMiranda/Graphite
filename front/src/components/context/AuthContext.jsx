@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { Stronghold } from '@tauri-apps/plugin-stronghold';
-import { appDataDir } from '@tauri-apps/api/path';
 import { isTokenValid } from '../../util/auth';
 import { deriveKEK, wrapDEK, unwrapDEK, deriveAuthHash } from '../../util/crypto';
 import { authService } from '../../services/api';
+import { userService } from '../../services/db/userService';
+import { invoke } from '@tauri-apps/api/core';
+import { workspaceService } from '../../services/db/workspaceService';
+import { noteService } from '../../services/db/noteService';
 
 const AuthContext = createContext();
 let strongholdInstance = null;
@@ -28,33 +30,13 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                const stronghold = await getStronghold();
-
-                let client;
-                try {
-                    // Try to load, if doesn't exist, will throw Error
-                    client = await stronghold.loadClient("graphite_auth");
-                } catch (e) {
-                    console.log("Sesión no iniciada (sin Vault previo)");
-                    setIsAuthenticated(false);
-                    setLoading(false);
-                    return;
-                }
-
-                const store = client.getStore();
-                const jwtBytes = await store.get("jwt_token");
-                const dekBytes = await store.get("active_dek");
-
-                if (jwtBytes && dekBytes) {
-                    const token = new TextDecoder().decode(new Uint8Array(jwtBytes));
-                    if (isTokenValid(token)) {
-                        setDek(new Uint8Array(dekBytes));
-                        setIsAuthenticated(true);
-                    }
+                const data = await invoke('load_secure_data');
+                if (data && isTokenValid(data.token)) {
+                    setDek(new Uint8Array(data.dek));
+                    setIsAuthenticated(true);
                 }
             } catch (e) {
-                // Este catch es para errores reales (archivo corrupto, clave maestra mal, etc.)
-                console.error("Error crítico de hardware/Stronghold:", e);
+                console.error("Error cargando vault rápido:", e);
             } finally {
                 setLoading(false);
             }
@@ -67,7 +49,7 @@ export const AuthProvider = ({ children }) => {
         const passwordHash = await deriveAuthHash(password, salt);
 
         // Call to remote service
-        const { token, wrappedDek, dekIv } = await authService.login(email, passwordHash);
+        const { token, wrappedDek, dekIv, username, userId } = await authService.login(email, passwordHash);
 
         // Cryptographic logic
         const kek = await deriveKEK(password, salt);
@@ -76,20 +58,27 @@ export const AuthProvider = ({ children }) => {
         // Persistence (Tauri/Stronghold)
         await saveSessionLocally(token, decryptedDek);
         setDek(decryptedDek);
+
+        await userService.saveCloudSession(userId, email, username, token)
+
         setIsAuthenticated(true);
     };
 
     const logout = async () => {
-        const stronghold = await getStronghold();
-        const client = await stronghold.getOrCreateClient(stronghold);
-        await client.getStore().clear(); // Safe delete of local session
-        await stronghold.save();
-
-        setIsAuthenticated(false);
-        setDek(null);
+        try {
+            // Clear binary file on rust
+            await invoke('clear_secure_data');
+            await userService.logout()
+        } catch (e) {
+            console.error("Error al borrar el vault:", e);
+        } finally {
+            // Clear React state
+            setIsAuthenticated(false);
+            setDek(null);
+        }
     };
 
-    const signUp = async (email, password) => {
+    const signUp = async (email, password, username) => {
         // Local cryptography setup
         const salt = window.crypto.getRandomValues(new Uint8Array(16));
         const saltBase64 = btoa(Array.from(salt).map(b => String.fromCodePoint(b)).join(''));
@@ -101,7 +90,8 @@ export const AuthProvider = ({ children }) => {
         const passwordHash = await deriveAuthHash(password, saltBase64);
 
         // Send to server
-        const { token } = await authService.signup({
+        const { token, userId, } = await authService.signup({
+            username,
             email,
             passwordHash: passwordHash,
             cryptoSalt: saltBase64,
@@ -109,38 +99,20 @@ export const AuthProvider = ({ children }) => {
             dekIv: iv
         });
 
+        await userService.saveCloudSession(userId, email, username, token);
+        const workspaceId = await workspaceService.addWelcomeWorkspace(userId);
+        await noteService.addWelcomeNotes(workspaceId)
+
         await saveSessionLocally(token, newDek);
         setDek(newDek);
         setIsAuthenticated(true);
     };
 
-    // Función auxiliar para no repetir código de guardado
     const saveSessionLocally = async (token, dek) => {
-        try {
-            const stronghold = await getStronghold();
-            const client = await getOrCreateClient(stronghold);
-            const store = client.getStore();
-
-            await store.insert("jwt_token", Array.from(new TextEncoder().encode(token)));
-            await store.insert("active_dek", Array.from(dek));
-
-            await stronghold.save();
-            console.log("Sesión persistida en Stronghold");
-        } catch (e) {
-            console.error("Error persistiendo sesión:", e);
-        }
-    };
-
-    const getOrCreateClient = async (stronghold) => {
-        const clientName = "graphite_auth";
-        try {
-            // Intentamos cargar el cliente
-            return await stronghold.loadClient(clientName);
-        } catch (e) {
-            // Si falla (porque no existe), lo creamos
-            console.log("Cliente no encontrado, creando nuevo espacio en el Vault...");
-            return await stronghold.createClient(clientName);
-        }
+        await invoke('save_secure_data', {
+            token,
+            dek: Array.from(dek)
+        });
     };
 
     if (loading) return null;

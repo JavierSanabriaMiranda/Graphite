@@ -26,3 +26,6 @@ tauri-plugin-sql = { version = "2", features = ["sqlite"] }
 tauri-plugin-stronghold = "2"
 argon2 = "0.5"
 machine-uid = "0.3"
+aes-gcm = "0.10.3"
+rand = "0.8.5"
+base64 = "0.21"

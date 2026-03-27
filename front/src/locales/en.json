@@ -164,10 +164,17 @@
     "settings": {
         "title": "Settings",
         "general": "General",
+        "account": "User account",
+        "account_section": "Account",
         "language": {
             "title": "App Language",
             "description": "Select the language for Graphite's interface.",
             "search": "Search language"
+        },
+        "logout": {
+            "logout": "Logout",
+            "title": "Logout",
+            "description": "Close your session at this device"
         }
     },
     "nav": {
@@ -177,6 +184,8 @@
         "settings": "Settings"
     },
     "identification": {
+        "username": "USERNAME",
+        "username_placeholder": "Introduce a username...",
         "email": "EMAIL",
         "email_placeholder": "Type your email...",
         "password": "PASSWORD",

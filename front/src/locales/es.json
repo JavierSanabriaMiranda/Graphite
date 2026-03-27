@@ -163,10 +163,17 @@
     "settings": {
         "title": "Ajustes",
         "general": "General",
+        "account": "Cuenta de usuario",
+        "account_section": "Cuenta",
         "language": {
             "title": "Idioma de la aplicación",
             "description": "Selecciona el idioma para la interfaz de Graphite.",
             "search": "Buscar idioma"
+        },
+        "logout": {
+            "logout": "Cerrar Sesión",
+            "title": "Cerrar Sesión",
+            "description": "Cierra tu sesión activa en este dispositivo"
         }
     },
     "nav": {
@@ -176,6 +183,8 @@
         "settings": "Ajustes"
     },
     "identification": {
+        "username": "NOMBRE DE USUARIO",
+        "username_placeholder": "Introduce un nombre de usuario...",
         "email": "CORREO ELECTRÓNICO",
         "email_placeholder": "Introduce tu correo electrónico...",
         "password": "CONTRASEÑA",

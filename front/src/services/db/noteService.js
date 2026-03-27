@@ -1,4 +1,6 @@
 import { getDB } from '.';
+import i18next from 'i18next';
+import { getWelcomeNote } from './pre_designed_pages/welcomeContent'
 
 const emptyContent = JSON.stringify({
     type: 'doc',
@@ -15,6 +17,44 @@ const emptyContent = JSON.stringify({
 export const noteService = {
 
 
+    addWelcomeNotes: async (workspaceUuid) => {
+        const db = await getDB();
+
+        const lang = i18next.language?.split('-')[0] || 'en';
+        const localizedContent = getWelcomeNote(lang);
+        const welcome = localizedContent.welcome_note;
+        const subnote = localizedContent.subnote;
+
+        const noteUuid = crypto.randomUUID();
+        const subnoteUuid = crypto.randomUUID();
+
+        await db.execute(
+            `INSERT INTO NOTES (note_id, workspace_id, title, content, note_path, icon, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, $6, 1)`,
+            [
+                noteUuid,
+                workspaceUuid,
+                welcome.title,
+                welcome.body,
+                "/" + welcome.title,
+                welcome.icon
+            ]
+        );
+
+        await db.execute(
+            `INSERT INTO NOTES (note_id, parent_id, workspace_id, title, content, note_path, icon, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, 1)`,
+            [
+                subnoteUuid,
+                noteUuid,
+                workspaceUuid,
+                subnote.title,
+                subnote.body,
+                "/" + welcome.title + "/" + subnote.title,
+                subnote.icon
+            ]
+        );
+    },
 
     /**
      * Get all the notes of a workspace

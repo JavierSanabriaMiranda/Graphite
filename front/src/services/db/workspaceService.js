@@ -5,6 +5,19 @@ import { getDB } from '.';
  */
 export const workspaceService = {
 
+    addWelcomeWorkspace: async (userId) => {
+        const db = await getDB();
+
+        const workspaceUuid = crypto.randomUUID();
+
+        await db.execute(
+            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, is_dirty) VALUES ($1, $2, $3, 1)",
+            [workspaceUuid, userId, "Personal"]
+        );
+
+        return workspaceUuid;
+    },
+
     /**
      * Get all the workspaces from the user whose id is inserted as parameter
      * 

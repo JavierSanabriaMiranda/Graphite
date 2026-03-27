@@ -12,6 +12,7 @@ const AuthenticationView = () => {
     const isMobile = useIsMobile();
 
     const [authMode, setAuthMode] = useState('login');
+    const [username, setUsername] = useState('')
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,9 +32,9 @@ const AuthenticationView = () => {
 
         try {
             if (authMode === 'login') {
-                await login(email, password); 
+                await login(email, password);
             } else {
-                await signUp(email, password); 
+                await signUp(email, password, username);
             }
         } catch (error) {
             setStatus('error');
@@ -44,7 +45,7 @@ const AuthenticationView = () => {
         <div className="h-dvh w-full flex flex-col bg-zinc-50 dark:bg-main-bg-darker font-sans transition-colors duration-500 overflow-hidden">
 
             {/* Top Bar */}
-            <div className="w-full h-16 flex items-center justify-between px-6 sm:px-10 border-b border-zinc-200/50 dark:border-zinc-900/50 backdrop-blur-md z-20 shrink-0">
+            <div className="w-full h-16 flex bg-zinc-50 dark:bg-main-bg-darker items-center justify-between px-6 sm:px-10 border-b border-zinc-200/50 dark:border-zinc-900/50 backdrop-blur-md z-20 shrink-0">
                 <h1 className="text-xl font-bold text-text-primary tracking-tight">Graphite</h1>
                 <div className="flex items-center">
                     <ChangeThemeButton />
@@ -81,6 +82,20 @@ const AuthenticationView = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {authMode === 'signup' && (
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest block">{t('identification.username')}</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder={t('identification.username_placeholder')}
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        className="w-full p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 text-text-primary border-2 border-transparent focus:border-primary/30 transition-all outline-none"
+                                    />
+                                </div>
+                            )}
+
                             {/* Email */}
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest block">{t('identification.email')}</label>
