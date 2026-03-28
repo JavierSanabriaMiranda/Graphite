@@ -22,13 +22,13 @@ export const syncService = {
             // Sync Workspaces (Dependencies)
             for (const workspace of workspaces) {
                 // Bundle sensitive data: name
-                const plaintext = JSON.stringify({ name: workspace.name });
+                const plaintext = JSON.stringify({ name: workspace.name, icon: workspace.icon });
                 const { ciphertext, iv } = await encryptData(plaintext, dek);
 
                 const wsPayload = {
                     workspaceId: workspace.workspace_id,
-                    encryptedName: ciphertext,
-                    nameIv: iv,
+                    encryptedPayload: ciphertext,
+                    iv: iv,
                     isDeleted: workspace.is_deleted === 1,
                     updatedAt: workspace.updated_at
                 };
@@ -136,16 +136,23 @@ export const syncService = {
             // Step 1: Sync Workspaces
             const remoteWorkspaces = await remoteWorkspaceService.getAllRemoteWorkspaces();
             for (const rw of remoteWorkspaces) {
-                // Decrypt name for local use
-                const decryptedJson = await decryptData(rw.encryptedName, dek, rw.nameIv);
-                const { name } = JSON.parse(decryptedJson);
+                // Decrypt payload for local use
+                const decryptedJson = await decryptData(rw.encryptedPayload, dek, rw.iv);
+                const { name, icon } = JSON.parse(decryptedJson);
+
+                // If no icon is present, we want to store null instead of an empty string 
+                // to avoid confusion with the default icon logic in the UI
+                let noteIcon = null;
+                if (icon) {
+                    noteIcon = icon;
+                }
 
                 await db.execute(
-                    `INSERT INTO WORKSPACES (workspace_id, owner_id, name, is_deleted, updated_at, is_dirty) 
+                    `INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_deleted, updated_at, is_dirty) 
                      VALUES (?, ?, ?, ?, ?, 0) 
                      ON CONFLICT(workspace_id) DO UPDATE SET 
-                     name = excluded.name, is_deleted = excluded.is_deleted, updated_at = excluded.updated_at`,
-                    [rw.workspaceId, userId, name, rw.isDeleted ? 1 : 0, rw.updatedAt]
+                     name = excluded.name, icon = excluded.icon, is_deleted = excluded.is_deleted, updated_at = excluded.updated_at`,
+                    [rw.workspaceId, userId, name, noteIcon, rw.isDeleted ? 1 : 0, rw.updatedAt]
                 );
 
                 const remoteNotes = await remoteNoteService.getRemoteMetadataByWorkspace(rw.workspaceId);
@@ -159,7 +166,7 @@ export const syncService = {
                         `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, updated_at, note_version, is_dirty)
                      VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
                      ON CONFLICT(note_id) DO UPDATE SET
-                     title = excluded.title, icon = excluded.icon, workspace_id = excluded.workspace_id,
+                     title = excluded.title, icon = excluded.icon, note_path = excluded.note_path, workspace_id = excluded.workspace_id,
                      is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
                      updated_at = excluded.updated_at, note_version = excluded.note_version`,
                         [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]

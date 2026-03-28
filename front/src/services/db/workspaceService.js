@@ -11,8 +11,8 @@ export const workspaceService = {
         const workspaceUuid = crypto.randomUUID();
 
         await db.execute(
-            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, is_dirty) VALUES ($1, $2, $3, 1)",
-            [workspaceUuid, userId, "Personal"]
+            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_dirty) VALUES ($1, $2, $3, $4, 1)",
+            [workspaceUuid, userId, "Personal", '🔒']
         );
 
         return workspaceUuid;

@@ -50,9 +50,17 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                         className="group flex items-center gap-2 overflow-hidden hover:bg-hover-primary-bg p-1 -ml-1 rounded-lg transition-all cursor-pointer flex-1 mr-2"
                         onClick={() => { /* TODO: Open workspace selector */ }}
                     >
-                        <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
-                            {workspace?.name?.charAt(0).toUpperCase() || 'W'}
-                        </div>
+                        {
+                            workspace?.icon ? (
+                                <div className="w-6 h-6 bg-main-bg hover:bg-hover-primary-bg rounded shrink-0 flex items-center justify-center text-xl font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
+                                    {workspace?.icon}
+                                </div>
+                            ) : (
+                                <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
+                                    {workspace?.name?.charAt(0)?.toUpperCase() || 'W'}
+                                </div>
+                            )
+                        }
                         <h2 className="font-semibold text-text-primary truncate text-left">
                             {workspace?.name || '...'}
                         </h2>
