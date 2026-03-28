@@ -42,7 +42,8 @@ export const syncService = {
                 // Bundle sensitive data: title, content, icon
                 const noteMetadata = JSON.stringify({
                     title: note.title,
-                    icon: note.icon
+                    icon: note.icon,
+                    notePath: note.note_path
                 });
 
                 let { ciphertext, iv } = await encryptData(noteMetadata, dek);
@@ -152,16 +153,16 @@ export const syncService = {
                 // Insert notes without parent references
                 for (const rn of remoteNotes) {
                     const metaJson = await decryptData(rn.encryptedMetadata, dek, rn.metadataIv);
-                    const { title, icon } = JSON.parse(metaJson);
+                    const { title, icon, notePath } = JSON.parse(metaJson);
 
                     await db.execute(
-                        `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, is_favorite, is_deleted, updated_at, note_version, is_dirty)
-                     VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, 0) 
+                        `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, updated_at, note_version, is_dirty)
+                     VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
                      ON CONFLICT(note_id) DO UPDATE SET
                      title = excluded.title, icon = excluded.icon, workspace_id = excluded.workspace_id,
                      is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
                      updated_at = excluded.updated_at, note_version = excluded.note_version`,
-                        [rn.noteId, rn.workspaceId, title, icon, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]
+                        [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]
                     );
                 }
 
