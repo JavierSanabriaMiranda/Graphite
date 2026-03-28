@@ -29,7 +29,6 @@ export const workspaceService = {
         return await db.select("SELECT * FROM WORKSPACES where owner_id = $1", [userId]);
     },
 
-
     /**
      * Gets the workspaces with the name and owner specified as params (it should be just one)
      * 

@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
+import { useAuth } from './AuthContext';
+import { syncService } from '../../services/db/syncService';
 
 /**
  * Context object to hold the global state of the active note and UI synchronization.
@@ -15,11 +17,14 @@ const NoteContext = createContext();
  * @param {Object} props.children - The components that will have access to this context.
  */
 export const NoteProvider = ({ children, workspace }) => {
+    const { dek } = useAuth();
     const { t } = useTranslation();
     const [selectedNote, setSelectedNote] = useState(null);
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [syncStatus, setSyncStatus] = useState('ONLINE');
 
     const selectedNoteRef = useRef(selectedNote);
     const workspaceRef = useRef(workspace)
@@ -49,10 +54,17 @@ export const NoteProvider = ({ children, workspace }) => {
      * 
      * @param {Object} note - The note object to be set as active.
      */
-    const selectNote = useCallback((note) => {
-        if (note?.note_id === selectedNote?.note_id) return;
+    const selectNote = useCallback(async (noteMetadata) => {
+        if (!noteMetadata) return;
+
+        // Fetch full content with sync logic
+        const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
+        const note = await noteService.getByNoteId(noteMetadata.note_id);
+
         setSelectedNote(note);
-    }, [selectedNote]);
+        setSyncStatus(result.status);
+        setIsSyncing(false);
+    }, [dek]);
 
     /**
      * Creates a new root note
@@ -109,6 +121,8 @@ export const NoteProvider = ({ children, workspace }) => {
     // Context value object containing the state and the updater functions
     const value = {
         selectedNote,
+        isSyncing,
+        syncStatus,
         setSelectedNote, // Raw setter for direct manipulation if needed
         selectNote,
         refreshTrigger,

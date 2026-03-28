@@ -6,6 +6,7 @@ import { userService } from '../../services/db/userService';
 import { invoke } from '@tauri-apps/api/core';
 import { workspaceService } from '../../services/db/workspaceService';
 import { noteService } from '../../services/db/noteService';
+import { syncService } from '../../services/db/syncService';
 
 const AuthContext = createContext();
 
@@ -24,6 +25,11 @@ export const AuthProvider = ({ children }) => {
                 else {
                     setDek(new Uint8Array(data.dek));
                     setIsAuthenticated(true);
+
+                    // INITIAL SYNC: Refresh metadata on app start
+                    if (navigator.onLine) {
+                        syncService.pullAllMetadata(decryptedDek);
+                    }
                 }
             } catch (e) {
                 console.error("Error cargando vault rápido:", e);
@@ -50,6 +56,11 @@ export const AuthProvider = ({ children }) => {
         setDek(decryptedDek);
 
         await userService.saveCloudSession(userId, email, username, token)
+
+        // SYNC AFTER LOGIN: Populate the app for the first time
+        if (navigator.onLine) {
+            await syncService.pullAllMetadata(decryptedDek, userId);
+        }
 
         setIsAuthenticated(true);
     };

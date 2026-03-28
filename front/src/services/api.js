@@ -82,6 +82,16 @@ export const remoteWorkspaceService = {
 
         if (!response.ok) throw new Error("Workspace sync failed");
         return true;
+    },
+
+    /**
+     * Fetches all workspaces from the server for the current user.
+     */
+    async getAllRemoteWorkspaces() {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}workspaces`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch workspaces");
+        return await response.json();
     }
 };
 
@@ -100,5 +110,25 @@ export const remoteNoteService = {
 
         if (!response.ok) throw new Error("Note sync failed");
         return true;
+    },
+
+    /**
+     * Fetches metadata for all notes in a specific workspace.
+     */
+    async getRemoteMetadataByWorkspace(workspaceId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/workspace/${workspaceId}/metadata`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch notes metadata");
+        return await response.json();
+    },
+
+    /**
+     * Fetches the encrypted payload of a specific note.
+     */
+    async getRemoteNoteContent(noteId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/${noteId}/content`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch note content");
+        return await response.json();
     }
 };

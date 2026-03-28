@@ -56,12 +56,17 @@ import { useNote } from './context/NoteContext';
 import { useToast } from './context/ToastContext';
 import { useIsMobile } from '../hooks/useIsMobile'
 
+const EMPTY_DOC = {
+  type: 'doc',
+  content: [{ type: 'paragraph' }]
+};
+
 const TiptapEditor = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const { dek, isAuthenticated } = useAuth();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote } = useNote();
+  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing } = useNote();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -264,7 +269,7 @@ const TiptapEditor = () => {
     }, 5); // Delay to let ProseMirror load
 
     return () => clearTimeout(timer);
-  }, [activeNote?.note_id, editor]);
+  }, [activeNote?.note_id, editor, isSyncing]);
 
   // Sync title when note changes
   useEffect(() => {
