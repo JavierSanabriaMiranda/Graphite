@@ -26,8 +26,8 @@ export const syncService = {
 
                 const wsPayload = {
                     workspaceId: workspace.workspace_id,
-                    encryptedPayload: ciphertext,
-                    iv: iv,
+                    encryptedName: ciphertext,
+                    nameIv: iv,
                     isDeleted: workspace.is_deleted === 1,
                     updatedAt: workspace.updated_at
                 };
@@ -39,18 +39,27 @@ export const syncService = {
             // Sync Notes
             for (const note of notes) {
                 // Bundle sensitive data: title, content, icon
-                const notePlaintext = JSON.stringify({
+                const noteMetadata = JSON.stringify({
                     title: note.title,
-                    content: note.content,
                     icon: note.icon
                 });
 
-                const { ciphertext, iv } = await encryptData(notePlaintext, dek);
+                const noteContent = JSON.stringify({
+                    content: note.content,
+                });
+
+                let { ciphertext, iv } = await encryptData(noteMetadata, dek);
+                const cipherMetadata = ciphertext;
+                const metadataIv = iv;
+
+                ({ ciphertext, iv } = await encryptData(noteContent, dek));
 
                 const notePayload = {
                     noteId: note.note_id,
                     workspace: { workspaceId: note.workspace_id },
                     parent: note.parent_id ? { noteId: note.parent_id } : null,
+                    encryptedMetadata: cipherMetadata,
+                    metadataIv: metadataIv,
                     encryptedPayload: ciphertext,
                     iv: iv,
                     isFavorite: note.is_favorite === 1,
@@ -69,7 +78,7 @@ export const syncService = {
 
             // Final purge of records that are already synced and marked as deleted
             await syncService.purgeSyncedDeletes();
-            
+
             console.log("Graphite Sync: All pending changes pushed to cloud.");
         } catch (error) {
             console.error("Graphite Sync Error:", error);

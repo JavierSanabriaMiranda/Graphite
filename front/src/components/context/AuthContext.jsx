@@ -18,7 +18,10 @@ export const AuthProvider = ({ children }) => {
         const initAuth = async () => {
             try {
                 const data = await invoke('load_secure_data');
-                if (data && isTokenValid(data.token)) {
+                if (!data || !isTokenValid(data.token)) {
+                    await logout();
+                }
+                else {
                     setDek(new Uint8Array(data.dek));
                     setIsAuthenticated(true);
                 }
