@@ -190,7 +190,7 @@
         "password": "CONTRASEÑA",
         "password_placeholder": "Introduce tu contraseña...",
         "confirm_password":"CONFIRMA CONTRASEÑA",
-        "invalid_credentials": "Credenciales incorrectas",
+        "password_mismatch": "Las contraseñas no coinciden",
         "login": {
             "login": "INICIA SESION",
             "title": "¡Bienvenido de nuevo!",
@@ -203,6 +203,11 @@
             "login_footer": "¿Ya tienes cuenta? ",
             "button": "CREAR CUENTA"
         }
+    },
+    "error": {
+        "invalid_credentials": "Credenciales incorrectas",
+        "connection_error": "Error de conexión con el servidor",
+        "already_registered": "Este usuario ya está registrado. Prueba iniciando sesión"
     },
     "emojis": {
         "emoji": "Emoji",

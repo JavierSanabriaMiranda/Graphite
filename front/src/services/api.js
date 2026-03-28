@@ -1,5 +1,6 @@
 const API_URL = "http://localhost:8080/api/v1/";
 import { invoke } from "@tauri-apps/api/core";
+import ApiError from "../custom_errors/ApiError";
 
 /**
  * Internal helper to retrieve the JWT token from the secure Rust vault.
@@ -35,7 +36,7 @@ export const authService = {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Error on login");
+            throw new ApiError(response.message, response.status);
         }
 
         return await response.json(); // token, wrappedDek, iv, salt
@@ -53,8 +54,7 @@ export const authService = {
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Error on signup");
+            throw new ApiError(response.message, response.status);
         }
 
         return await response.json(); // Returns new JWT
@@ -62,7 +62,7 @@ export const authService = {
 
     async getSalt(email) {
         const response = await fetch(`${API_URL}users/salt?email=${email}`);
-        if (!response.ok) throw new Error("User not found");
+        if (!response.ok) throw new ApiError(response.message, response.status);
         return await response.json();
     },
 };

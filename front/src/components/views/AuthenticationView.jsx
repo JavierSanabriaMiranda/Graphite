@@ -17,6 +17,7 @@ const AuthenticationView = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState('idle');
+    const [message, setMessage] = useState('');
 
     const toggleMode = () => {
         setAuthMode(prev => prev === 'login' ? 'signup' : 'login');
@@ -31,6 +32,7 @@ const AuthenticationView = () => {
         setStatus('loading');
         if (authMode !== 'login' && password !== confirmPassword) {
             setStatus('password_mismatch')
+            setMessage(t('identification.password_mismatch'))
             return
         }
 
@@ -42,6 +44,15 @@ const AuthenticationView = () => {
             }
         } catch (error) {
             setStatus('error');
+            if (!error.status) {
+                setMessage(t('error.connection_error'))
+            }
+            else if (error.status === 404) {
+                setMessage(t('error.invalid_credentials'))
+            } else if (error.status === 409) {
+                setMessage(t('error.already_registered'))
+            }
+            
         }
     };
 
@@ -141,7 +152,7 @@ const AuthenticationView = () => {
                             {(status === 'error' || status === 'password_mismatch') && (
                                 <div className="flex items-center gap-2 text-red-500 text-[11px] font-bold bg-red-500/10 p-4 rounded-2xl animate-in shake">
                                     <AlertCircle className="w-4 h-4 shrink-0" />
-                                    {status === 'error' ? t('identification.invalid_credentials') : t('identification.passwords_dont_match')}
+                                    {message}
                                 </div>
                             )}
 

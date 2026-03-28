@@ -191,7 +191,7 @@
         "password": "PASSWORD",
         "password_placeholder": "Type your password...",
         "confirm_password":"CONFIRM PASSWORD",
-        "invalid_credentials": "Invalid credentials",
+        "password_mismatch": "Passwords doesn't match",
         "login": {
             "login": "Log In",
             "title": "Welcome\nback!",
@@ -204,6 +204,11 @@
             "login_footer": "Already have an account? ",
             "button": "SIGN UP"
         }
+    },
+    "error": {
+        "invalid_credentials": "Invalid credentials",
+        "connection_error": "Error while connecting to the server",
+        "already_registered": "This user is already registered. Try login in"
     },
     "emojis": {
         "emojis": "Emoji",
