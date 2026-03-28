@@ -83,3 +83,65 @@ export async function deriveAuthHash(password, salt) {
     const exported = await window.crypto.subtle.exportKey("raw", derivedKey);
     return btoa(String.fromCharCode(...new Uint8Array(exported)));
 }
+
+/**
+ * Encrypts a string (plaintext) using the DEK.
+ * Used for Note content, titles, and Workspace names.
+ * @param {string} plaintext - The data to encrypt.
+ * @param {Uint8Array} dekBuf - The raw Data Encryption Key.
+ * @returns {Object} { ciphertext: string (base64), iv: string (base64) }
+ */
+export async function encryptData(plaintext, dekBuf) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plaintext);
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+    // Import the raw DEK buffer as a CryptoKey object
+    const key = await window.crypto.subtle.importKey(
+        "raw",
+        dekBuf,
+        "AES-GCM",
+        false,
+        ["encrypt"]
+    );
+
+    const encrypted = await window.crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        key,
+        data
+    );
+
+    return {
+        ciphertext: bufToBase64(encrypted),
+        iv: bufToBase64(iv)
+    };
+}
+
+/**
+ * Decrypts a base64 ciphertext using the DEK and provided IV.
+ * @param {string} ciphertextBase64 - The encrypted data in base64.
+ * @param {Uint8Array} dekBuf - The raw Data Encryption Key.
+ * @param {string} ivBase64 - The IV in base64.
+ * @returns {string} The original plaintext.
+ */
+export async function decryptData(ciphertextBase64, dekBuf, ivBase64) {
+    const data = base64ToBuf(ciphertextBase64);
+    const iv = base64ToBuf(ivBase64);
+
+    const key = await window.crypto.subtle.importKey(
+        "raw",
+        dekBuf,
+        "AES-GCM",
+        false,
+        ["decrypt"]
+    );
+
+    const decrypted = await window.crypto.subtle.decrypt(
+        { name: "AES-GCM", iv },
+        key,
+        data
+    );
+
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
+}

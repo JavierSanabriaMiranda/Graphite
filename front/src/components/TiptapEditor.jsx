@@ -50,6 +50,8 @@ import getSuggestionConfig from './slash_commands/suggestions';
 import MobileFormattingSheet from './menu_bar/MobileFormattingSheet';
 
 import { noteService } from '../services/db/noteService';
+import { useAuth } from './context/AuthContext';
+import { syncService } from '../services/db/syncService';
 import { useNote } from './context/NoteContext';
 import { useToast } from './context/ToastContext';
 import { useIsMobile } from '../hooks/useIsMobile'
@@ -57,6 +59,7 @@ import { useIsMobile } from '../hooks/useIsMobile'
 const TiptapEditor = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
+  const { dek, isAuthenticated } = useAuth();
 
   const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote } = useNote();
 
@@ -287,6 +290,19 @@ const TiptapEditor = () => {
     };
   }, [activeNote]);
 
+  /**
+   * Helper function to trigger the remote sync process.
+   * It only runs if the user is authenticated and the device is online.
+   */
+  const triggerRemoteSync = async () => {
+    if (navigator.onLine && isAuthenticated && dek) {
+      // We don't await this to keep the UI snappy (Optimistic)
+      syncService.syncPendingData(dek).catch(err =>
+        console.error("Background sync failed:", err)
+      );
+    }
+  };
+
   // Save changes on db and tells the sidebar
   const handleTitleChange = async (e) => {
     const newTitle = e.target.value;
@@ -304,7 +320,7 @@ const TiptapEditor = () => {
   // Saves title on db
   const saveTitle = async () => {
     if (activeNote && title.trim() !== '' && title !== activeNote.title) {
-      const result = await noteService.update(activeNote.note_id, { title: title });
+      const result = await noteService.update(activeNote.note_id, { title: title, is_dirty: 1 });
 
       if (result?.error === 'COLLISION') {
         // Feedback to user
@@ -317,6 +333,7 @@ const TiptapEditor = () => {
 
       // If everything goes fine, update sidebar
       onNoteUpdate();
+      triggerRemoteSync();
     } else if (title.trim() === '') {
       // If title is empty, revert
       setTitle(activeNote.title);
@@ -329,10 +346,11 @@ const TiptapEditor = () => {
 
     setIcon(char)
     // Update on db
-    await noteService.update(activeNote.note_id, { icon: char });
+    await noteService.update(activeNote.note_id, { icon: char, is_dirty: 1 });
 
     // Notifies App.jsx to update sidebar
     onNoteUpdate();
+    triggerRemoteSync();
   };
 
   // Handles when the page icon is removed
@@ -357,6 +375,7 @@ const TiptapEditor = () => {
     });
 
     onNoteUpdate();
+    triggerRemoteSync();
 
     setTimeout(() => {
       setSaveStatus('saved');

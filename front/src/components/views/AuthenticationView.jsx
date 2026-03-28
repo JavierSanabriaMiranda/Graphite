@@ -29,6 +29,10 @@ const AuthenticationView = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus('loading');
+        if (password !== confirmPassword) {
+            setStatus('password_mismatch')
+            return
+        }
 
         try {
             if (authMode === 'login') {

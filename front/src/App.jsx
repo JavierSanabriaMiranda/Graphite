@@ -12,6 +12,7 @@ import SettingsModal from './components/configuration_menu/SettingsModal';
 import MobileBrowseView from './components/navigation/MobileBrowseView';
 import { useAuth, AuthProvider } from './components/context/AuthContext';
 import AuthenticationView from './components/views/AuthenticationView';
+import { useOnlineSync } from './hooks/useOnlineSync';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWorkspace }) => {
@@ -77,6 +78,8 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
 
 // Middle component to handle data loading from user just after login
 const DataWrapper = ({ isMobile }) => {
+  useOnlineSync();
+
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [isSidebarPinned, setIsSidebarPinned] = useState(true);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);

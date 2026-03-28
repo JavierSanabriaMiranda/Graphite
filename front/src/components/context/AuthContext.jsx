@@ -8,24 +8,11 @@ import { workspaceService } from '../../services/db/workspaceService';
 import { noteService } from '../../services/db/noteService';
 
 const AuthContext = createContext();
-let strongholdInstance = null;
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
     const [dek, setDek] = useState(null);
-
-    // Helper for initializing Tauri Stronghold
-    const getStronghold = async () => {
-        if (strongholdInstance) return strongholdInstance;
-
-        const dataDir = await appDataDir();
-        const vaultPath = `${dataDir}/vault.stronghold`;
-
-        console.log("Cargando Stronghold por primera vez...");
-        strongholdInstance = await Stronghold.load(vaultPath, "client-key");
-        return strongholdInstance;
-    };
 
     useEffect(() => {
         const initAuth = async () => {
