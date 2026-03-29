@@ -18,10 +18,16 @@ const AuthenticationView = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState('idle');
     const [message, setMessage] = useState('');
+    const [seed, setSeed] = useState(1);
+
+    const reset = () => {
+        setSeed(Math.random());
+    }
 
     const toggleMode = () => {
         setAuthMode(prev => prev === 'login' ? 'signup' : 'login');
         setStatus('idle');
+        reset();
         setEmail('')
         setPassword('')
         setConfirmPassword('')
@@ -46,13 +52,15 @@ const AuthenticationView = () => {
             setStatus('error');
             if (!error.status) {
                 setMessage(t('error.connection_error'))
+            } else if (error.status === 400) {
+                setMessage(t(`error.${error.message}`));
             }
             else if (error.status === 404) {
                 setMessage(t('error.invalid_credentials'))
             } else if (error.status === 409) {
                 setMessage(t('error.already_registered'))
             }
-            
+
         }
     };
 
@@ -132,6 +140,7 @@ const AuthenticationView = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 error={status === 'password_mismatch'}
+                                key={seed} // Force re-mount to reset internal state when toggling modes
                             />
 
                             {/* Confirm Password */}
@@ -144,6 +153,7 @@ const AuthenticationView = () => {
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         error={status === 'password_mismatch'}
+                                        key={seed}
                                     />
                                 </div>
                             )}

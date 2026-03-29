@@ -219,7 +219,10 @@
     "error": {
         "invalid_credentials": "Invalid credentials",
         "connection_error": "Error while connecting to the server",
-        "already_registered": "This user is already registered. Try login in"
+        "already_registered": "This user is already registered. Try login in",
+        "invalid_email_format": "Invalid email format",
+        "invalid_username_format": "Invalid username format. Username must be between 3 and 20 characters long and cannot contain special characters",
+        "weak_password": "Weak password. Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number and a special character (@$!%*?&)."
     },
     "emojis": {
         "emojis": "Emoji",

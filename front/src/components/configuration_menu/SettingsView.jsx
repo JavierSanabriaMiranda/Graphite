@@ -150,7 +150,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                                     </div>
                                     <button
                                         onClick={logout}
-                                        className="cursor-pointer inline-flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-2xl transition-all shadow-lg shadow-red-500/20 active:scale-95"
+                                        className="cursor-pointer inline-flex items-center gap-2 px-6 py-3 bg-red-500/20 hover:bg-red-500/25 text-red-500 border dark:border-0 border-red-500 text-sm font-bold rounded-2xl transition-all shadow-sm shadow-red-500/20 active:scale-95"
                                     >
                                         <LogOut className="w-4 h-4" />
                                         {t('settings.logout.logout')}

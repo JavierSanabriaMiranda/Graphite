@@ -218,7 +218,10 @@
     "error": {
         "invalid_credentials": "Credenciales incorrectas",
         "connection_error": "Error de conexión con el servidor",
-        "already_registered": "Este usuario ya está registrado. Prueba iniciando sesión"
+        "already_registered": "Este usuario ya está registrado. Prueba iniciando sesión",
+        "invalid_email_format": "Formato de correo electrónico inválido",
+        "invalid_username_format": "Formato de nombre de usuario inválido. El nombre de usuario debe tener entre 3 y 20 caracteres y no puede contener caracteres especiales",
+        "weak_password": "Contraseña débil. La contraseña debe tener al menos 8 caracteres e incluir una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&)."
     },
     "emojis": {
         "emoji": "Emoji",

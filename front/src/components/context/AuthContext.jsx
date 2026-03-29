@@ -7,6 +7,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { workspaceService } from '../../services/db/workspaceService';
 import { noteService } from '../../services/db/noteService';
 import { syncService } from '../../services/db/syncService';
+import ApiError from '../../custom_errors/ApiError';
 
 const AuthContext = createContext();
 
@@ -80,6 +81,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     const signUp = async (email, password, username) => {
+        validateSignUpData(email, password, username);
+
         // Local cryptography setup
         const salt = window.crypto.getRandomValues(new Uint8Array(16));
         const saltBase64 = btoa(Array.from(salt).map(b => String.fromCodePoint(b)).join(''));
@@ -108,6 +111,25 @@ export const AuthProvider = ({ children }) => {
         setDek(newDek);
         setIsAuthenticated(true);
     };
+
+    // Validation logic for sign-up data
+    const validateSignUpData = (email, password, username) => {
+        // Username validation (3-20 chars, no special chars)
+        const usernameRegex = /^[a-zA-Z0-9]{3,20}$/;
+        if (!usernameRegex.test(username)) {
+            throw new ApiError("invalid_username_format", 400);
+        }
+        // Password validation (min 8 chars, at least one uppercase, one lowercase, one number, one special char)
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            throw new ApiError("weak_password", 400);
+        }
+        // Email validation (basic regex)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            throw new ApiError("invalid_email_format", 400);
+        }
+    }
 
     const saveSessionLocally = async (token, dek) => {
         await invoke('save_secure_data', {
