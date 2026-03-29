@@ -58,7 +58,10 @@ export const NoteProvider = ({ children }) => {
      * @param {Object} note - The note object to be set as active.
      */
     const selectNote = useCallback(async (noteMetadata) => {
-        if (!noteMetadata) return;
+        if (!noteMetadata) {
+            setSelectedNote(null);
+            return;
+        }
 
         // Fetch full content with sync logic
         const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);

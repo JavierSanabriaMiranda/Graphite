@@ -235,7 +235,8 @@ export const noteService = {
                 SET 
                     note_path = $1 || SUBSTR(note_path, $2),
                     is_dirty = 1,
-                    updated_at = $3
+                    updated_at = $3,
+                    note_version = version + 1
                 WHERE note_path LIKE $4 AND workspace_id = $5
             `, [
                     newPath,

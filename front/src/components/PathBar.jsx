@@ -114,7 +114,7 @@ const PathBar = ({ saveStatus, editor }) => {
             );
         }
 
-        // Caso: Normal route
+        // Case: Normal route
         return (
             <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
                 {parts.map((part, index) => {

@@ -48,6 +48,7 @@ import { BlockMoving } from './extensions/BlockMoving';
 import { Commands } from './slash_commands/Commands';
 import getSuggestionConfig from './slash_commands/suggestions';
 import MobileFormattingSheet from './menu_bar/MobileFormattingSheet';
+import ChangeThemeButton from './util/ChangeThemeButton';
 
 import { noteService } from '../services/db/noteService';
 import { useAuth } from './context/AuthContext';
@@ -394,7 +395,10 @@ const TiptapEditor = () => {
   if (!activeNote) {
     return (
       <div className="h-screen w-full bg-main-bg flex flex-col">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0" />
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0">
+          <div />
+          <ChangeThemeButton />
+        </div>
 
         <div className="grow">
           <EmptyState onCreateNote={createRootNote} />
