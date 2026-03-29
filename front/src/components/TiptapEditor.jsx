@@ -76,6 +76,7 @@ const TiptapEditor = () => {
 
   const saveTimeoutRef = useRef(null);
   const titleRef = useRef(null);
+  const scrollContainerRef = useRef(null);
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -231,6 +232,8 @@ const TiptapEditor = () => {
   // Effect to load selected note
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
+
+    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
 
     if (!activeNote) {
       editor.commands.setContent('', false);
@@ -408,7 +411,7 @@ const TiptapEditor = () => {
       />
       {isMobile ? <MobileFormattingSheet editor={editor} /> : <MenuBar editor={editor} />}
 
-      <div className="grow overflow-y-auto editor-scrollbar">
+      <div ref={scrollContainerRef} className="grow overflow-y-auto editor-scrollbar">
         <div className={`max-w-5xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
 
           {/* Header */}
