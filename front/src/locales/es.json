@@ -162,18 +162,34 @@
     },
     "settings": {
         "title": "Ajustes",
-        "general": "General",
-        "account": "Cuenta de usuario",
-        "account_section": "Cuenta",
-        "language": {
-            "title": "Idioma de la aplicación",
-            "description": "Selecciona el idioma para la interfaz de Graphite.",
-            "search": "Buscar idioma"
+        "general": {
+            "general": "General",
+            "language": {
+                "title": "Idioma de la aplicación",
+                "description": "Selecciona el idioma para la interfaz de Graphite.",
+                "search": "Buscar idioma"
+            }
         },
-        "logout": {
-            "logout": "Cerrar Sesión",
-            "title": "Cerrar Sesión",
-            "description": "Cierra tu sesión activa en este dispositivo"
+        "account": {
+            "account": "Cuenta de usuario",
+            "account_section": "Cuenta",
+            "logout": {
+                "logout": "Cerrar Sesión",
+                "title": "Cerrar Sesión",
+                "description": "Cierra tu sesión activa en este dispositivo"
+            }
+        },
+        "workspace": {
+            "workspace": "Espacio de trabajo",
+            "workspace_section": "Espacio de trabajo",
+            "name_title": "Nombre del espacio de trabajo",
+            "name_description": "Cambia el nombre de tu espacio de trabajo",
+            "delete_title": "Borrar espacio de trabajo",
+            "delete_description": "Borra tu espacio de trabajo y todo su contenido. Esta acción no se puede deshacer",
+            "delete_button": "Borrar espacio de trabajo",
+            "delete_confirm_title": "Confirmar borrado",
+            "delete_confirm_description": "¿Estás seguro de que quieres borrar el espacio de trabajo \"{{name}}\"? Todo su contenido será eliminado y no podrás recuperarlo.",
+            "delete_success": "El espacio de trabajo se ha borrado correctamente"
         }
     },
     "nav": {
@@ -200,7 +216,7 @@
         "email_placeholder": "Introduce tu correo electrónico...",
         "password": "CONTRASEÑA",
         "password_placeholder": "Introduce tu contraseña...",
-        "confirm_password":"CONFIRMA CONTRASEÑA",
+        "confirm_password": "CONFIRMA CONTRASEÑA",
         "password_mismatch": "Las contraseñas no coinciden",
         "login": {
             "login": "INICIA SESION",

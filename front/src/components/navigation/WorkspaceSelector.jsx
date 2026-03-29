@@ -50,7 +50,7 @@ const WorkspaceSelector = () => {
                     : "group flex items-center gap-2 overflow-hidden hover:bg-hover-primary-bg p-1 -ml-1 rounded-lg transition-all cursor-pointer flex-1 mr-2"
                  }`}
             >
-                <div className={`${isMobile ? "w-12 h-12 text-2xl" : "w-8 h-8 text-xl"} bg-primary/10 dark:bg-primary/30 rounded shrink-0 flex items-center justify-center font-bold text-white shadow-sm group-hover:scale-105 transition-transform`}>
+                <div className={`${isMobile ? "w-12 h-12 text-2xl" : "w-8 h-8 text-xl"} bg-primary/10 dark:bg-primary/30 rounded shrink-0 flex items-center justify-center font-bold text-black dark:text-white shadow-sm group-hover:scale-105 transition-transform`}>
                     {activeWorkspace?.icon || activeWorkspace?.name?.charAt(0).toUpperCase() || 'W'}
                 </div>
                 <div className="flex flex-col min-w-0">

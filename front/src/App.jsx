@@ -69,8 +69,9 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
       </main>
 
       {/* Global components (Portals) */}
-      <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
-
+      <ToastProvider>
+        <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
+      </ToastProvider>
       {isMobile && (
         <BottomNavbar activeTab={activeTab} onTabChange={handleTabChange} />
       )}

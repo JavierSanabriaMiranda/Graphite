@@ -68,12 +68,50 @@ export const WorkspaceProvider = ({ children }) => {
         // Lazy sync: just pull metadata for the selected workspace to update the note list in the sidebar
         if (navigator.onLine && dek) {
             try {
-                await syncService.pullAllMetadata(dek, workspace.workspace_id);
+                const user = await userService.getCurrentUser();
+                await syncService.pullAllMetadata(dek, user.user_id);
             } catch (error) {
                 console.error("Error while syncing workspace metadata:", error);
             }
         }
     }, [dek]);
+
+    const updateWorkspaceName = async (newName) => {
+        if (!activeWorkspace) return;
+        try {
+            const workspaceId = activeWorkspace.workspace_id;
+            await workspaceService.updateName(workspaceId, newName);
+            // Update local state
+            const user = await userService.getCurrentUser();
+            const localWorkspaces = await workspaceService.getByUser(user.user_id);
+            setWorkspaces(localWorkspaces);
+            const updatedWorkspace = await workspaceService.getById(workspaceId);
+            setActiveWorkspace(updatedWorkspace); // Update active workspace with new name
+            // Sync changes
+            await syncService.syncPendingData(dek);
+            
+        } catch (error) {
+            console.error("Error while updating workspace name:", error);
+        }   
+    };
+
+    const deleteWorkspace = async (workspaceId) => {
+        try {
+            await workspaceService.delete(workspaceId);
+            // Refresh list
+            const user = await userService.getCurrentUser();
+            const localWorkspaces = await workspaceService.getByUser(user.user_id);
+            setWorkspaces(localWorkspaces);
+            if (workspaces.length > 0) {
+                setActiveWorkspace(localWorkspaces[0]);
+            } else {
+                setActiveWorkspace(null);
+            }
+            await syncService.syncPendingData(dek);
+        } catch (error) {
+            console.error("Error while deleting workspace:", error);
+        }
+    }
 
     const value = {
         workspaces,
@@ -84,7 +122,9 @@ export const WorkspaceProvider = ({ children }) => {
         isCreatingWorkspace,
         openCreation,
         closeCreation,
-        createNewWorkspace
+        createNewWorkspace,
+        updateWorkspaceName,
+        deleteWorkspace
     };
 
     return (

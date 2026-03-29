@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { Globe, X, User, LogOut, Settings as SettingsIcon } from 'lucide-react';
-import LanguageSelector from './LanguageSelector';
+import { Globe, X, User, LogOut, Briefcase, } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+
+import GeneralSettings from './settings_views/GeneralSettings';
+import WorkspaceSettings from './settings_views/WorkspaceSettings';
+import AccountSettings from './settings_views/AccountSettings';
 
 const SettingsView = ({ t, onClose, isMobile }) => {
     const [activeTab, setActiveTab] = useState('general');
@@ -13,7 +16,6 @@ const SettingsView = ({ t, onClose, isMobile }) => {
      */
     const getTabClass = (tabId) => {
         const baseClass = "cursor-pointer flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ";
-        
         // Desktop sidebar full-width vs Mobile horizontal auto-width
         const layoutClass = isMobile ? "shrink-0 " : "w-full ";
 
@@ -24,7 +26,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
 
     return (
         <div className="flex h-full w-full bg-main-bg overflow-hidden transition-all duration-200 flex-col sm:flex-row">
-            
+
             {/* Sidebar - Desktop & Tablet (Hidden on mobile) */}
             <div className="hidden sm:flex w-56 md:w-64 bg-main-bg border-r border-zinc-200 dark:border-zinc-800 p-5 flex-col shrink-0">
                 <div className="flex-1 space-y-6">
@@ -39,7 +41,19 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                                 className={getTabClass('general')}
                             >
                                 <Globe className="w-4.5 h-4.5" />
-                                {t('settings.general')}
+                                {t('settings.general.general')}
+                            </button>
+                        </div>
+                    </div>
+                    {/* Workspace section */}
+                    <div>
+                        <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] px-3 mb-3">
+                            {t('settings.workspace.workspace_section') || 'WORKSPACE'}
+                        </h3>
+                        <div className="space-y-1">
+                            <button onClick={() => setActiveTab('workspace')} className={getTabClass('workspace')}>
+                                <Briefcase className="w-4.5 h-4.5" />
+                                {t('settings.workspace.workspace') || 'Workspace'}
                             </button>
                         </div>
                     </div>
@@ -47,7 +61,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                     {/* Account section */}
                     <div>
                         <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] px-3 mb-3">
-                            {t('settings.account_section')}
+                            {t('settings.account.account_section')}
                         </h3>
                         <div className="space-y-1">
                             <button
@@ -55,7 +69,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                                 className={getTabClass('account')}
                             >
                                 <User className="w-4.5 h-4.5" />
-                                {t('settings.account')}
+                                {t('settings.account.account')}
                             </button>
                         </div>
                     </div>
@@ -68,19 +82,21 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                         className="cursor-pointer w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl text-red-500 hover:bg-red-500/10 transition-all duration-200 group"
                     >
                         <LogOut className="w-4.5 h-4.5 group-hover:translate-x-0.5 transition-transform" />
-                        {t('settings.logout.logout')}
+                        {t('settings.account.logout.logout')}
                     </button>
                 </div>
             </div>
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-zinc-950/20">
-                
+
                 {/* Header */}
                 <div className="flex items-center justify-between p-5 md:p-6 border-b border-zinc-200 dark:border-zinc-800 bg-main-bg">
                     <div className="flex flex-col">
                         <h2 className="font-bold text-lg md:text-xl text-zinc-900 dark:text-zinc-100 capitalize">
-                            {activeTab === 'general' ? t('settings.general') : t('settings.account')}
+                            {activeTab === 'general' && t('settings.general.general')}
+                            {activeTab === 'workspace' && (t('settings.workspace.workspace'))}
+                            {activeTab === 'account' && t('settings.account.account')}
                         </h2>
                     </div>
 
@@ -98,67 +114,18 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                  */}
                 {isMobile && (
                     <div className="flex gap-2 p-3 bg-main-bg border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto no-scrollbar shrink-0">
-                        <button 
-                            onClick={() => setActiveTab('general')}
-                            className={getTabClass('general')}
-                        >
-                            <Globe className="w-4 h-4" />
-                            {t('settings.general')}
-                        </button>
-                        <button 
-                            onClick={() => setActiveTab('account')}
-                            className={getTabClass('account')}
-                        >
-                            <User className="w-4 h-4" />
-                            {t('settings.account')}
-                        </button>
+                        <button onClick={() => setActiveTab('general')} className={getTabClass('general')}><Globe className="w-4 h-4" /> {t('settings.genera.general')}</button>
+                        <button onClick={() => setActiveTab('workspace')} className={getTabClass('workspace')}><Briefcase className="w-4 h-4" /> {t('settings.workspace.workspace')}</button>
+                        <button onClick={() => setActiveTab('account')} className={getTabClass('account')}><User className="w-4 h-4" /> {t('settings.account.account')}</button>
                     </div>
                 )}
 
                 {/* Settings Content Switch */}
                 <div className="flex-1 overflow-y-auto p-5 md:p-8 custom-scrollbar">
                     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
-
-                        {activeTab === 'general' && (
-                            <div className="space-y-6">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 gap-4 bg-zinc-50/50 dark:bg-zinc-900/30 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-                                    <div className="max-w-full sm:max-w-[65%]">
-                                        <h4 className="text-sm md:text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                                            {t('settings.language.title')}
-                                        </h4>
-                                        <p className="text-xs md:text-sm text-zinc-500 mt-1">
-                                            {t('settings.language.description')}
-                                        </p>
-                                    </div>
-                                    <div className="w-full sm:w-auto flex justify-end">
-                                        <LanguageSelector />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'account' && (
-                            <div className="space-y-6">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 gap-4 bg-zinc-50/50 dark:bg-zinc-900/30 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-                                    <div className="max-w-full sm:max-w-[65%]">
-                                        <h4 className="text-sm md:text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                                            {t('settings.logout.title')}
-                                        </h4>
-                                        <p className="text-xs md:text-sm text-zinc-500 mt-1">
-                                            {t('settings.logout.description')}
-                                        </p>
-                                    </div>
-                                    <button
-                                        onClick={logout}
-                                        className="cursor-pointer inline-flex items-center gap-2 px-6 py-3 bg-red-500/20 hover:bg-red-500/25 text-red-500 border dark:border-0 border-red-500 text-sm font-bold rounded-2xl transition-all shadow-sm shadow-red-500/20 active:scale-95"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                        {t('settings.logout.logout')}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
+                        {activeTab === 'general' && <GeneralSettings t={t} />}
+                        {activeTab === 'workspace' && <WorkspaceSettings t={t} />}
+                        {activeTab === 'account' && <AccountSettings t={t} />}
                     </div>
                 </div>
             </div>

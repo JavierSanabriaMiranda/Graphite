@@ -26,12 +26,12 @@ export const workspaceService = {
      */
     getByUser: async (userId) => {
         const db = await getDB();
-        return await db.select("SELECT * FROM WORKSPACES where owner_id = $1", [userId]);
+        return await db.select("SELECT * FROM WORKSPACES where owner_id = $1 AND is_deleted = 0", [userId]);
     },
 
     getById: async (workspaceId) => {
         const db = await getDB();
-        const results = await db.select("SELECT * FROM WORKSPACES where workspace_id = $1", [workspaceId]);
+        const results = await db.select("SELECT * FROM WORKSPACES where workspace_id = $1 AND is_deleted = 0", [workspaceId]);
         return results.length > 0 ? results[0] : null;
     },
 
@@ -53,5 +53,32 @@ export const workspaceService = {
         );
 
         return await workspaceService.getById(workspaceId);
+    },
+
+    updateName: async (workspaceId, newName) => {
+        const db = await getDB();
+        await db.execute(
+            "UPDATE WORKSPACES SET name = $1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $2",
+            [newName, workspaceId]
+        );
+    },
+
+    /**
+     * Marks as deleted the workspace whose id is inserted as parameter, and all its notes. 
+     * The workspace and notes won't be deleted from the database until the sync process runs.
+     * 
+     * @param {string} workspaceId - Id of the workspace to delete
+     */
+    delete: async (workspaceId) => {
+        const db = await getDB();
+
+        await db.execute(
+            "UPDATE WORKSPACES SET is_deleted = 1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $1",
+            [workspaceId]
+        );
+        await db.execute(
+            "UPDATE NOTES SET is_deleted = 1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $1",
+            [workspaceId]
+        );
     }
 };

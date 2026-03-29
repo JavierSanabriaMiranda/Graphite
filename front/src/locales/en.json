@@ -163,18 +163,34 @@
     },
     "settings": {
         "title": "Settings",
-        "general": "General",
-        "account": "User account",
-        "account_section": "Account",
-        "language": {
-            "title": "App Language",
-            "description": "Select the language for Graphite's interface.",
-            "search": "Search language"
+        "general": {
+            "general": "General",
+            "language": {
+                "title": "Application language",
+                "description": "Select the language for Graphite's interface.",
+                "search": "Search language"
+            }
         },
-        "logout": {
-            "logout": "Logout",
-            "title": "Logout",
-            "description": "Close your session at this device"
+        "account": {
+            "account": "User Account",
+            "account_section": "Account",
+            "logout": {
+                "logout": "Logout",
+                "title": "Logout",
+                "description": "Close your session at this device"
+            }
+        },
+        "workspace": {
+            "workspace": "Workspace",
+            "workspace_section": "Workspace",
+            "name_title": "Workspace Name",
+            "name_description": "Change the name of your workspace",
+            "delete_title": "Delete Workspace",
+            "delete_description": "Delete your workspace and all its content. This action cannot be undone",
+            "delete_button": "Delete Workspace",
+            "delete_confirm_title": "Confirm Delete",
+            "delete_confirm_description": "Are you sure you want to delete the workspace \"{{name}}\"? All its content will be deleted and cannot be recovered.",
+            "delete_success": "The workspace has been deleted successfully"
         }
     },
     "nav": {
