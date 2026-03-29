@@ -50,17 +50,11 @@ export const WorkspaceProvider = ({ children }) => {
             const localWorkspaces = await workspaceService.getByUser(user.user_id);
             setWorkspaces(localWorkspaces);
 
-            if (workspaces.length === 0) {
+            if (localWorkspaces.length === 0) {
                 setIsCreatingWorkspace(true);
                 setActiveWorkspace(null);
-            } else {
-                if (!activeWorkspace) {
-                    setActiveWorkspace(workspaces[0]);
-                }
-            }
-
-            // If no active workspace, set the first one as active
-            if (!activeWorkspace && localWorkspaces.length > 0) {
+            } else if (!activeWorkspace) {
+                setIsCreatingWorkspace(false);
                 setActiveWorkspace(localWorkspaces[0]);
             }
         } catch (error) {
