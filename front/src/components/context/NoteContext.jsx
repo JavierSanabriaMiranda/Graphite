@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useAuth } from './AuthContext';
 import { syncService } from '../../services/db/syncService';
+import { useWorkspace } from './WorkspaceContext.';
 
 /**
  * Context object to hold the global state of the active note and UI synchronization.
@@ -16,9 +17,11 @@ const NoteContext = createContext();
  * 
  * @param {Object} props.children - The components that will have access to this context.
  */
-export const NoteProvider = ({ children, workspace }) => {
+export const NoteProvider = ({ children }) => {
     const { dek } = useAuth();
     const { t } = useTranslation();
+    const { activeWorkspace: workspace } = useWorkspace();
+    
     const [selectedNote, setSelectedNote] = useState(null);
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
@@ -27,15 +30,15 @@ export const NoteProvider = ({ children, workspace }) => {
     const [syncStatus, setSyncStatus] = useState('ONLINE');
 
     const selectedNoteRef = useRef(selectedNote);
-    const workspaceRef = useRef(workspace)
 
     // sync refs when state changes
     useEffect(() => {
         selectedNoteRef.current = selectedNote;
     }, [selectedNote]);
 
+    // Clear selected note when workspace changes
     useEffect(() => {
-        workspaceRef.current = workspace;
+        setSelectedNote(null);
     }, [workspace]);
 
     /**
@@ -89,8 +92,9 @@ export const NoteProvider = ({ children, workspace }) => {
     * @returns {Promise<Object|null>} The newly created note object
     */
     const createSubnote = useCallback(async (parentId = null) => {
+        if (!workspace) return;
         // If no ID, use the current selected note
-        const currentWorkspace = workspaceRef.current;
+        const currentWorkspace = workspace;
         const effectiveParentId = parentId || selectedNoteRef.current?.note_id;
 
         if (!currentWorkspace || !effectiveParentId) {

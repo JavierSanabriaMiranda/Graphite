@@ -183,6 +183,17 @@
         "browse": "Browse",
         "settings": "Settings"
     },
+    "workspaces": {
+        "title": "Workspaces",
+        "create": "Create new workspace",
+        "create_title": "Create Workspace",
+        "create_subtitle": "Welcome to the canvas where your thoughts take shape. Design an environment that inspires you to write, organize, and most importantly, create without limits.",
+        "button_create": "Create Workspace",
+        "icon": "Icon",
+        "set_name": "Set Name",
+        "name_placeholder": "e.g. Writing Project 2026",
+        "name_placeholder_mobile": "ej. Phone Notes"
+    },
     "identification": {
         "username": "USERNAME",
         "username_placeholder": "Introduce a username...",
@@ -190,7 +201,7 @@
         "email_placeholder": "Type your email...",
         "password": "PASSWORD",
         "password_placeholder": "Type your password...",
-        "confirm_password":"CONFIRM PASSWORD",
+        "confirm_password": "CONFIRM PASSWORD",
         "password_mismatch": "Passwords doesn't match",
         "login": {
             "login": "Log In",

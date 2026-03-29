@@ -3,12 +3,15 @@ import { PanelLeft, Settings, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
+import { useWorkspace } from '../context/WorkspaceContext.';
 import NavItem from './NavItem';
 import { useUI } from '../context/UIContext';
+import WorkspaceSelector from './WorkspaceSelector';
 
-const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
     const { t } = useTranslation();
     const { refreshTrigger, createRootNote } = useNote();
+    const { activeWorkspace: workspace } = useWorkspace();
 
     const { openSettings } = useUI();
 
@@ -46,26 +49,7 @@ const Sidebar = ({ isOpen, setIsOpen, workspace }) => {
                 {/* HEADER: Workspace name */}
                 <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-zinc-700">
                     {/* Workspace button */}
-                    <button
-                        className="group flex items-center gap-2 overflow-hidden hover:bg-hover-primary-bg p-1 -ml-1 rounded-lg transition-all cursor-pointer flex-1 mr-2"
-                        onClick={() => { /* TODO: Open workspace selector */ }}
-                    >
-                        {
-                            workspace?.icon ? (
-                                <div className="w-6 h-6 bg-main-bg hover:bg-hover-primary-bg rounded shrink-0 flex items-center justify-center text-xl font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
-                                    {workspace?.icon}
-                                </div>
-                            ) : (
-                                <div className="w-6 h-6 bg-primary rounded shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
-                                    {workspace?.name?.charAt(0)?.toUpperCase() || 'W'}
-                                </div>
-                            )
-                        }
-                        <h2 className="font-semibold text-text-primary truncate text-left">
-                            {workspace?.name || '...'}
-                        </h2>
-                    </button>
-
+                    <WorkspaceSelector/>
                     {/* Collapse button */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}

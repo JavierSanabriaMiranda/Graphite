@@ -29,16 +29,10 @@ export const workspaceService = {
         return await db.select("SELECT * FROM WORKSPACES where owner_id = $1", [userId]);
     },
 
-    /**
-     * Gets the workspaces with the name and owner specified as params (it should be just one)
-     * 
-     * @param {string} userId 
-     * @param {string} name 
-     * @returns Workspaces with the name and owner specified as params
-     */
-    getByUserAndName: async (userId, name) => {
+    getById: async (workspaceId) => {
         const db = await getDB();
-        return await db.select("SELECT * FROM WORKSPACES where owner_id = $1 AND name = $2", [userId, name]);
+        const results = await db.select("SELECT * FROM WORKSPACES where workspace_id = $1", [workspaceId]);
+        return results.length > 0 ? results[0] : null;
     },
 
     /**
@@ -46,20 +40,18 @@ export const workspaceService = {
      * 
      * @param {string} ownerId - ID of the user owner of the workspace to create
      * @param {string} name - Name of the workspace to create
+     * @param {string} icon - Icon for the workspace to create
      */
-    create: async (ownerId, name) => {
+    create: async (ownerId, name, icon=null) => {
         const db = await getDB();
-        const sameNameWorkspaces = await workspaceService.getByUserAndName(ownerId, name)
-
-        if (sameNameWorkspaces.length > 0) {
-            throw new Error(`User already have a workspace with name "${name}"`);
-        }
 
         const workspaceId = crypto.randomUUID();
 
-        return await db.execute(
-            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, is_dirty) VALUES ($1, $2, $3, 1)",
-            [workspaceId, ownerId, name]
+        await db.execute(
+            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_dirty) VALUES ($1, $2, $3, $4, 1)",
+            [workspaceId, ownerId, name, icon]
         );
+
+        return await workspaceService.getById(workspaceId);
     }
 };

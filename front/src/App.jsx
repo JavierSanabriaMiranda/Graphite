@@ -5,6 +5,7 @@ import Sidebar from './components/navigation/Sidebar';
 import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
 import { NoteProvider } from './components/context/NoteContext';
+import { WorkspaceProvider, useWorkspace } from './components/context/WorkspaceContext.';
 import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
@@ -13,15 +14,12 @@ import MobileBrowseView from './components/navigation/MobileBrowseView';
 import { useAuth, AuthProvider } from './components/context/AuthContext';
 import AuthenticationView from './components/views/AuthenticationView';
 import { useOnlineSync } from './hooks/useOnlineSync';
+import CreateWorkspaceView from './components/views/CreateWorkspaceView';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWorkspace }) => {
   const { isSettingsOpen, closeSettings, activeTab, setActiveTab, openSettings } = useUI();
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <LoginView />;
-  }
+  const { isCreatingWorkspace } = useWorkspace();
 
   const handleTabChange = (tabId) => {
     if (tabId === 'settings') {
@@ -31,6 +29,12 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
     }
   };
 
+  if (isCreatingWorkspace) {
+    return (
+      <CreateWorkspaceView />
+    );
+  }
+
   return (
     <div className="flex h-dvh bg-main-bg text-text-primary overflow-hidden">
       {/* SIDEBAR: just in desktop */}
@@ -38,7 +42,6 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
         <Sidebar
           isOpen={isSidebarPinned}
           setIsOpen={setIsSidebarPinned}
-          workspace={currentWorkspace}
         />
       )}
 
@@ -49,7 +52,6 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
         ${isMobile ? 'pb-16' : ''}
       `}>
         <ToastProvider>
-          {/* Aquí podrías alternar componentes según activeTab */}
           {activeTab === 'editor' && <TiptapEditor />}
           {activeTab === 'search' && (isMobile ? (
             <div className="p-8">Sección de Búsqueda</div>
@@ -127,14 +129,16 @@ const DataWrapper = ({ isMobile }) => {
 
   return (
     <UIProvider>
-      <NoteProvider workspace={currentWorkspace}>
-        <AppContent
-          isMobile={isMobile}
-          isSidebarPinned={isSidebarPinned}
-          setIsSidebarPinned={setIsSidebarPinned}
-          currentWorkspace={currentWorkspace}
-        />
-      </NoteProvider>
+      <WorkspaceProvider>
+        <NoteProvider>
+          <AppContent
+            isMobile={isMobile}
+            isSidebarPinned={isSidebarPinned}
+            setIsSidebarPinned={setIsSidebarPinned}
+            currentWorkspace={currentWorkspace}
+          />
+        </NoteProvider>
+      </WorkspaceProvider>
     </UIProvider>
   );
 };

@@ -82,11 +82,6 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                         <h2 className="font-bold text-lg md:text-xl text-zinc-900 dark:text-zinc-100 capitalize">
                             {activeTab === 'general' ? t('settings.general') : t('settings.account')}
                         </h2>
-                        {isMobile && (
-                            <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">
-                                Graphite System
-                            </p>
-                        )}
                     </div>
 
                     <button

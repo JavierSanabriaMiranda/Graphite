@@ -182,6 +182,17 @@
         "browse": "Navegar",
         "settings": "Ajustes"
     },
+    "workspaces": {
+        "title": "Espacios de Trabajo",
+        "create": "Crear nuevo espacio de trabajo",
+        "create_title": "Crear Nuevo Espacio",
+        "create_subtitle": "Bienvenido al lienzo donde tus pensamientos toman forma. Diseña un entorno que te inspire a escribir, a organizar y, sobre todo, a crear sin límites.",
+        "button_create": "Crear Espacio",
+        "icon": "Icono",
+        "set_name": "Establecer nombre",
+        "name_placeholder": "ej. Proyecto de Escritura 2026",
+        "name_placeholder_mobile": "ej. Notas móviles"
+    },
     "identification": {
         "username": "NOMBRE DE USUARIO",
         "username_placeholder": "Introduce un nombre de usuario...",

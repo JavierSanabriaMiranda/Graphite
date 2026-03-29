@@ -36,17 +36,6 @@ describe('workspaceService Suite', () => {
             );
             expect(result).toEqual(mockList);
         });
-
-        it('should fetch specifically by user and name', async () => {
-            mockDb.select.mockResolvedValue([{ workspace_id: 'ws-1' }]);
-
-            await workspaceService.getByUserAndName('user-123', 'My Workspace');
-
-            expect(mockDb.select).toHaveBeenCalledWith(
-                "SELECT * FROM WORKSPACES where owner_id = $1 AND name = $2",
-                ['user-123', 'My Workspace']
-            );
-        });
     });
 
     describe('Creation Logic', () => {

@@ -4,6 +4,7 @@ import { Plus, FolderOpen, ChevronRight } from 'lucide-react';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NavItem from './NavItem';
+import WorkspaceSelector from './WorkspaceSelector';
 
 const MobileBrowseView = ({ workspace }) => {
     const { t } = useTranslation();
@@ -21,20 +22,7 @@ const MobileBrowseView = ({ workspace }) => {
             {/* Header */}
             <header className="px-6 pt-12 pb-4 border-b border-zinc-200 dark:border-zinc-800">
                 {/* Workspace button */}
-                <button className="group flex items-center gap-3 w-full p-2 -ml-2 mb-6 hover:bg-hover-primary-bg rounded-2xl transition-all active:scale-95">
-                    <div className="w-10 h-10 bg-primary rounded-xl shrink-0 flex items-center justify-center text-lg font-bold text-white shadow-lg shadow-primary/20">
-                        {workspace?.name?.charAt(0).toUpperCase() || 'W'}
-                    </div>
-                    <div className="flex flex-col items-start overflow-hidden flex-1">
-                        <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter mb-0.5">
-                            {t('sidebar.workspace') || 'Workspace'}
-                        </span>
-                        <h2 className="font-bold text-text-primary truncate w-full text-left leading-none">
-                            {workspace?.name || '...'}
-                        </h2>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-primary transition-colors" />
-                </button>
+                <WorkspaceSelector/>
 
                 <div className="flex items-center justify-between mb-2">
                     <h1 className="text-2xl font-bold text-text-primary flex items-center gap-2">

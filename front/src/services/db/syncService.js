@@ -149,7 +149,7 @@ export const syncService = {
 
                 await db.execute(
                     `INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_deleted, updated_at, is_dirty) 
-                     VALUES (?, ?, ?, ?, ?, 0) 
+                     VALUES (?, ?, ?, ?, ?, ?, 0) 
                      ON CONFLICT(workspace_id) DO UPDATE SET 
                      name = excluded.name, icon = excluded.icon, is_deleted = excluded.is_deleted, updated_at = excluded.updated_at`,
                     [rw.workspaceId, userId, name, noteIcon, rw.isDeleted ? 1 : 0, rw.updatedAt]
