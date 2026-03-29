@@ -190,7 +190,14 @@
             "delete_button": "Delete Workspace",
             "delete_confirm_title": "Confirm Delete",
             "delete_confirm_description": "Are you sure you want to delete the workspace \"{{name}}\"? All its content will be deleted and cannot be recovered.",
-            "delete_success": "The workspace has been deleted successfully"
+            "delete_success": "The workspace has been deleted successfully",
+            "icon_title": "Workspace Icon",
+            "icon_description": "Customize the appearance of your workspace with an icon.",
+            "change_icon": "Change Icon",
+            "add_icon": "Add icon",
+            "icon_hint": "Select an emoji for your workspace",
+            "update_success": "The workspace has been updated successfully",
+            "update_error": "Error while updating the workspace"
         }
     },
     "nav": {

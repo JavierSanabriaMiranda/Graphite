@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
         if (navigator.onLine) {
             await syncService.pullAllMetadata(decryptedDek, userId);
         }
+        await syncService.purgeSyncedDeletes();
 
         setIsAuthenticated(true);
     };

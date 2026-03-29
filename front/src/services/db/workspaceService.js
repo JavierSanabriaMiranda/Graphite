@@ -63,6 +63,15 @@ export const workspaceService = {
         );
     },
 
+    updateIcon: async (workspaceId, newIcon) => {
+        const db = await getDB();
+        await db.execute(
+            "UPDATE WORKSPACES SET icon = $1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $2",
+            [newIcon, workspaceId]
+        );
+    },
+
+
     /**
      * Marks as deleted the workspace whose id is inserted as parameter, and all its notes. 
      * The workspace and notes won't be deleted from the database until the sync process runs.

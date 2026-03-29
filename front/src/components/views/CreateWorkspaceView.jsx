@@ -38,7 +38,7 @@ const CreateWorkspaceView = () => {
                     <div className="flex flex-col gap-2 items-center">
                         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">{t('workspaces.icon')}</span>
                         <div className="relative w-fit group/icon-wrapper">
-                            <EmojiPicker onSelect={(emoji) => setIcon(emoji)}>
+                            <EmojiPicker onSelect={(emoji) => setIcon(emoji)} showIconsMenu={false}>
                                 <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-700 dark:border-0 border-2 border-dashed border-zinc-500 hover: hover:border-0 dark:hover:border-2 hover:border-dashed dark:hover:border-primary/50 rounded-xl flex flex-col items-center justify-center hover:bg-zinc-800/50 transition-all cursor-pointer group">
                                     {icon ? (
                                         <span className="text-4xl" style={{ fontFamily: 'var(--font-emoji)' }}>{icon}</span>

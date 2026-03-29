@@ -189,7 +189,14 @@
             "delete_button": "Borrar espacio de trabajo",
             "delete_confirm_title": "Confirmar borrado",
             "delete_confirm_description": "¿Estás seguro de que quieres borrar el espacio de trabajo \"{{name}}\"? Todo su contenido será eliminado y no podrás recuperarlo.",
-            "delete_success": "El espacio de trabajo se ha borrado correctamente"
+            "delete_success": "El espacio de trabajo se ha borrado correctamente",
+            "icon_title": "Icono del espacio de trabajo",
+            "icon_description": "Personaliza el aspecto de tu espacio de trabajo con un icono.",
+            "change_icon": "Cambiar icono",
+            "add_icon": "Añadir icono",
+            "icon_hint": "Selecciona un emoji para tu espacio de trabajo",
+            "update_success": "El espacio de trabajo se ha actualizado correctamente",
+            "update_error": "Error al actualizar el espacio de trabajo"
         }
     },
     "nav": {
