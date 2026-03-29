@@ -44,6 +44,15 @@ export const WorkspaceProvider = ({ children }) => {
             const localWorkspaces = await workspaceService.getByUser(user.user_id);
             setWorkspaces(localWorkspaces);
 
+            if (workspaces.length === 0) {
+                setIsCreatingWorkspace(true);
+                setActiveWorkspace(null);
+            } else {
+                if (!activeWorkspace) {
+                    setActiveWorkspace(workspaces[0]);
+                }
+            }
+
             // If no active workspace, set the first one as active
             if (!activeWorkspace && localWorkspaces.length > 0) {
                 setActiveWorkspace(localWorkspaces[0]);
@@ -89,10 +98,10 @@ export const WorkspaceProvider = ({ children }) => {
             setActiveWorkspace(updatedWorkspace); // Update active workspace with new name
             // Sync changes
             await syncService.syncPendingData(dek);
-            
+
         } catch (error) {
             console.error("Error while updating workspace name:", error);
-        }   
+        }
     };
 
     const updateWorkspaceIcon = async (newIcon) => {
@@ -108,10 +117,10 @@ export const WorkspaceProvider = ({ children }) => {
             setActiveWorkspace(updatedWorkspace); // Update active workspace with new icon
             // Sync changes
             await syncService.syncPendingData(dek);
-            
+
         } catch (error) {
             console.error("Error while updating workspace name:", error);
-        }   
+        }
     };
 
     const deleteWorkspace = async (workspaceId) => {

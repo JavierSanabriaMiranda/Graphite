@@ -3,7 +3,8 @@
         "cancel": "Cancel",
         "delete": "Delete",
         "no_result": "No results",
-        "search": "Search..."
+        "search": "Search...",
+        "loading": "Loading..."
     },
     "editor": {
         "placeholder": "Write something incredible...",

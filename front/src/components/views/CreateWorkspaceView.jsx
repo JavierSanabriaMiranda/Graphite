@@ -5,7 +5,7 @@ import { useWorkspace } from '../context/WorkspaceContext.';
 import EmojiPicker from '../util/EmojiPicker';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
-const CreateWorkspaceView = () => {
+const CreateWorkspaceView = ({ showCancelBtn = true }) => {
     const { t } = useTranslation();
     const { closeCreation, createNewWorkspace } = useWorkspace();
     const [name, setName] = useState('');
@@ -75,12 +75,15 @@ const CreateWorkspaceView = () => {
 
                 {/* Footer Buttons */}
                 <div className={`${isMobile ? "gap-12" : "gap-16"} w-full flex items-center justify-end mt-8`}>
-                    <button
-                        onClick={closeCreation}
-                        className="text-zinc-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest cursor-pointer"
-                    >
-                        {t('common.cancel')}
-                    </button>
+
+                    {showCancelBtn && (
+                        <button
+                            onClick={closeCreation}
+                            className="text-zinc-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest cursor-pointer"
+                        >
+                            {t('common.cancel')}
+                        </button>
+                    )}
 
                     <button
                         onClick={handleCreate}

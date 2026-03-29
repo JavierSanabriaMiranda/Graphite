@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import TiptapEditor from './components/TiptapEditor';
+import { useTranslation } from 'react-i18next';
 import { ToastProvider } from './components/context/ToastContext';
 import Sidebar from './components/navigation/Sidebar';
 import { userService } from './services/db/userService';
@@ -15,11 +16,14 @@ import { useAuth, AuthProvider } from './components/context/AuthContext';
 import AuthenticationView from './components/views/AuthenticationView';
 import { useOnlineSync } from './hooks/useOnlineSync';
 import CreateWorkspaceView from './components/views/CreateWorkspaceView';
+import { Loader2 } from 'lucide-react';
 
 // Component to access to the context inside the app
-const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWorkspace }) => {
+const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
+  const { t } = useTranslation();
+
   const { isSettingsOpen, closeSettings, activeTab, setActiveTab, openSettings } = useUI();
-  const { isCreatingWorkspace } = useWorkspace();
+  const { isCreatingWorkspace, isLoading: wsLoading, workspaces } = useWorkspace();
 
   const handleTabChange = (tabId) => {
     if (tabId === 'settings') {
@@ -29,9 +33,18 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
     }
   };
 
+  if (wsLoading) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-main-bg text-primary">
+        <Loader2 className="w-10 h-10 animate-spin mb-4" />
+        <p className="text-xs font-black uppercase tracking-widest opacity-50">{t('common.loading')}</p>
+      </div>
+    );
+  }
+
   if (isCreatingWorkspace) {
     return (
-      <CreateWorkspaceView />
+      <CreateWorkspaceView showCancelBtn={workspaces.length > 0} />
     );
   }
 
@@ -136,7 +149,6 @@ const DataWrapper = ({ isMobile }) => {
             isMobile={isMobile}
             isSidebarPinned={isSidebarPinned}
             setIsSidebarPinned={setIsSidebarPinned}
-            currentWorkspace={currentWorkspace}
           />
         </NoteProvider>
       </WorkspaceProvider>

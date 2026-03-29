@@ -3,7 +3,8 @@
         "cancel": "Cancelar",
         "delete": "Borrar",
         "no_result": "No hay resultados",
-        "search": "Buscar..."
+        "search": "Buscar...",
+        "loading": "Cargando..."
     },
     "editor": {
         "placeholder": "Escribe algo increíble...",
