@@ -16,6 +16,12 @@ export const WorkspaceProvider = ({ children }) => {
     const openCreation = () => setIsCreatingWorkspace(true);
     const closeCreation = () => setIsCreatingWorkspace(false);
 
+    useEffect(() => {
+        if (!activeWorkspace) {
+            setIsCreatingWorkspace(true);
+        }
+    }, [activeWorkspace]);
+
     const createNewWorkspace = async (name, icon) => {
         try {
             const user = await userService.getCurrentUser();
