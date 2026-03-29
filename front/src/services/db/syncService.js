@@ -3,6 +3,134 @@ import { remoteNoteService, remoteWorkspaceService } from '../api';
 import { encryptData, decryptData } from '../../util/crypto';
 import { formatDateForServer } from '../../util/formatDate';
 
+// --- Private helper functions for sync logic ---
+
+/**
+ * Syncs the workspaces received as parameter with the remote server, encrypting them with the provided DEK. 
+ * Marks them as clean if successful.
+ **/ 
+const syncWorkspaces = async (workspaces, dek) => {
+    for (const workspace of workspaces) {
+        // Bundle sensitive data: name
+        const plaintext = JSON.stringify({ name: workspace.name, icon: workspace.icon });
+        const { ciphertext, iv } = await encryptData(plaintext, dek);
+
+        const wsPayload = {
+            workspaceId: workspace.workspace_id,
+            encryptedPayload: ciphertext,
+            iv: iv,
+            isDeleted: workspace.is_deleted === 1,
+            updatedAt: workspace.updated_at
+        };
+
+        await remoteWorkspaceService.upsertRemoteWorkspace(wsPayload);
+        await syncService.markAsClean('WORKSPACES', 'workspace_id', workspace.workspace_id);
+    }
+};
+
+/**
+ * Syncs the notes received as parameter with the remote server, encrypting them with the provided DEK. 
+ * Marks them as clean if successful.
+ **/ 
+const syncNotes = async (notes, dek) => {
+    for (const note of notes) {
+        // Bundle sensitive data: title, content, icon
+        const noteMetadata = JSON.stringify({
+            title: note.title,
+            icon: note.icon,
+            notePath: note.note_path
+        });
+
+        let { ciphertext, iv } = await encryptData(noteMetadata, dek);
+        const cipherMetadata = ciphertext;
+        const metadataIv = iv;
+
+        ({ ciphertext, iv } = await encryptData(note.content, dek));
+
+        const formattedCreatedAt = formatDateForServer(note.created_at)
+        const formattedUpdatedAt = formatDateForServer(note.updated_at)
+
+
+        const notePayload = {
+            noteId: note.note_id,
+            workspace: { workspaceId: note.workspace_id },
+            parent: note.parent_id ? { noteId: note.parent_id } : null,
+            encryptedMetadata: cipherMetadata,
+            metadataIv: metadataIv,
+            encryptedPayload: ciphertext,
+            iv: iv,
+            isFavorite: note.is_favorite === 1,
+            isDeleted: note.is_deleted === 1,
+            createdAt: formattedCreatedAt,
+            updatedAt: formattedUpdatedAt,
+            noteVersion: note.note_version
+        };
+
+        const success = await remoteNoteService.updateRemoteNote(notePayload);
+
+        if (success) {
+            await syncService.markAsClean('NOTES', 'note_id', note.note_id);
+        }
+    }
+};
+
+// Pulls remote workspaces and their notes, decrypts them, and saves to local DB
+const pullRemoteWorkspacesAndNotes = async (remoteWorkspaces, dek, db, userId) => {
+    for (const rw of remoteWorkspaces) {
+        // Decrypt payload for local use
+        const decryptedJson = await decryptData(rw.encryptedPayload, dek, rw.iv);
+        const { name, icon } = JSON.parse(decryptedJson);
+
+        // If no icon is present, we want to store null instead of an empty string 
+        // to avoid confusion with the default icon logic in the UI
+        let noteIcon = null;
+        if (icon) {
+            noteIcon = icon;
+        }
+
+        await db.execute(
+            `INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_deleted, updated_at, is_dirty) 
+                     VALUES (?, ?, ?, ?, ?, ?, 0) 
+                     ON CONFLICT(workspace_id) DO UPDATE SET 
+                     name = excluded.name, icon = excluded.icon, is_deleted = excluded.is_deleted, updated_at = excluded.updated_at`,
+            [rw.workspaceId, userId, name, noteIcon, rw.isDeleted ? 1 : 0, rw.updatedAt]
+        );
+
+        const remoteNotes = await remoteNoteService.getRemoteMetadataByWorkspace(rw.workspaceId);
+        await pullRemoteNotesOfAWorkspace(remoteNotes, dek, db);
+    }
+};
+
+const pullRemoteNotesOfAWorkspace = async (remoteNotes, dek, db) => {
+    // Insert notes without parent references
+    for (const rn of remoteNotes) {
+        const metaJson = await decryptData(rn.encryptedMetadata, dek, rn.metadataIv);
+        const { title, icon, notePath } = JSON.parse(metaJson);
+
+        await db.execute(
+            `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, updated_at, note_version, is_dirty)
+                     VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
+                     ON CONFLICT(note_id) DO UPDATE SET
+                     title = excluded.title, icon = excluded.icon, note_path = excluded.note_path, workspace_id = excluded.workspace_id,
+                     is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
+                     updated_at = excluded.updated_at, note_version = excluded.note_version`,
+            [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]
+        );
+    }
+
+    // Insert parent references
+    for (const rn of remoteNotes) {
+        if (rn.parentId) {
+            await db.execute(
+                "UPDATE NOTES SET parent_id = ? WHERE note_id = ?",
+                [rn.parentId, rn.noteId]
+            );
+        }
+    }
+};
+
+// --- Sync Service Implementation ---
+
 /**
  * syncService - Handles integrity and cleans the synchronized data.
  * Implements a Zero-Knowledge architecture where the server only receives opaque blobs.
@@ -20,63 +148,10 @@ export const syncService = {
             const { notes, workspaces } = await syncService.getPendingUploads();
 
             // Sync Workspaces (Dependencies)
-            for (const workspace of workspaces) {
-                // Bundle sensitive data: name
-                const plaintext = JSON.stringify({ name: workspace.name, icon: workspace.icon });
-                const { ciphertext, iv } = await encryptData(plaintext, dek);
-
-                const wsPayload = {
-                    workspaceId: workspace.workspace_id,
-                    encryptedPayload: ciphertext,
-                    iv: iv,
-                    isDeleted: workspace.is_deleted === 1,
-                    updatedAt: workspace.updated_at
-                };
-
-                await remoteWorkspaceService.upsertRemoteWorkspace(wsPayload);
-                await syncService.markAsClean('WORKSPACES', 'workspace_id', workspace.workspace_id);
-            }
+            await syncWorkspaces(workspaces, dek);
 
             // Sync Notes
-            for (const note of notes) {
-                // Bundle sensitive data: title, content, icon
-                const noteMetadata = JSON.stringify({
-                    title: note.title,
-                    icon: note.icon,
-                    notePath: note.note_path
-                });
-
-                let { ciphertext, iv } = await encryptData(noteMetadata, dek);
-                const cipherMetadata = ciphertext;
-                const metadataIv = iv;
-
-                ({ ciphertext, iv } = await encryptData(note.content, dek));
-
-                const formattedCreatedAt = formatDateForServer(note.created_at)
-                const formattedUpdatedAt = formatDateForServer(note.updated_at)
-
-
-                const notePayload = {
-                    noteId: note.note_id,
-                    workspace: { workspaceId: note.workspace_id },
-                    parent: note.parent_id ? { noteId: note.parent_id } : null,
-                    encryptedMetadata: cipherMetadata,
-                    metadataIv: metadataIv,
-                    encryptedPayload: ciphertext,
-                    iv: iv,
-                    isFavorite: note.is_favorite === 1,
-                    isDeleted: note.is_deleted === 1,
-                    createdAt: formattedCreatedAt,
-                    updatedAt: formattedUpdatedAt,
-                    noteVersion: note.note_version
-                };
-
-                const success = await remoteNoteService.updateRemoteNote(notePayload);
-
-                if (success) {
-                    await syncService.markAsClean('NOTES', 'note_id', note.note_id);
-                }
-            }
+            await syncNotes(notes, dek);
 
             // Final purge of records that are already synced and marked as deleted
             await syncService.purgeSyncedDeletes();
@@ -86,6 +161,7 @@ export const syncService = {
             console.error("Graphite Sync Error:", error);
         }
     },
+
 
     /**
      * Removes from local DB rows that have been removed and successfully informed to cloud.
@@ -133,56 +209,10 @@ export const syncService = {
 
         try {
 
-            // Step 1: Sync Workspaces
+            // SyncWorkspaces and their notes
             const remoteWorkspaces = await remoteWorkspaceService.getAllRemoteWorkspaces();
-            for (const rw of remoteWorkspaces) {
-                // Decrypt payload for local use
-                const decryptedJson = await decryptData(rw.encryptedPayload, dek, rw.iv);
-                const { name, icon } = JSON.parse(decryptedJson);
+            await pullRemoteWorkspacesAndNotes(remoteWorkspaces, dek, db, userId);
 
-                // If no icon is present, we want to store null instead of an empty string 
-                // to avoid confusion with the default icon logic in the UI
-                let noteIcon = null;
-                if (icon) {
-                    noteIcon = icon;
-                }
-
-                await db.execute(
-                    `INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_deleted, updated_at, is_dirty) 
-                     VALUES (?, ?, ?, ?, ?, ?, 0) 
-                     ON CONFLICT(workspace_id) DO UPDATE SET 
-                     name = excluded.name, icon = excluded.icon, is_deleted = excluded.is_deleted, updated_at = excluded.updated_at`,
-                    [rw.workspaceId, userId, name, noteIcon, rw.isDeleted ? 1 : 0, rw.updatedAt]
-                );
-
-                const remoteNotes = await remoteNoteService.getRemoteMetadataByWorkspace(rw.workspaceId);
-
-                // Insert notes without parent references
-                for (const rn of remoteNotes) {
-                    const metaJson = await decryptData(rn.encryptedMetadata, dek, rn.metadataIv);
-                    const { title, icon, notePath } = JSON.parse(metaJson);
-
-                    await db.execute(
-                        `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, updated_at, note_version, is_dirty)
-                     VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
-                     ON CONFLICT(note_id) DO UPDATE SET
-                     title = excluded.title, icon = excluded.icon, note_path = excluded.note_path, workspace_id = excluded.workspace_id,
-                     is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
-                     updated_at = excluded.updated_at, note_version = excluded.note_version`,
-                        [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]
-                    );
-                }
-
-                // Insert parent references
-                for (const rn of remoteNotes) {
-                    if (rn.parentId) {
-                        await db.execute(
-                            "UPDATE NOTES SET parent_id = ? WHERE note_id = ?",
-                            [rn.parentId, rn.noteId]
-                        );
-                    }
-                }
-            }
         } catch (error) {
             console.error("Error pulling metadata:", error);
         }
