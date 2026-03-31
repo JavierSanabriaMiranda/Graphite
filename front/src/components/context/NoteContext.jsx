@@ -63,10 +63,14 @@ export const NoteProvider = ({ children }) => {
             setSelectedNote(null);
             return;
         }
+        if (noteMetadata.content) {
+            setSelectedNote(noteMetadata);
+        }
         setIsSyncing(true);
-
+        
         // Fetch full content with sync logic
         const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
+        triggerRefresh();
 
         setSelectedNote(result.note);
         setSyncStatus(result.status);

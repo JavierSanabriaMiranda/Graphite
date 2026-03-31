@@ -14,15 +14,31 @@ import { useNote } from '../context/NoteContext';
  * @param {String} activeNoteId - Id of the current active note
  * @param {number} level - Level to calculate the padding of the NavItem 
  */
-const NavItem = ({ note, level = 0 }) => {
+const NavItem = ({ note: initialNote, level = 0 }) => {
     const { t } = useTranslation();
 
     const { selectedNote, selectNote, refreshTrigger } = useNote();
+
+    const [note, setNote] = useState(initialNote);
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [subnotes, setSubnotes] = useState([]);
     const [hasSubnotes, setHasSubnotes] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Effect to sync local note state with the database whenever the selected 
+    // note changes or a refresh is triggered.
+    useEffect(() => {
+        let isMounted = true;
+        
+        noteService.getByNoteId(initialNote.note_id).then(updatedNote => {
+            if (isMounted && updatedNote) {
+                setNote(updatedNote);
+            }
+        });
+
+        return () => { isMounted = false; };
+    }, [initialNote.note_id, refreshTrigger]);
 
     // Verify if the note has subnotes (to know if a DropdownArrow is needed)
     useEffect(() => {

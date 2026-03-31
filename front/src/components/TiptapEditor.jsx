@@ -469,7 +469,7 @@ const TiptapEditor = () => {
           {/* Editor body */}
           <div className="tiptap-container relative">
             {/* Skeleton for page loading */}
-            {(isPageLoading || isSyncing) && (
+            {(isPageLoading) && (
               <div className="absolute inset-0 z-10 bg-main-bg">
                 <div className="animate-pulse space-y-4 pt-4">
                   <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4"></div>
