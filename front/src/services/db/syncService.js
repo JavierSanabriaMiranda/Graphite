@@ -2,13 +2,14 @@ import { getDB } from '.';
 import { remoteNoteService, remoteWorkspaceService } from '../api';
 import { encryptData, decryptData } from '../../util/crypto';
 import { formatDateForServer } from '../../util/formatDate';
+import { noteService } from './noteService';
 
 // --- Private helper functions for sync logic ---
 
 /**
  * Syncs the workspaces received as parameter with the remote server, encrypting them with the provided DEK. 
  * Marks them as clean if successful.
- **/ 
+ **/
 const syncWorkspaces = async (workspaces, dek) => {
     for (const workspace of workspaces) {
         // Bundle sensitive data: name
@@ -31,7 +32,7 @@ const syncWorkspaces = async (workspaces, dek) => {
 /**
  * Syncs the notes received as parameter with the remote server, encrypting them with the provided DEK. 
  * Marks them as clean if successful.
- **/ 
+ **/
 const syncNotes = async (notes, dek) => {
     for (const note of notes) {
         // Bundle sensitive data: title, content, icon
@@ -66,10 +67,17 @@ const syncNotes = async (notes, dek) => {
             noteVersion: note.note_version
         };
 
-        const success = await remoteNoteService.updateRemoteNote(notePayload);
+        const response = await remoteNoteService.updateRemoteNote(notePayload);
 
-        if (success) {
+        if (response.ok) {
+            const data = await response.json();
+            const newVersion = data.newVersion;
+
+            await noteService.incrementVersion(note.note_id, newVersion);
             await syncService.markAsClean('NOTES', 'note_id', note.note_id);
+        } else if (response.status === 409) {
+            // Version conflict
+            // TODO: Implement conflict resolution strategy
         }
     }
 };
@@ -230,37 +238,66 @@ export const syncService = {
         const localNote = await db.select("SELECT * FROM NOTES WHERE note_id = $1", [noteId]);
         const note = localNote[0];
 
-        if (isOnline) {
-            try {
-                // Fetch remote content
-                const remote = await remoteNoteService.getRemoteNoteContent(noteId);
-
-                // Compare versions (Simple LWW)
-                // If remote is newer OR we don't have local content, we update
-                if (!note.content || new Date(remote.updatedAt) > new Date(note.updated_at)) {
-                    const decryptedContent = await decryptData(remote.encryptedPayload, dek, remote.iv);
-
-                    await db.execute(
-                        "UPDATE NOTES SET content = ?, is_dirty = 0 WHERE note_id = ?",
-                        [decryptedContent, noteId]
-                    );
-
-                    // Return updated note
-                    const updated = { ...note, content: JSON.stringify(decryptedContent), updated_at: remote.updatedAt };
-                    return { note: updated, status: 'ONLINE' };
-                }
-                return { note, status: 'ONLINE' };
-            } catch (error) {
-                console.error("Sync error, falling back to local:", error);
-                // If network fails during fetch, proceed as offline
-            }
+        if (!isOnline) {
+            return {
+                note,
+                status: note.content ? 'OFFLINE_STALE' : 'OFFLINE_EMPTY'
+            };
         }
 
-        // 3. Offline Logic
-        if (!note.content) {
-            return { note, status: 'OFFLINE_EMPTY' };
-        } else {
-            return { note, status: 'OFFLINE_STALE' };
+        try {
+            const remoteMeta = await remoteNoteService.getRemoteNoteMetadata(noteId);
+            // Note doesn't exists remotely
+            if (!remoteMeta) {
+                if (!note) {
+                    return { note: null, status: 'OFFLINE_EMPTY' };
+                } else {
+                    return { note, status: 'OFFLINE_STALE' };
+                }
+            }
+
+            // CASE A: Local note is dirty, we have unsynced changes.
+            if (note.is_dirty === 1) {
+                // If local note is dirty, we have unsynced changes. Check for conflict: if 
+                // remote version is different, we have a conflict. 
+                // Otherwise, we are online but just haven't synced yet, so we can show local safely.
+                if (remoteMeta.noteVersion !== note.note_version) {
+                    return { note, status: 'CONFLICT' };
+                }
+                // If no conlifct, show local version
+                return { note, status: 'ONLINE' };
+            }
+            // CASE B: Local note is clean, we can safely compare and decide if we need to update from remote
+            if (!note.content || remoteMeta.noteVersion > note.note_version) {
+                const remoteFull = await remoteNoteService.getRemoteNoteContent(noteId);
+                const decryptedContent = await decryptData(remoteFull.encryptedPayload, dek, remoteFull.iv);
+
+                // Save locally
+                await db.execute(
+                    "UPDATE NOTES SET content = ?, updated_at = ?, note_version = ?, is_dirty = 0 WHERE note_id = ?",
+                    [decryptedContent, remoteMeta.updatedAt, remoteMeta.noteVersion, noteId]
+                );
+
+                // Return note object updated
+                const updatedNote = {
+                    ...note,
+                    content: decryptedContent,
+                    updated_at: remoteMeta.updatedAt,
+                    note_version: remoteMeta.noteVersion
+                };
+                return { note: updatedNote, status: 'ONLINE' };
+            }
+            return { note, status: 'ONLINE' };
+
+        } catch (error) {
+            console.error("Sync error, falling back to local:", error);
+            // If network fails during fetch, proceed as offline
+            if (!note.content) {
+                return { note, status: 'OFFLINE_EMPTY' };
+            } else {
+                return { note, status: 'OFFLINE_STALE' };
+            }
+            
         }
     }
 };

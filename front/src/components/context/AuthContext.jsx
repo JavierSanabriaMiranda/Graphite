@@ -26,10 +26,10 @@ export const AuthProvider = ({ children }) => {
                 else {
                     setDek(new Uint8Array(data.dek));
                     setIsAuthenticated(true);
-
+                    const user = userService.getCurrentUser()
                     // INITIAL SYNC: Refresh metadata on app start
                     if (navigator.onLine) {
-                        syncService.pullAllMetadata(decryptedDek);
+                        syncService.pullAllMetadata(dek, user.id);
                     }
                 }
             } catch (e) {

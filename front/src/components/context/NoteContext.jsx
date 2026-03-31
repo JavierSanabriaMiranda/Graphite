@@ -58,16 +58,17 @@ export const NoteProvider = ({ children }) => {
      * @param {Object} note - The note object to be set as active.
      */
     const selectNote = useCallback(async (noteMetadata) => {
+        if (isSyncing) return;
         if (!noteMetadata) {
             setSelectedNote(null);
             return;
         }
+        setIsSyncing(true);
 
         // Fetch full content with sync logic
         const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
-        const note = await noteService.getByNoteId(noteMetadata.note_id);
 
-        setSelectedNote(note);
+        setSelectedNote(result.note);
         setSyncStatus(result.status);
         setIsSyncing(false);
     }, [dek]);
@@ -123,7 +124,7 @@ export const NoteProvider = ({ children }) => {
             console.error("Error creating subnote:", error);
             return null;
         }
-    }, [t, triggerRefresh]);
+    }, [workspace, t, triggerRefresh]);
 
     // Context value object containing the state and the updater functions
     const value = {

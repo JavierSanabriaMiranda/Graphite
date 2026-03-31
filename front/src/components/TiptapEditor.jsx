@@ -232,12 +232,16 @@ const TiptapEditor = () => {
 
   // Effect to load selected note
   useEffect(() => {
-    if (!editor || editor.isDestroyed) return;
+    if (!editor || editor.isDestroyed || isSyncing) {
+      if (isSyncing) setIsPageLoading(true);
+      return;
+    }
 
     if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
 
     if (!activeNote) {
       editor.commands.setContent('', false);
+      setIsPageLoading(false);
       return;
     }
 
@@ -270,7 +274,7 @@ const TiptapEditor = () => {
         console.error("Critical error while loading:", error);
         setIsPageLoading(false);
       }
-    }, 5); // Delay to let ProseMirror load
+    }, 0); // Delay to let ProseMirror load
 
     return () => clearTimeout(timer);
   }, [activeNote?.note_id, editor, isSyncing]);
@@ -378,7 +382,7 @@ const TiptapEditor = () => {
   // Saves the current note content to DB
   // This automatically triggers when user stops typing for 1 second
   const saveContentToDB = async (content) => {
-    if (!activeNote) return;
+    if (!activeNote || isSyncing) return;
     await noteService.update(activeNote.note_id, {
       content: content,
       is_dirty: 1 // Mark for cloud sync
@@ -465,7 +469,7 @@ const TiptapEditor = () => {
           {/* Editor body */}
           <div className="tiptap-container relative">
             {/* Skeleton for page loading */}
-            {isPageLoading && (
+            {(isPageLoading || isSyncing) && (
               <div className="absolute inset-0 z-10 bg-main-bg">
                 <div className="animate-pulse space-y-4 pt-4">
                   <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4"></div>

@@ -109,7 +109,7 @@ export const remoteNoteService = {
         });
 
         if (!response.ok) throw new Error("Note sync failed");
-        return true;
+        return response;
     },
 
     /**
@@ -119,6 +119,21 @@ export const remoteNoteService = {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}notes/workspace/${workspaceId}/metadata`, { headers });
         if (!response.ok) throw new Error("Failed to fetch notes metadata");
+        return await response.json();
+    },
+
+    async getRemoteNoteMetadata(noteId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/${noteId}/metadata`, { headers });
+        if (!response.ok) {
+            if (response.status === 404) {
+                // Note doesn't exist on server
+                return null
+            }
+            else {
+                throw new Error("Failed to fetch note metadata");
+            }
+        } 
         return await response.json();
     },
 

@@ -60,7 +60,7 @@ const WorkspaceSettings = ({ t }) => {
                     <button
                         onClick={handleUpdate}
                         disabled={!newName.trim() || newName === activeWorkspace?.name}
-                        className="cursor-pointer p-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-all active:scale-95"
+                        className="cursor-pointer p-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 transition-all disabled:active:scale-100 active:scale-95"
                     >
                         <Save className="w-4.5 h-4.5" />
                     </button>

@@ -7,8 +7,8 @@ const LanguageSelector = () => {
 
     // language data
     const languages = useMemo(() => [
-        { value: 'en', label: 'English', icon: '🇺🇸' },
-        { value: 'es', label: 'Español', icon: '🇪🇸' },
+        { value: 'en', label: 'English' },
+        { value: 'es', label: 'Español' },
     ], []);
 
     // Find current language for button label
@@ -21,7 +21,6 @@ const LanguageSelector = () => {
             onSelect={(value) => i18n.changeLanguage(value)}
             buttonLabel={
                 <div className="flex items-center gap-2">
-                    <span>{currentLanguage.icon}</span>
                     <span>{currentLanguage.label}</span>
                 </div>
             }
