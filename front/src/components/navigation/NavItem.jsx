@@ -74,7 +74,7 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
                 className={`flex items-center gap-1 px-2 py-1 rounded-md cursor-pointer transition-all group
           ${isActive ? 'bg-primary/10 text-primary' : 'text-text-primary hover:bg-hover-primary-bg'}`}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
-                onClick={() => selectNote(note)}
+                onClick={() => {if(!isActive) selectNote(note)}}
                 onKeyDown={handleKeyDown}
             >
                 <button
