@@ -35,7 +35,6 @@ export const authService = {
         });
 
         if (!response.ok) {
-            const error = await response.json();
             throw new ApiError(response.message, response.status);
         }
 

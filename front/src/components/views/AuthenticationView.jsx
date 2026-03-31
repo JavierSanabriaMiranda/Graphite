@@ -55,7 +55,7 @@ const AuthenticationView = () => {
             } else if (error.status === 400) {
                 setMessage(t(`error.${error.message}`));
             }
-            else if (error.status === 404) {
+            else if (error.status === 404 || error.status === 401) {
                 setMessage(t('error.invalid_credentials'))
             } else if (error.status === 409) {
                 setMessage(t('error.already_registered'))
