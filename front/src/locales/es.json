@@ -22,6 +22,8 @@
         },
         "offline_empty_title": "Contenido no disponible",
         "offline_empty_desc": "Necesitas conectarte a internet para descargar esta nota por primera vez en este dispositivo.",
+        "sync_warning_title": "Sincronización pendiente",
+        "sync_warning_description": "Esta nota puede no estar actualizada. Modificar su contenido puede causar conflictos de sincronización. Conéctate a internet para resolver los cambios pendientes.",
         "toolbar": {
             "tools": "Herramientas",
             "block_type": {

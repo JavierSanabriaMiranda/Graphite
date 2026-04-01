@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, AlertTriangle } from 'lucide-react';
 import ChangeThemeButton from './util/ChangeThemeButton';
 import OptionsMenu from './options_menu/OptionsMenu';
 import { noteService } from '../services/db/noteService'
 import { useNote } from './context/NoteContext';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { SyncStatus } from '../util/SyncStatus';
 
 /**
  * PathBar - Topbar for navigation and note state
@@ -13,7 +14,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 const PathBar = ({ saveStatus, editor }) => {
     const { t } = useTranslation();
     const isMobile = useIsMobile();
-    const { selectedNote: activeNote, selectNote: onNoteSelect, refreshTrigger } = useNote();
+    const { selectedNote: activeNote, selectNote: onNoteSelect, refreshTrigger, syncStatus } = useNote();
     const [displayNote, setDisplayNote] = useState(activeNote);
 
     // When selected note changes or refreshTrigger
@@ -144,6 +145,25 @@ const PathBar = ({ saveStatus, editor }) => {
 
             {/* Right side: State and actions */}
             <div className="flex items-center gap-4 shrink-0">
+                {/* Warning for OFFLINE_STALE status */}
+                {syncStatus === SyncStatus.OFFLINE_STALE && (
+                    <div className="group relative flex items-center">
+                        <AlertTriangle className="w-6 h-6 text-amber-500 animate-in fade-in zoom-in duration-300" />
+                        
+                        {/* Tooltip */}
+                        <div className="absolute right-0 top-full mt-2 w-64 p-3 bg-white dark:bg-zinc-800 border border-amber-300 dark:border-amber-900 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-tight">
+                                    {t('editor.sync_warning_title')}
+                                </span>
+                                <p className="text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium">
+                                    {t('editor.sync_warning_description')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Save status*/}
                 <div className="flex items-center gap-2">
                     <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${saveStatus === 'saving' ? 'bg-amber-500 animate-pulse' : 'bg-primary'}`} />

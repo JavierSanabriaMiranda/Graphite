@@ -22,6 +22,8 @@
         },
         "offline_empty_title": "Content not available",
         "offline_empty_desc": "You need to connect to the internet to download this note for the first time on this device.",
+        "sync_warning_title": "Synchronization pending",
+        "sync_warning_description": "This note may not be up to date. Modifying it's content may cause synchronization conflicts. Connect to the internet to resolve pending changes.",
         "toolbar": {
             "tools": "Tools",
             "block_type": {
