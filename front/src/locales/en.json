@@ -4,7 +4,8 @@
         "delete": "Delete",
         "no_result": "No results",
         "search": "Search...",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "retry": "Retry"
     },
     "editor": {
         "placeholder": "Write something incredible...",
@@ -19,6 +20,8 @@
             "title": "No page selected",
             "description": "There's no page selected. Select one or create a new one"
         },
+        "offline_empty_title": "Content not available",
+        "offline_empty_desc": "You need to connect to the internet to download this note for the first time on this device.",
         "toolbar": {
             "tools": "Tools",
             "block_type": {

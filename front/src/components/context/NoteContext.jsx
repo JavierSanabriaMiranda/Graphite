@@ -4,6 +4,7 @@ import { noteService } from '../../services/db/noteService';
 import { useAuth } from './AuthContext';
 import { syncService } from '../../services/db/syncService';
 import { useWorkspace } from './WorkspaceContext.';
+import { SyncStatus } from '../../util/SyncStatus';
 
 /**
  * Context object to hold the global state of the active note and UI synchronization.
@@ -21,7 +22,7 @@ export const NoteProvider = ({ children }) => {
     const { dek } = useAuth();
     const { t } = useTranslation();
     const { activeWorkspace: workspace } = useWorkspace();
-    
+
     const [selectedNote, setSelectedNote] = useState(null);
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
@@ -63,19 +64,41 @@ export const NoteProvider = ({ children }) => {
             setSelectedNote(null);
             return;
         }
+
+        // Optimistic loading (if note has content show it inmediately)
         if (noteMetadata.content) {
             setSelectedNote(noteMetadata);
+            setSyncStatus(SyncStatus.ONLINE); // Temporal state
         }
-        setIsSyncing(true);
-        
-        // Fetch full content with sync logic
-        const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
-        triggerRefresh();
+        // If no content, we need to fetch it. Show loading state.
+        else {
+            setIsSyncing(true);
+            setSyncStatus(SyncStatus.LOADING);
+            setSelectedNote(noteMetadata); // Set metadata to show title and icon while loading
+        }
 
-        setSelectedNote(result.note);
-        setSyncStatus(result.status);
-        setIsSyncing(false);
-    }, [dek]);
+        // Sync logic in background, we will update the note once we have the result
+        try {
+            // Fetch full content with sync logic
+            const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
+            // Security verification: Is the user still looking at the same note they requested to sync? 
+            // If not, we should not update the state to avoid confusion.
+            if (selectedNoteRef.current?.note_id === noteMetadata.note_id) {
+                setSelectedNote(result.note);
+                setSyncStatus(result.status);
+            }
+
+        } catch (error) {
+            console.error("Error on note background sync:", error);
+            if (!noteMetadata.content) {
+                setSyncStatus(SyncStatus.OFFLINE_EMPTY);
+            }
+        } finally {
+            setIsSyncing(false);
+            triggerRefresh();
+        }
+
+    }, [dek, isSyncing]);
 
     /**
      * Creates a new root note

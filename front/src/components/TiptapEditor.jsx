@@ -57,6 +57,8 @@ import { useNote } from './context/NoteContext';
 import { useToast } from './context/ToastContext';
 import { useIsMobile } from '../hooks/useIsMobile'
 
+import { SyncStatus } from '../util/SyncStatus';
+
 const EMPTY_DOC = {
   type: 'doc',
   content: [{ type: 'paragraph' }]
@@ -67,7 +69,7 @@ const TiptapEditor = () => {
   const { showToast } = useToast();
   const { dek, isAuthenticated } = useAuth();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing } = useNote();
+  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing, syncStatus } = useNote();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -78,6 +80,7 @@ const TiptapEditor = () => {
   const saveTimeoutRef = useRef(null);
   const titleRef = useRef(null);
   const scrollContainerRef = useRef(null);
+  const currentNoteIdRef = useRef(null);
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -232,52 +235,71 @@ const TiptapEditor = () => {
 
   // Effect to load selected note
   useEffect(() => {
-    if (!editor || editor.isDestroyed || isSyncing) {
-      if (isSyncing) setIsPageLoading(true);
-      return;
-    }
+    if (!editor || editor.isDestroyed) return;
 
-    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
-
+    // NO NOTE SELECTED: Clear editor
     if (!activeNote) {
       editor.commands.setContent('', false);
+      currentNoteIdRef.current = null;
       setIsPageLoading(false);
       return;
     }
 
-    // Start loading
-    setIsPageLoading(true);
+    const isDifferentNote = activeNote.note_id !== currentNoteIdRef.current;
 
-    const timer = setTimeout(() => {
-      try {
-        let contentToSet = activeNote.content;
-        if (typeof contentToSet === 'string' && contentToSet.trim() !== '') {
-          try {
-            contentToSet = JSON.parse(contentToSet);
-          } catch (e) {
-            // If the content is not a valid JSON put a basic paragraph with the text
-            contentToSet = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: activeNote.content }] }] };
-          }
-        }
+    // CHANGING FROM NOTE A -> B
+    if (isDifferentNote) {
+      setIsPageLoading(true);
+      currentNoteIdRef.current = activeNote.note_id;
 
-        // Reset undo history when changing note
-        const newState = EditorState.create({
-          doc: editor.schema.nodeFromJSON(contentToSet),
-          plugins: editor.state.plugins,
-        });
+      if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
 
-        editor.view.updateState(newState);
-        setIsPageLoading(false)
-        editor.commands.focus('start');
-
-      } catch (error) {
-        console.error("Critical error while loading:", error);
+      // If there's content (optimistic loading) load it inmediately
+      if (activeNote.content) {
+        injectContentToEditor(activeNote.content);
         setIsPageLoading(false);
       }
-    }, 0); // Delay to let ProseMirror load
+      // If no content and is syncing, we are in loading state, 
+      // show skeleton and wait for sync to update the content when it arrives
+      else if (isSyncing && syncStatus === SyncStatus.LOADING) {
+        injectContentToEditor(EMPTY_DOC);
+        setIsPageLoading(false);
+      }
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [activeNote?.note_id, editor, isSyncing]);
+    // SILECENSE UPDATE (Same note, content might have changed due to sync)
+    // Just update if user is not typing (saveStatus === 'saved')
+    if (!isDifferentNote && !isSyncing && activeNote.content) {
+      const currentJSON = JSON.stringify(editor.getJSON());
+      const incomingJSON = typeof activeNote.content === 'string'
+        ? activeNote.content
+        : JSON.stringify(activeNote.content);
+
+      if (saveStatus === 'saved' && currentJSON !== incomingJSON) {
+        injectContentToEditor(activeNote.content);
+      }
+      setIsPageLoading(false);
+    }
+
+    // Function to inject content into the editor
+    function injectContentToEditor(content) {
+      try {
+        let json = typeof content === 'string' ? JSON.parse(content) : content;
+
+        // Create new state to clear editor history (undo/redo)
+        const newState = EditorState.create({
+          doc: editor.schema.nodeFromJSON(json),
+          plugins: editor.state.plugins,
+        });
+        editor.view.updateState(newState);
+      } catch (e) {
+        console.error("Error inyectando contenido:", e);
+      }
+    }
+
+  }, [activeNote?.note_id, activeNote?.content, isSyncing, syncStatus]);
 
   // Sync title when note changes
   useEffect(() => {
@@ -293,7 +315,9 @@ const TiptapEditor = () => {
   // Force save note content when changing note
   useEffect(() => {
     return () => {
-      if (saveTimeoutRef.current) {
+      // If the note is still syncing or is empty offline (we don't have content in local and we are offline), 
+      // we should not save to avoid overwriting content with empty or outdated data
+      if (saveTimeoutRef.current && !isSyncing && syncStatus !== SyncStatus.OFFLINE_EMPTY) {
         clearTimeout(saveTimeoutRef.current);
         const currentContent = editor?.getJSON();
         if (currentContent) {
@@ -302,7 +326,7 @@ const TiptapEditor = () => {
         }
       }
     };
-  }, [activeNote]);
+  }, [activeNote, isSyncing]);
 
   /**
    * Helper function to trigger the remote sync process.
@@ -333,7 +357,7 @@ const TiptapEditor = () => {
 
   // Saves title on db
   const saveTitle = async () => {
-    if (activeNote && title.trim() !== '' && title !== activeNote.title) {
+    if (activeNote && title.trim() !== '' && title !== activeNote.title && !isSyncing && syncStatus !== SyncStatus.OFFLINE_EMPTY) {
       const result = await noteService.update(activeNote.note_id, { title: title, is_dirty: 1 });
 
       if (result?.error === 'COLLISION') {
@@ -382,7 +406,7 @@ const TiptapEditor = () => {
   // Saves the current note content to DB
   // This automatically triggers when user stops typing for 1 second
   const saveContentToDB = async (content) => {
-    if (!activeNote || isSyncing) return;
+    if (!activeNote || isSyncing || syncStatus === SyncStatus.OFFLINE_EMPTY) return;
     await noteService.update(activeNote.note_id, {
       content: content,
       is_dirty: 1 // Mark for cloud sync
@@ -469,7 +493,7 @@ const TiptapEditor = () => {
           {/* Editor body */}
           <div className="tiptap-container relative">
             {/* Skeleton for page loading */}
-            {(isPageLoading) && (
+            {(isPageLoading || (isSyncing && !activeNote.content)) && (
               <div className="absolute inset-0 z-10 bg-main-bg">
                 <div className="animate-pulse space-y-4 pt-4">
                   <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4"></div>
@@ -479,9 +503,28 @@ const TiptapEditor = () => {
               </div>
             )}
 
-            <div className={`grow overflow-y-auto editor-scrollbar ${isMobile ? 'pb-32' : 'pb-16'}`}>
-              <EditorContent editor={editor} />
-            </div>
+
+            {/* SYNC ERROR (No local content + Offline) */}
+            {!activeNote.content && syncStatus === SyncStatus.OFFLINE_EMPTY && !isSyncing ? (
+              <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
+                <div className="text-zinc-400 mb-4 text-4xl">🌐</div>
+                <h3 className="font-bold text-text-primary">{t('editor.offline_empty_title')}</h3>
+                <p className="text-sm text-zinc-500 max-w-xs mt-2">
+                  {t('editor.offline_empty_desc')}
+                </p>
+                <button
+                  onClick={() => selectNote(activeNote)}
+                  className="mt-6 px-4 py-2 bg-primary text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  {t('common.retry')}
+                </button>
+              </div>
+            ) : (
+              /* Normal editor (Local content + Offline or Online) */
+              <div className={`grow overflow-y-auto editor-scrollbar ${isMobile ? 'pb-32' : 'pb-16'}`}>
+                <EditorContent editor={editor} />
+              </div>
+            )}
 
           </div>
         </div>

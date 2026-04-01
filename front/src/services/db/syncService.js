@@ -3,6 +3,7 @@ import { remoteNoteService, remoteWorkspaceService } from '../api';
 import { encryptData, decryptData } from '../../util/crypto';
 import { formatDateForServer } from '../../util/formatDate';
 import { noteService } from './noteService';
+import { SyncStatus } from '../../util/SyncStatus';
 
 // --- Private helper functions for sync logic ---
 
@@ -241,7 +242,7 @@ export const syncService = {
         if (!isOnline) {
             return {
                 note,
-                status: note.content ? 'OFFLINE_STALE' : 'OFFLINE_EMPTY'
+                status: note.content ? SyncStatus.OFFLINE_STALE : SyncStatus.OFFLINE_EMPTY
             };
         }
 
@@ -250,9 +251,9 @@ export const syncService = {
             // Note doesn't exists remotely
             if (!remoteMeta) {
                 if (!note) {
-                    return { note: null, status: 'OFFLINE_EMPTY' };
+                    return { note: null, status: SyncStatus.OFFLINE_EMPTY };
                 } else {
-                    return { note, status: 'OFFLINE_STALE' };
+                    return { note, status: SyncStatus.OFFLINE_STALE };
                 }
             }
 
@@ -262,10 +263,10 @@ export const syncService = {
                 // remote version is different, we have a conflict. 
                 // Otherwise, we are online but just haven't synced yet, so we can show local safely.
                 if (remoteMeta.noteVersion !== note.note_version) {
-                    return { note, status: 'CONFLICT' };
+                    return { note, status: SyncStatus.CONFLICT };
                 }
                 // If no conlifct, show local version
-                return { note, status: 'ONLINE' };
+                return { note, status: SyncStatus.ONLINE };
             }
             // CASE B: Local note is clean, we can safely compare and decide if we need to update from remote
             if (!note.content || remoteMeta.noteVersion > note.note_version) {
@@ -285,17 +286,17 @@ export const syncService = {
                     updated_at: remoteMeta.updatedAt,
                     note_version: remoteMeta.noteVersion
                 };
-                return { note: updatedNote, status: 'ONLINE' };
+                return { note: updatedNote, status: SyncStatus.ONLINE };
             }
-            return { note, status: 'ONLINE' };
+            return { note, status: SyncStatus.ONLINE };
 
         } catch (error) {
             console.error("Sync error, falling back to local:", error);
             // If network fails during fetch, proceed as offline
             if (!note.content) {
-                return { note, status: 'OFFLINE_EMPTY' };
+                return { note, status: SyncStatus.OFFLINE_EMPTY };
             } else {
-                return { note, status: 'OFFLINE_STALE' };
+                return { note, status: SyncStatus.OFFLINE_STALE };
             }
             
         }

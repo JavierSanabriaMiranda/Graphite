@@ -4,7 +4,8 @@
         "delete": "Borrar",
         "no_result": "No hay resultados",
         "search": "Buscar...",
-        "loading": "Cargando..."
+        "loading": "Cargando...",
+        "retry": "Reintentar"
     },
     "editor": {
         "placeholder": "Escribe algo increíble...",
@@ -19,6 +20,8 @@
             "title": "Ninguna página seleccionada",
             "description": "No hay ninguna página seleccionada. Selecciona una o crea una nueva"
         },
+        "offline_empty_title": "Contenido no disponible",
+        "offline_empty_desc": "Necesitas conectarte a internet para descargar esta nota por primera vez en este dispositivo.",
         "toolbar": {
             "tools": "Herramientas",
             "block_type": {
