@@ -182,7 +182,11 @@
             "logout": {
                 "logout": "Cerrar Sesión",
                 "title": "Cerrar Sesión",
-                "description": "Cierra tu sesión activa en este dispositivo"
+                "description": "Cierra tu sesión activa en este dispositivo",
+                "confirm_title": "Confirmar cierre de sesión",
+                "confirm_description": "¿Estás seguro de que quieres cerrar sesión?",
+                "unsynced_title": "Cambios sin guardar",
+                "unsynced_description": "Hay notas o espacios que aún no se han sincronizados con la nube. Si cierras sesión ahora, perderás estos cambios permanentemente."
             }
         },
         "workspace": {

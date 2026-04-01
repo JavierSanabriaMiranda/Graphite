@@ -89,5 +89,12 @@ export const workspaceService = {
             "UPDATE NOTES SET is_deleted = 1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $1",
             [workspaceId]
         );
+    },
+
+    getWorkspacesNotSynced: async () => {
+        const db = await getDB();
+        return await db.select(
+            "SELECT * FROM WORKSPACES WHERE is_dirty = 1 AND is_deleted = 0"
+        );
     }
 };

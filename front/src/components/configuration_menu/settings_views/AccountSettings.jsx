@@ -1,9 +1,7 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 
-const AccountSettings = ({ t }) => {
-    const { logout } = useAuth();
+const AccountSettings = ({ t, onLogoutClick }) => {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -17,7 +15,7 @@ const AccountSettings = ({ t }) => {
                     </p>
                 </div>
                 <button
-                    onClick={logout}
+                    onClick={onLogoutClick}
                     className="cursor-pointer inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white text-sm font-bold rounded-xl dark:brightness-90 hover:bg-red-700 transition-all active:scale-95 shadow-lg shadow-red-600/20"
                 >
                     <LogOut className="w-4 h-4" />

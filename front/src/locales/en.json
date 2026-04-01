@@ -183,7 +183,11 @@
             "logout": {
                 "logout": "Logout",
                 "title": "Logout",
-                "description": "Close your session at this device"
+                "description": "Close your session at this device",
+                "confirm_title": "Confirm Logout",
+                "confirm_description": "Are you sure you want to logout?",
+                "unsynced_title": "Unsaved Changes",
+                "unsynced_description": "There are notes or spaces that have not been synchronized with the cloud. If you log out now, you will lose these changes permanently."
             }
         },
         "workspace": {

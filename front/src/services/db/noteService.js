@@ -303,5 +303,12 @@ export const noteService = {
             `UPDATE NOTES SET note_version = $1 WHERE note_id = $2`,
             [newVersion, noteId]
         );
+    },
+
+    getNotesNotSynced: async () => {
+        const db = await getDB();
+        return await db.select(
+            "SELECT * FROM NOTES WHERE is_dirty = 1 AND is_deleted = 0"
+        );
     }
 };

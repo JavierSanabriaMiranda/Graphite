@@ -5,10 +5,31 @@ import { useAuth } from '../context/AuthContext';
 import GeneralSettings from './settings_views/GeneralSettings';
 import WorkspaceSettings from './settings_views/WorkspaceSettings';
 import AccountSettings from './settings_views/AccountSettings';
+import LogoutModal from './settings_views/LogoutModal';
+
+import { noteService } from '../../services/db/noteService';
+import { workspaceService } from '../../services/db/workspaceService';
 
 const SettingsView = ({ t, onClose, isMobile }) => {
     const [activeTab, setActiveTab] = useState('general');
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const [hasUnsyncedData, setHasUnsyncedData] = useState(false);
     const { logout } = useAuth();
+
+    // Function to check for unsynced data before opening logout confirmation
+    const handleOpenLogout = async () => {
+        try {
+            const unsyncedWs = await workspaceService.getWorkspacesNotSynced();
+            const unsyncedNotes = await noteService.getNotesNotSynced();
+            
+            const isDirty = unsyncedWs.length > 0 || unsyncedNotes.length > 0;
+            setHasUnsyncedData(isDirty);
+            setIsLogoutModalOpen(true);
+        } catch (error) {
+            console.error("Error checking sync status:", error);
+            setIsLogoutModalOpen(true); // Open by default if error occurs
+        }
+    };
 
     /**
      * Handles the styling of sidebar and mobile navigation buttons
@@ -26,6 +47,13 @@ const SettingsView = ({ t, onClose, isMobile }) => {
 
     return (
         <div className="flex h-full w-full bg-main-bg overflow-hidden transition-all duration-200 flex-col sm:flex-row">
+
+            <LogoutModal 
+                isOpen={isLogoutModalOpen} 
+                onClose={() => setIsLogoutModalOpen(false)} 
+                onConfirm={logout} 
+                isUnsynced={hasUnsyncedData}
+            />
 
             {/* Sidebar - Desktop & Tablet (Hidden on mobile) */}
             <div className="hidden sm:flex w-56 md:w-64 bg-main-bg border-r border-zinc-200 dark:border-zinc-800 p-5 flex-col shrink-0">
@@ -78,7 +106,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                 {/* Logout button at sidebar end */}
                 <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
                     <button
-                        onClick={logout}
+                        onClick={handleOpenLogout}
                         className="cursor-pointer w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl text-red-500 hover:bg-red-500/10 transition-all duration-200 group"
                     >
                         <LogOut className="w-4.5 h-4.5 group-hover:translate-x-0.5 transition-transform" />
@@ -125,7 +153,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                         {activeTab === 'general' && <GeneralSettings t={t} />}
                         {activeTab === 'workspace' && <WorkspaceSettings t={t} />}
-                        {activeTab === 'account' && <AccountSettings t={t} />}
+                        {activeTab === 'account' && <AccountSettings t={t} onLogoutClick={handleOpenLogout} />}
                     </div>
                 </div>
             </div>
