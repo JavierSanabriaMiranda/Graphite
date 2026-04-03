@@ -312,16 +312,17 @@ export const noteService = {
         );
     },
 
-    setConflict: async (noteId, conflictContent, remoteVersion) => {
+    setConflict: async (noteId, conflictTitle, conflictIcon, conflictContent, remoteVersion) => {
         const db = await getDB();
         return await db.execute(
-            `UPDATE NOTES SET conflict_content = $1, remote_version = $2 WHERE note_id = $3`,
-            [conflictContent, remoteVersion, noteId]
+            `UPDATE NOTES SET conflict_title = $1, conflict_icon = $2, conflict_content = $3, remote_version = $4 WHERE note_id = $5`,
+            [ conflictTitle, conflictIcon, conflictContent, remoteVersion, noteId]
         );
     },
 
-    resolveConflict: async (noteId, content, version) => {
+    resolveConflict: async (noteId, title, icon, content, version) => {
         const db = await getDB();
+        await noteService.update(noteId, {title: title, icon: icon})
         return await db.execute(
             `UPDATE NOTES SET content = $1, note_version = $2, conflict_content = NULL, remote_version = NULL, is_dirty = 1 WHERE note_id = $3`,
             [JSON.stringify(content), version, noteId]

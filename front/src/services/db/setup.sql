@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS NOTES (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     note_version INTEGER DEFAULT 1,
+    conflict_title TEXT,
+    conflict_icon TEXT,
     conflict_content TEXT,
     remote_version INTEGER
 );

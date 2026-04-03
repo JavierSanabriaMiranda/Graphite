@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { useEditor, EditorContent, ReactNodeViewRenderer } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { X, Monitor, Globe, AlertCircle } from 'lucide-react';
+import { X, Monitor, Globe, AlertCircle, FileText, Trash2 } from 'lucide-react';
 import { noteService } from '../../services/db/noteService';
 import i18next from 'i18next'
+import { useState, useRef } from 'react';
 
 import { Underline } from '@tiptap/extension-underline'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -46,11 +47,18 @@ import { Commands } from '../slash_commands/Commands';
 import getSuggestionConfig from '../slash_commands/suggestions';
 import { useNote } from '../context/NoteContext';
 
+import EmojiPicker from '../util/EmojiPicker';
+import NoteIcon from '../util/NoteIcon';
+
 
 const ConflictResolver = ({ note, onClose, onResolved }) => {
   const { t } = useTranslation();
 
   const { createSubnote, selectNote } = useNote();
+
+  const [localTitle, setLocalTitle] = useState(note.title || '');
+  const [localIcon, setLocalIcon] = useState(note.icon || '');
+  const titleRef = useRef(null);
 
   const lowlight = createLowlight()
   lowlight.register('java', java)
@@ -186,10 +194,14 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
   });
 
   const handleResolve = async (source) => {
-    let finalContent;
+    let finalTitle, finalIcon, finalContent;
     if (source === 'local') {
+      finalTitle = localTitle;
+      finalIcon = localIcon;
       finalContent = localEditor.getJSON();
     } else {
+      finalTitle = note.conflict_title;
+      finalIcon = note.conflict_icon;
       finalContent = typeof note.conflict_content === 'string'
         ? JSON.parse(note.conflict_content)
         : note.conflict_content;
@@ -198,6 +210,8 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
     try {
       // Save resolved content and update the id to the version the server is expecting
       await noteService.resolveConflict(note.note_id,
+        finalTitle,
+        finalIcon,
         finalContent,
         note.remote_version
       );
@@ -251,28 +265,69 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
       {/* Editors */}
       <div className="flex flex-1 overflow-hidden">
         {/* Local panel */}
-        <div className="flex-1 flex flex-col border-r border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center gap-2 px-8 py-3 bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-            <Monitor className="w-4 h-4 text-primary" />
-            <span className="text-xs font-black uppercase tracking-widest text-primary">
-              {t('conflict.local_label')}
-            </span>
+        <div className="flex-1 flex flex-col border-r border-zinc-200 dark:border-zinc-800 bg-main-bg">
+          <div className="flex items-center justify-between px-8 py-3 bg-primary/5 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-center gap-2 text-primary">
+              <Monitor className="w-4 h-4" />
+              <span className="text-xs font-black uppercase tracking-widest">{t('conflict.local_label')}</span>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto bg-main-bg custom-scrollbar">
-            <EditorContent editor={localEditor} />
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-12 pt-10">
+            <div className="max-w-3xl mx-auto">
+              {/* Local metadata */}
+              <div className="group mb-4 ml-7">
+                <div className="relative w-fit group/icon-wrapper">
+                  <EmojiPicker onSelect={(char) => setLocalIcon(char)}>
+                    <div className="text-6xl mb-4 w-20 h-20 flex items-center justify-center rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors">
+                      {localIcon ? <NoteIcon iconChar={localIcon} /> : <div className="text-zinc-300 dark:text-zinc-700">+</div>}
+                    </div>
+                  </EmojiPicker>
+                  {localIcon && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setLocalIcon(''); }}
+                      className="cursor-pointer absolute -top-2 -right-2 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 transition-opacity hover:text-red-500"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+                <textarea
+                  ref={titleRef}
+                  value={localTitle}
+                  onChange={(e) => setLocalTitle(e.target.value)}
+                  placeholder={t('editor.no_title_placeholder')}
+                  className="w-full text-4xl font-bold bg-transparent border-none outline-none text-text-primary resize-none py-2 leading-tight placeholder:opacity-20"
+                  rows={1}
+                  style={{ fieldSizing: 'content' }}
+                />
+              </div>
+              <EditorContent editor={localEditor} />
+            </div>
           </div>
         </div>
 
         {/* Remote panel */}
         <div className="flex-1 flex flex-col bg-zinc-50/20 dark:bg-zinc-900/10">
-          <div className="flex items-center gap-2 px-8 py-3 bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-            <Globe className="w-4 h-4 text-zinc-500" />
-            <span className="text-xs font-black uppercase tracking-widest text-zinc-500">
-              {t('conflict.remote_label')}
-            </span>
+          <div className="flex items-center justify-between px-8 py-3 bg-zinc-100/50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-center gap-2 text-zinc-500">
+              <Globe className="w-4 h-4" />
+              <span className="text-xs font-black uppercase tracking-widest">{t('conflict.remote_label')}</span>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            <EditorContent editor={remoteEditor} />
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-12 pt-10 opacity-70">
+            <div className="max-w-3xl mx-auto">
+              <div className="ml-7 mb-4">
+                <div className="text-6xl mb-4 w-20 h-20 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800/30">
+                  {note.conflict_icon ? <NoteIcon iconChar={note.conflict_icon} /> : <FileText className="w-10 h-10 text-zinc-400" />}
+                </div>
+                <h1 className="text-4xl font-bold text-text-primary break-words leading-tight">
+                  {note.conflict_title || t('editor.untitled_note')}
+                </h1>
+              </div>
+              <EditorContent editor={remoteEditor} />
+            </div>
           </div>
         </div>
       </div>

@@ -80,11 +80,16 @@ const syncNotes = async (notes, dek) => {
             // Take server content to compare
             const remoteData = await remoteNoteService.getRemoteNoteContent(note.note_id);
             const remoteMeta = await remoteNoteService.getRemoteNoteMetadata(note.note_id);
+            const metaJson = await decryptData(remoteMeta.encryptedMetadata, dek, remoteMeta.metadataIv);
+            const { title, icon } = JSON.parse(metaJson);
+
             const decryptedRemote = await decryptData(remoteData.encryptedPayload, dek, remoteData.iv);
 
             // Save conflict on local db
             await noteService.setConflict(
                 note.note_id,
+                title,
+                icon,
                 decryptedRemote,
                 remoteMeta.noteVersion
             );
@@ -275,8 +280,13 @@ export const syncService = {
                 if (remoteMeta.noteVersion !== note.note_version) {
                     const remoteFull = await remoteNoteService.getRemoteNoteContent(noteId);
                     const decryptedRemote = await decryptData(remoteFull.encryptedPayload, dek, remoteFull.iv);
+                    const metaJson = await decryptData(remoteMeta.encryptedMetadata, dek, remoteMeta.metadataIv);
+                    const { title, icon } = JSON.parse(metaJson);
+
                     await noteService.setConflict(
                         noteId,
+                        title,
+                        icon,
                         decryptedRemote,
                         remoteMeta.noteVersion
                     );
