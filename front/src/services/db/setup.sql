@@ -34,7 +34,9 @@ CREATE TABLE IF NOT EXISTS NOTES (
     is_deleted INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    note_version INTEGER DEFAULT 1
+    note_version INTEGER DEFAULT 1,
+    conflict_content TEXT,
+    remote_version INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS NOTE_LINKS (

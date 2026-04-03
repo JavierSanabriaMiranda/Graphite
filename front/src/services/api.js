@@ -107,7 +107,7 @@ export const remoteNoteService = {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error("Note sync failed");
+        if (!response.ok && response.status !== 409) throw new Error("Note sync failed");
         return response;
     },
 

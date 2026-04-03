@@ -248,6 +248,19 @@
             "button": "CREAR CUENTA"
         }
     },
+    "conflict": {
+        "conflict": "Conflicto",
+        "conflict_detected_title": "Se ha detectado un conflicto en esta nota",
+        "conflict_detected_desc": "Pulsa en el botón de la derecha para resolver el conflicto manualmente",
+        "resolve_conflict": "Resolver conflicto",
+        "conflict_warning_pathbar": "Se han detectado cambios remotos. Pulsa aquí para resolver el conflicto.",
+        "resolve_title": "Resolución de conflictos en \"{{name}}\"",
+        "resolve_desc": "Resuelve los conflictos aceptando los cambios del lado que quieras conservar o fusionando cambios en el editor izquierdo",
+        "local_label": "Versión local (Editable)",
+        "remote_label": "Versión remota (Solo lectura)",
+        "keep_local": "Mantener versión local",
+        "keep_remote": "Mantener versión remota"
+    },
     "error": {
         "invalid_credentials": "Credenciales incorrectas",
         "connection_error": "Error de conexión con el servidor",

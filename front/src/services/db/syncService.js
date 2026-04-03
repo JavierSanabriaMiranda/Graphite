@@ -77,8 +77,18 @@ const syncNotes = async (notes, dek) => {
             await noteService.incrementVersion(note.note_id, newVersion);
             await syncService.markAsClean('NOTES', 'note_id', note.note_id);
         } else if (response.status === 409) {
-            // Version conflict
-            // TODO: Implement conflict resolution strategy
+            // Take server content to compare
+            const remoteData = await remoteNoteService.getRemoteNoteContent(note.note_id);
+            const remoteMeta = await remoteNoteService.getRemoteNoteMetadata(note.note_id);
+            const decryptedRemote = await decryptData(remoteData.encryptedPayload, dek, remoteData.iv);
+
+            // Save conflict on local db
+            await noteService.setConflict(
+                note.note_id,
+                decryptedRemote,
+                remoteMeta.noteVersion
+            );
+
         }
     }
 };
@@ -263,7 +273,16 @@ export const syncService = {
                 // remote version is different, we have a conflict. 
                 // Otherwise, we are online but just haven't synced yet, so we can show local safely.
                 if (remoteMeta.noteVersion !== note.note_version) {
-                    return { note, status: SyncStatus.CONFLICT };
+                    const remoteFull = await remoteNoteService.getRemoteNoteContent(noteId);
+                    const decryptedRemote = await decryptData(remoteFull.encryptedPayload, dek, remoteFull.iv);
+                    await noteService.setConflict(
+                        noteId,
+                        decryptedRemote,
+                        remoteMeta.noteVersion
+                    );
+                    const updatedLocalNote = (await db.select("SELECT * FROM NOTES WHERE note_id = $1", [noteId]))[0];
+
+                    return { note: updatedLocalNote, status: SyncStatus.CONFLICT };
                 }
                 // If no conlifct, show local version
                 return { note, status: SyncStatus.ONLINE };
@@ -298,7 +317,6 @@ export const syncService = {
             } else {
                 return { note, status: SyncStatus.OFFLINE_STALE };
             }
-            
         }
     }
 };

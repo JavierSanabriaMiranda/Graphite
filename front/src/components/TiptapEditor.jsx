@@ -1,8 +1,8 @@
 import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import i18next from 'i18next'
-import { Trash2 } from 'lucide-react';
+import { Trash2, AlertTriangle } from 'lucide-react';
 
 import { EditorState } from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit'
@@ -49,6 +49,7 @@ import { Commands } from './slash_commands/Commands';
 import getSuggestionConfig from './slash_commands/suggestions';
 import MobileFormattingSheet from './menu_bar/MobileFormattingSheet';
 import ChangeThemeButton from './util/ChangeThemeButton';
+import ConflictResolver from './views/ConflictResolver';
 
 import { noteService } from '../services/db/noteService';
 import { useAuth } from './context/AuthContext';
@@ -69,15 +70,17 @@ const TiptapEditor = () => {
   const { showToast } = useToast();
   const { dek, isAuthenticated } = useAuth();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing, syncStatus } = useNote();
+  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing, syncStatus, refreshCurrentNote } = useNote();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('');
   const [saveStatus, setSaveStatus] = useState('saved');
   const [isPageLoading, setIsPageLoading] = useState(false);
+  const [isResolvingConflict, setIsResolvingConflict] = useState(false);
 
   const saveTimeoutRef = useRef(null);
+  const isProgrammaticRef = useRef(false); // Flag to indicate if content change is programmatic (to avoid save loops)
   const titleRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const currentNoteIdRef = useRef(null);
@@ -194,6 +197,10 @@ const TiptapEditor = () => {
     ],
     onUpdate: ({ editor }) => {
       // Clean timeout if the user keeps typing
+      if (isProgrammaticRef.current) {
+        return;
+      }
+
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
@@ -233,6 +240,39 @@ const TiptapEditor = () => {
     },
   })
 
+  // Function to inject content into the editor
+  const injectContentToEditor = useCallback((content, callback = null) => {
+    if (!editor || editor.isDestroyed) return;
+
+    let json;
+    try {
+      json = typeof content === 'string' ? JSON.parse(content) : content;
+    } catch (e) {
+      console.error("Error al parsear contenido:", e);
+      return;
+    }
+
+    setTimeout(() => {
+      if (!editor || editor.isDestroyed) return;
+
+      try {
+        const newState = EditorState.create({
+          doc: editor.schema.nodeFromJSON(json),
+          plugins: editor.state.plugins,
+        });
+        isProgrammaticRef.current = true;
+        editor.view.updateState(newState);
+        isProgrammaticRef.current = false;
+
+        if (callback) callback();
+      } catch (e) {
+        console.error("Error inyectando contenido en el editor:", e);
+        isProgrammaticRef.current = false;
+        if (callback) callback();
+      }
+    }, 0);
+  }, [editor]);
+
   // Effect to load selected note
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
@@ -257,14 +297,12 @@ const TiptapEditor = () => {
 
       // If there's content (optimistic loading) load it inmediately
       if (activeNote.content) {
-        injectContentToEditor(activeNote.content);
-        setIsPageLoading(false);
+        injectContentToEditor(activeNote.content, () => setIsPageLoading(false));
       }
       // If no content and is syncing, we are in loading state, 
       // show skeleton and wait for sync to update the content when it arrives
       else if (isSyncing && syncStatus === SyncStatus.LOADING) {
-        injectContentToEditor(EMPTY_DOC);
-        setIsPageLoading(false);
+        injectContentToEditor(EMPTY_DOC, () => setIsPageLoading(false));
       }
       return;
     }
@@ -283,23 +321,7 @@ const TiptapEditor = () => {
       setIsPageLoading(false);
     }
 
-    // Function to inject content into the editor
-    function injectContentToEditor(content) {
-      try {
-        let json = typeof content === 'string' ? JSON.parse(content) : content;
-
-        // Create new state to clear editor history (undo/redo)
-        const newState = EditorState.create({
-          doc: editor.schema.nodeFromJSON(json),
-          plugins: editor.state.plugins,
-        });
-        editor.view.updateState(newState);
-      } catch (e) {
-        console.error("Error inyectando contenido:", e);
-      }
-    }
-
-  }, [activeNote?.note_id, activeNote?.content, isSyncing, syncStatus]);
+  }, [activeNote?.note_id, activeNote?.content, isSyncing, syncStatus, editor, injectContentToEditor]);
 
   // Sync title when note changes
   useEffect(() => {
@@ -314,19 +336,22 @@ const TiptapEditor = () => {
 
   // Force save note content when changing note
   useEffect(() => {
+    const noteIdAtEffectTime = activeNote?.note_id;
+
     return () => {
       // If the note is still syncing or is empty offline (we don't have content in local and we are offline), 
       // we should not save to avoid overwriting content with empty or outdated data
-      if (saveTimeoutRef.current && !isSyncing && syncStatus !== SyncStatus.OFFLINE_EMPTY) {
+      if (saveTimeoutRef.current && noteIdAtEffectTime && !isSyncing && syncStatus !== SyncStatus.OFFLINE_EMPTY && !isResolvingConflict) {
         clearTimeout(saveTimeoutRef.current);
         const currentContent = editor?.getJSON();
         if (currentContent) {
-          saveContentToDB(currentContent);
-          triggerRemoteSync();
+          saveContentToDB(currentContent, noteIdAtEffectTime);
         }
+      } else {
+        clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [activeNote, isSyncing]);
+  }, [activeNote?.note_id, isSyncing, syncStatus]);
 
   /**
    * Helper function to trigger the remote sync process.
@@ -357,7 +382,7 @@ const TiptapEditor = () => {
 
   // Saves title on db
   const saveTitle = async () => {
-    if (activeNote && title.trim() !== '' && title !== activeNote.title && !isSyncing && syncStatus !== SyncStatus.OFFLINE_EMPTY) {
+    if (activeNote && title.trim() !== '' && title !== activeNote.title && !isSyncing && syncStatus !== SyncStatus.OFFLINE_EMPTY && !isResolvingConflict) {
       const result = await noteService.update(activeNote.note_id, { title: title, is_dirty: 1 });
 
       if (result?.error === 'COLLISION') {
@@ -405,13 +430,16 @@ const TiptapEditor = () => {
 
   // Saves the current note content to DB
   // This automatically triggers when user stops typing for 1 second
-  const saveContentToDB = async (content) => {
-    if (!activeNote || isSyncing || syncStatus === SyncStatus.OFFLINE_EMPTY) return;
-    await noteService.update(activeNote.note_id, {
+  const saveContentToDB = async (content, id = null) => {
+    const targetId = id || activeNote?.note_id;
+
+    if (!targetId || !activeNote || isSyncing || syncStatus === SyncStatus.OFFLINE_EMPTY || isResolvingConflict) return;
+    await noteService.update(targetId, {
       content: content,
       is_dirty: 1 // Mark for cloud sync
     });
-
+    
+    saveTimeoutRef.current = null;
     onNoteUpdate();
     triggerRemoteSync();
 
@@ -440,8 +468,44 @@ const TiptapEditor = () => {
       <PathBar
         saveStatus={saveStatus}
         editor={editor}
+        onResolveConflict={() => setIsResolvingConflict(true)}
       />
       {isMobile ? <MobileFormattingSheet editor={editor} /> : <MenuBar editor={editor} />}
+
+      {syncStatus === SyncStatus.CONFLICT && (
+        <div className="mx-8 mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+            <div>
+              <p className="text-sm font-bold text-red-900 dark:text-red-100">
+                {t('conflict.conflict_detected_title')}
+              </p>
+              <p className="text-xs text-red-700 dark:text-red-300">
+                {t('conflict.conflict_detected_desc')}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsResolvingConflict(true)}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
+          >
+            {t('conflict.resolve_conflict')}
+          </button>
+        </div>
+      )}
+
+      {/* Resolution view */}
+      {isResolvingConflict && (
+        <ConflictResolver
+          note={activeNote}
+          onClose={() => setIsResolvingConflict(false)}
+          onResolved={() => {
+            refreshCurrentNote();
+            triggerRemoteSync();
+            setIsResolvingConflict(false);
+          }}
+        />
+      )}
 
       <div ref={scrollContainerRef} className="grow overflow-y-auto editor-scrollbar">
         <div className={`max-w-5xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>

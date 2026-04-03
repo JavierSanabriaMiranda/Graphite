@@ -100,6 +100,13 @@ export const NoteProvider = ({ children }) => {
 
     }, [dek, isSyncing]);
 
+    const refreshCurrentNote = useCallback(async () => {
+        if (selectedNoteRef.current) {
+            const noteRefresh = await noteService.getByNoteId(selectedNoteRef.current.note_id);
+            selectNote(noteRefresh)
+        }
+    }, [selectNote]);
+
     /**
      * Creates a new root note
      */
@@ -160,6 +167,7 @@ export const NoteProvider = ({ children }) => {
         syncStatus,
         setSelectedNote, // Raw setter for direct manipulation if needed
         selectNote,
+        refreshCurrentNote,
         refreshTrigger,
         triggerRefresh,
         createRootNote,

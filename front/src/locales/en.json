@@ -249,6 +249,19 @@
             "button": "SIGN UP"
         }
     },
+    "conflict": {
+        "conflict": "Conflict",
+        "conflict_detected_title": "Conflict detected in this note",
+        "conflict_detected_desc": "Click the button on the right to resolve the conflict manually",
+        "resolve_conflict": "Resolve conflict",
+        "conflict_warning_pathbar": "Remote changes detected. Click here to resolve the conflict.",
+        "resolve_title": "Conflict resolution in \"{{name}}\"",
+        "resolve_desc": "Resolve conflicts by accepting the changes from the version you want to keep or by merging changes in the left editor",
+        "local_label": "Local version (Editable)",
+        "remote_label": "Remote version (Read-only)",
+        "keep_local": "Keep local version",
+        "keep_remote": "Keep remote version"
+    },
     "error": {
         "invalid_credentials": "Invalid credentials",
         "connection_error": "Error while connecting to the server",
