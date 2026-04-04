@@ -11,6 +11,20 @@ const emptyContent = JSON.stringify({
     ],
 });
 
+const getChildIdsFromContent = (json) => {
+    const ids = [];
+    const traverse = (node) => {
+        if (node.type === 'pageBlock' && node.attrs?.id) {
+            ids.push(node.attrs.id);
+        }
+        if (node.content) {
+            node.content.forEach(traverse);
+        }
+    };
+    if (json) traverse(json);
+    return ids;
+};
+
 /**
  * Service for CRUD operations in Notes table
  */
@@ -316,16 +330,35 @@ export const noteService = {
         const db = await getDB();
         return await db.execute(
             `UPDATE NOTES SET conflict_title = $1, conflict_icon = $2, conflict_content = $3, remote_version = $4 WHERE note_id = $5`,
-            [ conflictTitle, conflictIcon, conflictContent, remoteVersion, noteId]
+            [conflictTitle, conflictIcon, conflictContent, remoteVersion, noteId]
         );
     },
 
     resolveConflict: async (noteId, title, icon, content, version) => {
         const db = await getDB();
-        await noteService.update(noteId, {title: title, icon: icon})
-        return await db.execute(
+        await noteService.update(noteId, { title: title, icon: icon })
+        await db.execute(
             `UPDATE NOTES SET content = $1, note_version = $2, conflict_content = NULL, remote_version = NULL, is_dirty = 1 WHERE note_id = $3`,
             [JSON.stringify(content), version, noteId]
         );
+
+        // Get the IDs of the subpages that are on new content
+        const validChildIds = getChildIdsFromContent(content);
+
+        if (validChildIds.length > 0) {
+            // Mark all notes that aren't in validChildIds and whose parent is current note to not be in new content
+            const placeholders = validChildIds.map(() => '?').join(',');
+            await db.execute(
+                `UPDATE NOTES SET is_deleted = 1, is_dirty = 1 
+             WHERE parent_id = ? AND note_id NOT IN (${placeholders})`,
+                [noteId, ...validChildIds]
+            );
+        } else {
+            // If new content doesn't have supages, all local subpages gets deleted
+            await db.execute(
+                `UPDATE NOTES SET is_deleted = 1, is_dirty = 1 WHERE parent_id = ?`,
+                [noteId]
+            );
+        }
     }
 };

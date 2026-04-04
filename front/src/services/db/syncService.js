@@ -98,6 +98,24 @@ const syncNotes = async (notes, dek) => {
     }
 };
 
+const ensureRemoteChildrenMetadata = async (parentId, dek, db) => {
+    // Pedimos al servidor todos los hijos de esta nota
+    const remoteChildren = await remoteNoteService.getRemoteMetadataByParent(parentId);
+
+    for (const child of remoteChildren) {
+        const metaJson = await decryptData(child.encryptedMetadata, dek, child.metadataIv);
+        const { title, icon, notePath } = JSON.parse(metaJson);
+
+        await db.execute(
+            `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, note_version, is_dirty)
+             VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+             ON CONFLICT(note_id) DO UPDATE SET
+             title = excluded.title, icon = excluded.icon, parent_id = excluded.parent_id`,
+            [child.noteId, child.workspaceId, parentId, title, icon, notePath, child.noteVersion]
+        );
+    }
+};
+
 // Pulls remote workspaces and their notes, decrypts them, and saves to local DB
 const pullRemoteWorkspacesAndNotes = async (remoteWorkspaces, dek, db, userId) => {
     for (const rw of remoteWorkspaces) {

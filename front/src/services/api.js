@@ -121,6 +121,13 @@ export const remoteNoteService = {
         return await response.json();
     },
 
+    async getRemoteMetadataByParent(parentId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/parent/${parentId}/metadata`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch notes metadata")
+        return await response.json()
+    },
+
     async getRemoteNoteMetadata(noteId) {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}notes/${noteId}/metadata`, { headers });
