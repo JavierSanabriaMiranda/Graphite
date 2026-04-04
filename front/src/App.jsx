@@ -73,7 +73,7 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
           ))}
           {activeTab === 'browse' && (
             isMobile ? (
-              <MobileBrowseView workspace={currentWorkspace} />
+              <MobileBrowseView />
             ) : (
               <TiptapEditor />
             )

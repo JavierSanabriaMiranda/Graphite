@@ -46,6 +46,7 @@ import { BlockMoving } from '../extensions/BlockMoving';
 import { Commands } from '../slash_commands/Commands';
 import getSuggestionConfig from '../slash_commands/suggestions';
 import { useNote } from '../context/NoteContext';
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 import EmojiPicker from '../util/EmojiPicker';
 import NoteIcon from '../util/NoteIcon';
@@ -53,9 +54,10 @@ import NoteIcon from '../util/NoteIcon';
 
 const ConflictResolver = ({ note, onClose, onResolved }) => {
   const { t } = useTranslation();
-
   const { createSubnote, selectNote } = useNote();
+  const isMobile = useIsMobile();
 
+  const [mobileTab, setMobileTab] = useState('local');
   const [localTitle, setLocalTitle] = useState(note.title || '');
   const [localIcon, setLocalIcon] = useState(note.icon || '');
   const titleRef = useRef(null);
@@ -176,7 +178,7 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
     content: typeof note.content === 'string' ? JSON.parse(note.content) : note.content,
     editorProps: {
       attributes: {
-        class: 'prose dark:prose-invert prose-sm max-w-none focus:outline-none p-8 min-h-full',
+        class: `prose dark:prose-invert prose-sm max-w-none focus:outline-none ${isMobile ? 'p-4' : 'p-8'} min-h-full`,
       },
     },
   });
@@ -188,7 +190,7 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
     editable: false,
     editorProps: {
       attributes: {
-        class: 'prose dark:prose-invert prose-sm max-w-none focus:outline-none p-8 min-h-full',
+        class: `prose dark:prose-invert prose-sm max-w-none focus:outline-none ${isMobile ? 'p-4' : 'p-8'} min-h-full`,
       },
     },
   });
@@ -225,79 +227,88 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
 
   return (
     <div className="fixed inset-0 z-9999 bg-main-bg flex flex-col animate-in fade-in duration-200">
-      <header className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-main-bg">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors cursor-pointer"
-          >
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 sm:px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-main-bg gap-4">
+        <div className="flex items-center gap-3">
+          <button onClick={onClose} className="cursor-pointer p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors shrink-0">
             <X className="w-5 h-5 text-zinc-500" />
           </button>
-          <div>
-            <h2 className="text-lg font-black text-text-primary flex items-center gap-2 leading-none">
-              <AlertCircle className="w-5 h-5 text-red-500" />
+          <div className="min-w-0">
+            <h2 className="text-sm sm:text-lg font-black text-text-primary flex items-center gap-2 leading-none truncate">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 shrink-0" />
               {t('conflict.resolve_title', { name: note.title })}
             </h2>
-            <p className="text-xs text-zinc-500 mt-1 font-medium">
-              {t('conflict.resolve_desc')}
-            </p>
+            {!isMobile && <p className="text-xs text-zinc-500 mt-1 font-medium">{t('conflict.resolve_desc')}</p>}
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Botones de acción principal (Siempre visibles arriba) */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={() => handleResolve('local')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:opacity-90 transition-all cursor-pointer shadow-lg shadow-primary/20"
+            className="cursor-pointer flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white text-[10px] sm:text-xs font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-primary/20"
           >
-            <Monitor className="w-4 h-4" />
-            {t('conflict.keep_local')}
+            <Monitor className="w-3.5 h-3.5" />
+            <span className="truncate">{isMobile ? t('conflict.keep_local_short') : t('conflict.keep_local')}</span>
           </button>
           <button
             onClick={() => handleResolve('remote')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 text-xs font-bold rounded-xl hover:opacity-90 transition-all cursor-pointer shadow-lg"
+            className="cursor-pointer flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 text-[10px] sm:text-xs font-bold rounded-xl hover:opacity-90 transition-all shadow-lg"
           >
-            <Globe className="w-4 h-4" />
-            {t('conflict.keep_remote')}
+            <Globe className="w-3.5 h-3.5" />
+            <span className="truncate">{isMobile ? t('conflict.keep_remote_short') : t('conflict.keep_remote')}</span>
           </button>
         </div>
       </header>
 
+      {/* Phone tabs */}
+      {isMobile && (
+        <div className="flex border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+          <button
+            onClick={() => setMobileTab('local')}
+            className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-colors ${mobileTab === 'local' ? 'text-primary border-b-2 border-primary bg-white dark:bg-main-bg' : 'text-zinc-500'}`}
+          >
+            <Monitor className="w-3 h-3" /> {t('conflict.local_label')}
+          </button>
+          <button
+            onClick={() => setMobileTab('remote')}
+            className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-colors ${mobileTab === 'remote' ? 'text-zinc-500 border-b-2 border-zinc-500 bg-white dark:bg-main-bg' : 'text-zinc-500/50'}`}
+          >
+            <Globe className="w-3 h-3" /> {t('conflict.remote_label')}
+          </button>
+        </div>
+      )}
+
       {/* Editors */}
       <div className="flex flex-1 overflow-hidden">
         {/* Local panel */}
-        <div className="flex-1 flex flex-col border-r border-zinc-200 dark:border-zinc-800 bg-main-bg">
-          <div className="flex items-center justify-between px-8 py-3 bg-primary/5 border-b border-zinc-200 dark:border-zinc-800">
-            <div className="flex items-center gap-2 text-primary">
-              <Monitor className="w-4 h-4" />
-              <span className="text-xs font-black uppercase tracking-widest">{t('conflict.local_label')}</span>
+        <div className={`flex-1 flex-col border-r border-zinc-200 dark:border-zinc-800 bg-main-bg ${isMobile && mobileTab !== 'local' ? 'hidden' : 'flex'}`}>
+          {!isMobile && (
+            <div className="px-8 py-3 bg-primary/5 border-b border-zinc-200 dark:border-zinc-800">
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                <Monitor className="w-3.5 h-3.5" /> {t('conflict.local_label')}
+              </span>
             </div>
-          </div>
+          )}
 
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-12 pt-10">
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-12 pt-6 sm:pt-10">
             <div className="max-w-3xl mx-auto">
-              {/* Local metadata */}
-              <div className="group mb-4 ml-7">
+              {/* Metadata Local */}
+              <div className="group mb-4 ml-0 sm:ml-7">
                 <div className="relative w-fit group/icon-wrapper">
                   <EmojiPicker onSelect={(char) => setLocalIcon(char)}>
-                    <div className="text-6xl mb-4 w-20 h-20 flex items-center justify-center rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors">
+                    <div className="text-4xl sm:text-6xl mb-4 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors bg-zinc-50 dark:bg-zinc-900/30">
                       {localIcon ? <NoteIcon iconChar={localIcon} /> : <div className="text-zinc-300 dark:text-zinc-700">+</div>}
                     </div>
                   </EmojiPicker>
                   {localIcon && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setLocalIcon(''); }}
-                      className="cursor-pointer absolute -top-2 -right-2 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 transition-opacity hover:text-red-500"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); setLocalIcon(''); }} className="cursor-pointer absolute -top-2 -right-2 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm hover:text-red-500"><Trash2 className="w-3 h-3" /></button>
                   )}
                 </div>
                 <textarea
                   ref={titleRef}
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
-                  placeholder={t('editor.no_title_placeholder')}
-                  className="w-full text-4xl font-bold bg-transparent border-none outline-none text-text-primary resize-none py-2 leading-tight placeholder:opacity-20"
+                  className="w-full text-2xl sm:text-4xl font-bold bg-transparent border-none outline-none text-text-primary resize-none py-2 leading-tight"
                   rows={1}
                   style={{ fieldSizing: 'content' }}
                 />
@@ -308,21 +319,22 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
         </div>
 
         {/* Remote panel */}
-        <div className="flex-1 flex flex-col bg-zinc-50/20 dark:bg-zinc-900/10">
-          <div className="flex items-center justify-between px-8 py-3 bg-zinc-100/50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
-            <div className="flex items-center gap-2 text-zinc-500">
-              <Globe className="w-4 h-4" />
-              <span className="text-xs font-black uppercase tracking-widest">{t('conflict.remote_label')}</span>
+        <div className={`flex-1 flex-col bg-zinc-50/20 dark:bg-zinc-900/10 ${isMobile && mobileTab !== 'remote' ? 'hidden' : 'flex'}`}>
+          {!isMobile && (
+            <div className="px-8 py-3 bg-zinc-100/50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                <Globe className="w-3.5 h-3.5" /> {t('conflict.remote_label')}
+              </span>
             </div>
-          </div>
+          )}
 
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-12 pt-10 opacity-70">
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-12 pt-6 sm:pt-10 opacity-80 sm:opacity-70">
             <div className="max-w-3xl mx-auto">
-              <div className="ml-7 mb-4">
-                <div className="text-6xl mb-4 w-20 h-20 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800/30">
-                  {note.conflict_icon ? <NoteIcon iconChar={note.conflict_icon} /> : <FileText className="w-10 h-10 text-zinc-400" />}
+              <div className="ml-0 sm:ml-7 mb-4">
+                <div className="text-4xl sm:text-6xl mb-4 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800/30">
+                  {note.conflict_icon ? <NoteIcon iconChar={note.conflict_icon} /> : <FileText className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-400" />}
                 </div>
-                <h1 className="text-4xl font-bold text-text-primary break-words leading-tight">
+                <h1 className="text-2xl sm:text-4xl font-bold text-text-primary break-words leading-tight">
                   {note.conflict_title || t('editor.untitled_note')}
                 </h1>
               </div>

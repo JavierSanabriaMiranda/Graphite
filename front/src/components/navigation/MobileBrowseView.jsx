@@ -5,11 +5,13 @@ import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NavItem from './NavItem';
 import WorkspaceSelector from './WorkspaceSelector';
+import { useWorkspace } from '../context/WorkspaceContext.';
 
-const MobileBrowseView = ({ workspace }) => {
+const MobileBrowseView = () => {
     const { t } = useTranslation();
     const { refreshTrigger, createRootNote } = useNote();
     const [notes, setNotes] = useState([]);
+    const { activeWorkspace: workspace } = useWorkspace();
 
     useEffect(() => {
         if (workspace) {

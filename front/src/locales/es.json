@@ -259,7 +259,9 @@
         "local_label": "Versión local (Editable)",
         "remote_label": "Versión remota (Solo lectura)",
         "keep_local": "Mantener versión local",
-        "keep_remote": "Mantener versión remota"
+        "keep_local_short": "Mantener local",
+        "keep_remote": "Mantener versión remota",
+        "keep_remote_short": "Mantener remoto"
     },
     "error": {
         "invalid_credentials": "Credenciales incorrectas",
