@@ -142,7 +142,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                  */}
                 {isMobile && (
                     <div className="flex gap-2 p-3 bg-main-bg border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto no-scrollbar shrink-0">
-                        <button onClick={() => setActiveTab('general')} className={getTabClass('general')}><Globe className="w-4 h-4" /> {t('settings.genera.general')}</button>
+                        <button onClick={() => setActiveTab('general')} className={getTabClass('general')}><Globe className="w-4 h-4" /> {t('settings.general.general')}</button>
                         <button onClick={() => setActiveTab('workspace')} className={getTabClass('workspace')}><Briefcase className="w-4 h-4" /> {t('settings.workspace.workspace')}</button>
                         <button onClick={() => setActiveTab('account')} className={getTabClass('account')}><User className="w-4 h-4" /> {t('settings.account.account')}</button>
                     </div>
