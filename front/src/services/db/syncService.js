@@ -77,11 +77,19 @@ const syncNotes = async (notes, dek) => {
             await noteService.incrementVersion(note.note_id, newVersion);
             await syncService.markAsClean('NOTES', 'note_id', note.note_id);
         } else if (response.status === 409) {
+
             // Take server content to compare
             const remoteData = await remoteNoteService.getRemoteNoteContent(note.note_id);
             const remoteMeta = await remoteNoteService.getRemoteNoteMetadata(note.note_id);
             const metaJson = await decryptData(remoteMeta.encryptedMetadata, dek, remoteMeta.metadataIv);
             const { title, icon } = JSON.parse(metaJson);
+
+            try {
+                // Get subnotes metadata
+                await ensureRemoteChildrenMetadata(noteId, dek);
+            } catch (e) {
+                console.warn("Error obtaining remote children metadata:", e);
+            }
 
             const decryptedRemote = await decryptData(remoteData.encryptedPayload, dek, remoteData.iv);
 
@@ -99,7 +107,6 @@ const syncNotes = async (notes, dek) => {
 };
 
 const ensureRemoteChildrenMetadata = async (parentId, dek, db) => {
-    // Pedimos al servidor todos los hijos de esta nota
     const remoteChildren = await remoteNoteService.getRemoteMetadataByParent(parentId);
 
     for (const child of remoteChildren) {
@@ -107,10 +114,12 @@ const ensureRemoteChildrenMetadata = async (parentId, dek, db) => {
         const { title, icon, notePath } = JSON.parse(metaJson);
 
         await db.execute(
-            `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, note_version, is_dirty)
+            `INSERT INTO NOTES (
+                note_id, workspace_id, parent_id, title, icon, note_path, note_version, is_dirty
+            )
              VALUES (?, ?, ?, ?, ?, ?, ?, 0)
              ON CONFLICT(note_id) DO UPDATE SET
-             title = excluded.title, icon = excluded.icon, parent_id = excluded.parent_id`,
+                title = excluded.title, icon = excluded.icon, parent_id = excluded.parent_id`,
             [child.noteId, child.workspaceId, parentId, title, icon, notePath, child.noteVersion]
         );
     }
@@ -151,11 +160,12 @@ const pullRemoteNotesOfAWorkspace = async (remoteNotes, dek, db) => {
 
         await db.execute(
             `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, updated_at, note_version, is_dirty)
-                     VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
-                     ON CONFLICT(note_id) DO UPDATE SET
-                     title = excluded.title, icon = excluded.icon, note_path = excluded.note_path, workspace_id = excluded.workspace_id,
-                     is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
-                     updated_at = excluded.updated_at, note_version = excluded.note_version`,
+                VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
+                ON CONFLICT(note_id) DO UPDATE SET
+                    title = excluded.title, icon = excluded.icon, note_path = excluded.note_path, workspace_id = excluded.workspace_id,
+                    is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
+                    updated_at = excluded.updated_at, note_version = excluded.note_version
+                WHERE NOTES.is_dirty = 0`,
             [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]
         );
     }
@@ -211,7 +221,18 @@ export const syncService = {
     purgeSyncedDeletes: async () => {
         const db = await getDB();
         try {
-            await db.execute("DELETE FROM NOTES WHERE is_deleted = 1 AND is_dirty = 0");
+            await db.execute(`
+                DELETE FROM NOTES 
+                WHERE is_deleted = 1 
+                AND is_dirty = 0 
+                AND note_id NOT IN (
+                    SELECT note_id FROM NOTES WHERE parent_id IN (
+                        SELECT note_id FROM NOTES WHERE conflict_content IS NOT NULL
+                    )
+                    UNION
+                    SELECT note_id FROM NOTES WHERE conflict_content IS NOT NULL
+                )
+            `);
             await db.execute("DELETE FROM WORKSPACES WHERE is_deleted = 1 AND is_dirty = 0");
         } catch (error) {
             console.error("Error while database purge:", error);
@@ -300,6 +321,12 @@ export const syncService = {
                     const decryptedRemote = await decryptData(remoteFull.encryptedPayload, dek, remoteFull.iv);
                     const metaJson = await decryptData(remoteMeta.encryptedMetadata, dek, remoteMeta.metadataIv);
                     const { title, icon } = JSON.parse(metaJson);
+                    try {
+                        // Get subnotes metadata
+                        await ensureRemoteChildrenMetadata(noteId, dek);
+                    } catch (e) {
+                        console.warn("Error obtaining remote children metadata:", e);
+                    }
 
                     await noteService.setConflict(
                         noteId,
@@ -319,6 +346,38 @@ export const syncService = {
             if (!note.content || remoteMeta.noteVersion > note.note_version) {
                 const remoteFull = await remoteNoteService.getRemoteNoteContent(noteId);
                 const decryptedContent = await decryptData(remoteFull.encryptedPayload, dek, remoteFull.iv);
+
+                try {
+                    // Get metadata from the childs of the content and update the childs that were not locally
+                    const remoteChildren = await remoteNoteService.getRemoteMetadataByParent(noteId);
+                    for (const child of remoteChildren) {
+                        const metaJson = await decryptData(child.encryptedMetadata, dek, child.metadataIv);
+                        const { title, icon, notePath } = JSON.parse(metaJson);
+
+                        await db.execute(
+                            `INSERT INTO NOTES (
+                                note_id, workspace_id, parent_id, title, icon, 
+                                note_path, is_favorite, updated_at, note_version, 
+                                is_deleted, is_dirty
+                            )
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0) 
+                            ON CONFLICT(note_id) DO UPDATE SET
+                                title = excluded.title,
+                                icon = excluded.icon,
+                                parent_id = excluded.parent_id,
+                                note_version = excluded.note_version,
+                                is_deleted = 0,
+                                is_dirty = 0`,
+                            [
+                                child.noteId, child.workspaceId, noteId, title, icon,
+                                notePath, child.isFavorite ? 1 : 0,
+                                child.updatedAt, child.noteVersion
+                            ]
+                        );
+                    }
+                } catch (e) {
+                    console.error("Error while getting subnotes metadata during sync:", e);
+                }
 
                 // Save locally
                 await db.execute(

@@ -3,7 +3,7 @@ import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import { Node, mergeAttributes } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { useEffect, useState } from 'react';
-import { Trash2, FileText } from 'lucide-react';
+import { Trash2, FileText, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
@@ -39,8 +39,12 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
 
             if (!isMounted) return;
 
+            // Check if editor allows to show deleted notes (personalized property)
+            // This is used to show deleted notes on conflict resolver
+            const allowDeleted = editor.options.editorProps?.allowDeleted;
+
             // If note doesn't exist or marked as deleted
-            if (!data || data.is_deleted === 1) {
+            if (!data || (data.is_deleted === 1 && !allowDeleted)) {
                 const pos = getPos();
                 // Use authorized delete
                 editor.view.dispatch(
@@ -81,6 +85,28 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
 
     if (checking || !noteData) return null;
 
+    // Function for conflict resolution to paste the pageBlockComponent at the end of the local editor
+    const handleTransferToLocal = (e) => {
+        e.stopPropagation();
+        if (!localEditor) return;
+
+        const endOfDoc = localEditor.state.doc.content.size;
+
+        localEditor.chain()
+            .focus()
+            .insertContentAt(endOfDoc, {
+                type: 'pageBlock',
+                attrs: { noteId }
+            })
+            .run();
+    };
+
+    // Conflict resolving properties
+    const role = editor.options.editorProps?.panelRole;
+    const isRemoteConflictPanel = role === 'conflict-remote';
+    const localEditor = editor.options.editorProps?.localEditor;
+    const isGhost = noteData.is_deleted === 1;
+
     return (
         <NodeViewWrapper
             className={`my-2 group/page select-none transition-all ${selected ? 'ring-2 ring-primary/40 rounded-xl' : ''}`}
@@ -90,7 +116,7 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
                 ref={containerRef}
                 role="button"
                 tabIndex={0}
-                onClick={() => selectNote(noteData)}
+                onClick={() => !isGhost && selectNote(noteData)}
                 onKeyDown={handleKeyDown}
                 className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border
                     ${selected
@@ -111,10 +137,22 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
                     {noteData.title}
                 </span>
 
+                {isRemoteConflictPanel && localEditor && (
+                    <button
+                        onClick={handleTransferToLocal}
+                        className="cursor-pointer bg-primary text-white p-1.5 hover:scale-110 active:scale-95 rounded-lg transition-all shadow-md shadow-primary/20 shrink-0"
+                        title={t('conflict.transfer_to_local') || "Traer a mi versión"}
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                    </button>
+                )}
+
                 <button
                     onClick={(e) => {
-                        e.stopPropagation(); // Avoid navigate to page
-                        setIsDeleteModalOpen(true);
+                        if (!isGhost) {
+                            e.stopPropagation(); // Avoid navigate to page
+                            setIsDeleteModalOpen(true);
+                        }
                     }}
                     className="cursor-pointer opacity-0 group-hover/page:opacity-100 p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-zinc-400 hover:text-red-600 rounded-md transition-all"
                     title={t('common.delete') || "Delete"}

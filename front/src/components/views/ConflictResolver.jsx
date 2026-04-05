@@ -177,6 +177,8 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
     extensions,
     content: typeof note.content === 'string' ? JSON.parse(note.content) : note.content,
     editorProps: {
+      panelRole: 'conflict-local',
+      allowDeleted: true,
       attributes: {
         class: `prose dark:prose-invert prose-sm max-w-none focus:outline-none ${isMobile ? 'p-4' : 'p-8'} min-h-full`,
       },
@@ -189,6 +191,9 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
     content: typeof note.conflict_content === 'string' ? JSON.parse(note.conflict_content) : note.conflict_content,
     editable: false,
     editorProps: {
+      panelRole: 'conflict-remote',
+      localEditor: localEditor,
+      allowDeleted: true,
       attributes: {
         class: `prose dark:prose-invert prose-sm max-w-none focus:outline-none ${isMobile ? 'p-4' : 'p-8'} min-h-full`,
       },

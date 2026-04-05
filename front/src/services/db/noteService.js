@@ -14,8 +14,8 @@ const emptyContent = JSON.stringify({
 const getChildIdsFromContent = (json) => {
     const ids = [];
     const traverse = (node) => {
-        if (node.type === 'pageBlock' && node.attrs?.id) {
-            ids.push(node.attrs.id);
+        if (node.type === 'pageBlock' && node.attrs?.noteId) {
+            ids.push(node.attrs.noteId);
         }
         if (node.content) {
             node.content.forEach(traverse);
@@ -305,7 +305,7 @@ export const noteService = {
         UPDATE NOTES 
         SET 
             is_deleted = 1, 
-            is_dirty = 1, 
+            is_dirty = 1,
             updated_at = CURRENT_TIMESTAMP 
         WHERE note_id IN (SELECT note_id FROM descendant_notes)
         `, [noteId]);
@@ -338,7 +338,11 @@ export const noteService = {
         const db = await getDB();
         await noteService.update(noteId, { title: title, icon: icon })
         await db.execute(
-            `UPDATE NOTES SET content = $1, note_version = $2, conflict_content = NULL, remote_version = NULL, is_dirty = 1 WHERE note_id = $3`,
+            `UPDATE NOTES SET 
+                content = $1, note_version = $2,  
+                conflict_content = NULL, remote_version = NULL, 
+                is_deleted = 0, is_dirty = 1 
+            WHERE note_id = $3`,
             [JSON.stringify(content), version, noteId]
         );
 
@@ -353,6 +357,8 @@ export const noteService = {
              WHERE parent_id = ? AND note_id NOT IN (${placeholders})`,
                 [noteId, ...validChildIds]
             );
+            // Mark all notes that are in validChildIds to not be deleted
+            await noteService.resurrectNotes(validChildIds)
         } else {
             // If new content doesn't have supages, all local subpages gets deleted
             await db.execute(
@@ -360,5 +366,20 @@ export const noteService = {
                 [noteId]
             );
         }
+    },
+
+    resurrectNotes: async (noteIds) => {
+        if (!noteIds || noteIds.length === 0) return;
+        const db = await getDB();
+        const placeholders = noteIds.map(() => '?').join(',');
+
+        // Mark as not deleted
+        await db.execute(
+            `UPDATE NOTES SET 
+            is_deleted = 0, 
+            is_dirty = 1 
+            WHERE note_id IN (${placeholders})`,
+            noteIds
+        );
     }
 };
