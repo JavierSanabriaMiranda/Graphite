@@ -27,5 +27,5 @@ argon2 = "0.5"
 aes-gcm = "0.10.3"
 rand = "0.8.5"
 base64 = "0.21"
-[target.'cfg(not(target_os = "android"))'.dependencies]
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 machine-uid = "0.3"

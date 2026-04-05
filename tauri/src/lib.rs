@@ -1,5 +1,5 @@
 use argon2::{Argon2, Algorithm, Version, Params};
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 use machine_uid;
 use aes_gcm::{Aes256Gcm, Key, Nonce, KeyInit, aead::Aead};
 use rand::{Rng, thread_rng};
@@ -22,11 +22,11 @@ fn get_hardware_master_key() -> Vec<u8> {
     MASTER_KEY_CACHE.get_or_init(|| {
         println!("Graphite: Derivando clave de hardware...");
         let hw_id = {
-            #[cfg(not(target_os = "android"))]
+            #[cfg(not(any(target_os = "android", target_os = "ios")))]
             {
                 machine_uid::get().unwrap_or_else(|_| "fallback-id-desktop".to_string())
             }
-            #[cfg(target_os = "android")]
+            #[cfg(any(target_os = "android", target_os = "ios"))]
             {
                 // Use a persistent id for the app
                 "graphite-android-vault-id-2026".to_string()
