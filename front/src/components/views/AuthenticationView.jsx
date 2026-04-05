@@ -28,6 +28,7 @@ const AuthenticationView = () => {
         setAuthMode(prev => prev === 'login' ? 'signup' : 'login');
         setStatus('idle');
         reset();
+        setUsername('')
         setEmail('')
         setPassword('')
         setConfirmPassword('')
@@ -68,7 +69,7 @@ const AuthenticationView = () => {
         <div className="h-dvh w-full flex flex-col bg-zinc-50 dark:bg-main-bg-darker font-sans transition-colors duration-500 overflow-hidden">
 
             {/* Top Bar */}
-            <div className="w-full h-16 flex bg-zinc-50 dark:bg-main-bg-darker items-center justify-between px-6 sm:px-10 border-b border-zinc-200/50 dark:border-zinc-900/50 backdrop-blur-md z-20 shrink-0">
+            <div className={`w-full h-16 flex bg-zinc-50 dark:bg-main-bg-darker items-center justify-between px-6 sm:px-10 border-b border-zinc-200/50 dark:border-zinc-900/50 backdrop-blur-md z-20 shrink-0 ${isMobile ? 'mt-10' : ''}`}>
                 <h1 className="text-xl font-bold text-text-primary tracking-tight">Graphite</h1>
                 <div className="flex items-center">
                     <ChangeThemeButton />

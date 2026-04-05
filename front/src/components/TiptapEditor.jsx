@@ -451,7 +451,7 @@ const TiptapEditor = () => {
   if (!activeNote) {
     return (
       <div className="h-screen w-full bg-main-bg flex flex-col">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0">
+        <div className={`flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-zinc-800 bg-main-bg h-10 shrink-0 ${isMobile ? 'mt-10' : ''}`}>
           <div />
           <ChangeThemeButton />
         </div>
