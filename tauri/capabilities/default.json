@@ -12,7 +12,6 @@
     "sql:allow-load",
     "sql:allow-execute",
     "sql:allow-select",
-    "sql:allow-close",
-    "stronghold:default"
+    "sql:allow-close"
   ]
 }

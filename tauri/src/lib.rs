@@ -1,13 +1,14 @@
 use argon2::{Argon2, Algorithm, Version, Params};
+#[cfg(not(target_os = "android"))]
 use machine_uid;
 use aes_gcm::{Aes256Gcm, Key, Nonce, KeyInit, aead::Aead};
 use rand::{Rng, thread_rng};
 use serde::{Serialize, Deserialize};
 use std::fs;
-use std::sync::OnceLock; // Para el cache de la clave
-use tauri::Manager; // ¡VITAL! Sin esto .path() no existe
+use std::sync::OnceLock;
+use tauri::Manager;
 
-// Cache para que Argon2 solo se ejecute una vez por sesión
+// Cache for Argon2 to execute just once
 static MASTER_KEY_CACHE: OnceLock<Vec<u8>> = OnceLock::new();
 
 #[derive(Serialize, Deserialize)]
@@ -16,11 +17,21 @@ pub struct VaultData {
     pub dek: Vec<u8>,
 }
 
-// Genera una clave maestra de 32 bytes basada en hardware (con cache)
+// Generates a 32 bytes masterkey based on hardware
 fn get_hardware_master_key() -> Vec<u8> {
     MASTER_KEY_CACHE.get_or_init(|| {
         println!("Graphite: Derivando clave de hardware...");
-        let hw_id = machine_uid::get().unwrap_or_else(|_| "fallback-id-generico".to_string());
+        let hw_id = {
+            #[cfg(not(target_os = "android"))]
+            {
+                machine_uid::get().unwrap_or_else(|_| "fallback-id-desktop".to_string())
+            }
+            #[cfg(target_os = "android")]
+            {
+                // Use a persistent id for the app
+                "graphite-android-vault-id-2026".to_string()
+            }
+        };
         let app_salt = b"graphite-pro-salt-2026"; 
 
         let params = Params::new(64 * 1024, 3, 1, Some(32))
@@ -47,8 +58,7 @@ async fn save_secure_data(app_handle: tauri::AppHandle, token: String, dek: Vec<
     let key_bytes = get_hardware_master_key();
     let key = Key::<Aes256Gcm>::from_slice(&key_bytes);
     let cipher = Aes256Gcm::new(key);
-    
-    // r#gen() escapa la palabra reservada 'gen' en nuevas ediciones de Rust
+
     let iv: [u8; 12] = thread_rng().r#gen(); 
     let nonce = Nonce::from_slice(&iv);
 
@@ -61,7 +71,6 @@ async fn save_secure_data(app_handle: tauri::AppHandle, token: String, dek: Vec<
     let mut final_blob = iv.to_vec();
     final_blob.extend_from_slice(&ciphertext);
 
-    // Gracias a 'use tauri::Manager', esto ahora funciona
     let path = app_handle.path().app_data_dir().unwrap().join("vault.bin");
     fs::create_dir_all(path.parent().unwrap()).map_err(|e| e.to_string())?;
     fs::write(path, final_blob).map_err(|e| e.to_string())?;
