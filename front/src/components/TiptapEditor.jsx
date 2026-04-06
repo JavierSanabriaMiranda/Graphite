@@ -80,6 +80,7 @@ const TiptapEditor = () => {
   const [saveStatus, setSaveStatus] = useState('saved');
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [isResolvingConflict, setIsResolvingConflict] = useState(false);
+  const [emojiPickerRef, setEmojiPickerRef] = useState(null);
 
   const saveTimeoutRef = useRef(null);
   const isProgrammaticRef = useRef(false); // Flag to indicate if content change is programmatic (to avoid save loops)
@@ -94,6 +95,32 @@ const TiptapEditor = () => {
     createSubnoteRef.current = createSubnote;
     selectNoteRef.current = selectNote;
   }, [createSubnote, selectNote]);
+
+  const handleEmojiCommand = () => {
+    // Get cursor coords
+    const { view } = editor;
+    const { selection } = view.state;
+    const coords = view.coordsAtPos(selection.from);
+
+    // create virtual element for floating-ui
+    const virtualElement = {
+      getBoundingClientRect: () => ({
+        width: 0,
+        height: 0,
+        x: coords.left,
+        y: coords.top,
+        top: coords.top,
+        left: coords.left,
+        right: coords.left,
+        bottom: coords.bottom,
+      }),
+    };
+
+    setEmojiPickerRef({
+      element: virtualElement,
+      onClose: () => setEmojiPickerRef(null)
+    });
+  };
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -181,7 +208,8 @@ const TiptapEditor = () => {
         suggestion: getSuggestionConfig(
           t,
           async (parentId) => await createSubnoteRef.current(parentId),
-          (note) => selectNoteRef.current(note)
+          (note) => selectNoteRef.current(note),
+          handleEmojiCommand
         ),
       }),
       Placeholder.configure({
@@ -607,6 +635,15 @@ const TiptapEditor = () => {
           </div>
         </div>
       </div>
+      {emojiPickerRef && (
+        <EmojiPicker
+          showIconsMenu={false}
+          externalReference={emojiPickerRef}
+          onSelect={(emoji) => {
+            editor.chain().focus().insertContent(emoji).run();
+          }}
+        />
+      )}
     </div>
   )
 }

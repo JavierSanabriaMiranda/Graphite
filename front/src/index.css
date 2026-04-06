@@ -564,6 +564,11 @@ Emojis style
   --font-emoji: "Apple Color Emoji", "TwemojiLocal", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
 }
 
+/* Applies emoji font to emojis in editor content */
+.ProseMirror {
+  font-family: var(--font-emoji);
+}
+
 /* Apply fonts to EmojiPicker */
 .emoji-picker-content {
   font-family: var(--font-emoji) !important;

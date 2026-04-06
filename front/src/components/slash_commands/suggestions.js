@@ -1,6 +1,6 @@
 import { ReactRenderer } from '@tiptap/react';
 import { computePosition, flip, shift, offset } from '@floating-ui/dom';
-import { Quote, Heading1, Heading2, Heading3, FileText, Code } from 'lucide-react';
+import { Quote, Heading1, Heading2, Heading3, FileText, Code, Smile } from 'lucide-react';
 import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
 import { TodoIcon } from '../menu_bar/lists/TodoList';
 import { NumberedListIcon } from '../menu_bar/lists/NumberedListSelector';
@@ -17,7 +17,7 @@ import SlashMenuList from './SlashMenuList';
  * @param {Function} selectNote - Function to handle changing note
  * @returns {Object} A configuration object containing 'items' (filtering logic) and 'render' (UI/Floating UI logic).
  */
-const getSuggestionConfig = (t, createSubnote, selectNote) => ({
+const getSuggestionConfig = (t, createSubnote, selectNote, onEmojiCommand) => ({
   items: ({ query }) => {
     const items = [
       {
@@ -120,6 +120,20 @@ const getSuggestionConfig = (t, createSubnote, selectNote) => ({
         icon: NumberedListIcon,
         command: ({ editor, range }) => {
           editor.chain().focus().deleteRange(range).toggleOrderedList().updateAttributes('orderedList', { listStyle: "default" }).run();
+        },
+      },
+      {
+        title: t('editor.slash.emoji.title'),
+        searchTerms: t('editor.slash.emoji.search').split(','),
+        icon: Smile,
+        command: ({ editor, range }) => {
+          // Remove slash command text ("/emoji")
+          editor.chain().focus().deleteRange(range).run();
+          
+          // Call function that will open EmojiPicker
+          if (onEmojiCommand) {
+            onEmojiCommand();
+          }
         },
       },
     ];
