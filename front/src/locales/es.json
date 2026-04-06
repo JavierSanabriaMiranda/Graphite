@@ -156,6 +156,10 @@
             "toggle": {
                 "title": "Contenido Desplegable",
                 "search": "desplegable,oculto,toggle,contenido"
+            },
+            "emoji": {
+                "title": "Emojis",
+                "search": "emoji,icono,caras"
             }
         }
     },

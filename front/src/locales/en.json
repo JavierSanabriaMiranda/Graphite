@@ -157,6 +157,10 @@
             "toggle": {
                 "title": "Toggle",
                 "search": "toggle,expandable,hidden,collapsible"
+            },
+            "emoji": {
+                "title": "Emoji",
+                "search": "emoji,icon,faces"
             }
         }
     },
