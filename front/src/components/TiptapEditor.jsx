@@ -59,6 +59,7 @@ import { useToast } from './context/ToastContext';
 import { useIsMobile } from '../hooks/useIsMobile'
 
 import { SyncStatus } from '../util/SyncStatus';
+import { useWorkspace } from './context/WorkspaceContext.';
 
 const EMPTY_DOC = {
   type: 'doc',
@@ -71,6 +72,7 @@ const TiptapEditor = () => {
   const { dek, isAuthenticated } = useAuth();
 
   const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing, syncStatus, refreshCurrentNote } = useNote();
+  const { activeWorkspace } = useWorkspace();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -84,6 +86,14 @@ const TiptapEditor = () => {
   const titleRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const currentNoteIdRef = useRef(null);
+  // References to context functions
+  const createSubnoteRef = useRef(createSubnote);
+  const selectNoteRef = useRef(selectNote);
+
+  useEffect(() => {
+    createSubnoteRef.current = createSubnote;
+    selectNoteRef.current = selectNote;
+  }, [createSubnote, selectNote]);
 
   // Instance for syntax highlighting in code blocks
   const lowlight = createLowlight()
@@ -168,7 +178,11 @@ const TiptapEditor = () => {
       PageBlock,
       BlockMoving,
       Commands.configure({
-        suggestion: getSuggestionConfig(t, createSubnote, selectNote),
+        suggestion: getSuggestionConfig(
+          t,
+          async (parentId) => await createSubnoteRef.current(parentId),
+          (note) => selectNoteRef.current(note)
+        ),
       }),
       Placeholder.configure({
         includeChildren: true,
@@ -438,7 +452,7 @@ const TiptapEditor = () => {
       content: content,
       is_dirty: 1 // Mark for cloud sync
     });
-    
+
     saveTimeoutRef.current = null;
     onNoteUpdate();
     triggerRemoteSync();
