@@ -23,12 +23,25 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
     // Reference to external div to control focus
     const containerRef = useRef(null);
 
-    // Effect to get focus when selecting page block
     useEffect(() => {
-        if (selected && containerRef.current) {
-            containerRef.current.focus();
-        }
-    }, [selected]);
+        if (!selected || !noteData) return;
+
+        const handleEditorKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                // Avoid creating a new paragraph
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                selectNote(noteData);
+            }
+        };
+
+        // Listen the keydown event
+        editor.view.dom.addEventListener('keydown', handleEditorKeyDown, true);
+
+        return () => {
+            editor.view.dom.removeEventListener('keydown', handleEditorKeyDown, true);
+        };
+    }, [selected, noteData, selectNote, editor]);
 
     // Checks note status to remove the node if note has been removed
     useEffect(() => {
@@ -82,6 +95,7 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
             e.preventDefault();
             e.stopPropagation();
             selectNote(noteData);
+            return;
         }
     };
 
