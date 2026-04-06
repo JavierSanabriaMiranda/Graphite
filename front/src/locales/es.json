@@ -261,7 +261,8 @@
         "keep_local": "Mantener versión local",
         "keep_local_short": "Mantener local",
         "keep_remote": "Mantener versión remota",
-        "keep_remote_short": "Mantener remoto"
+        "keep_remote_short": "Mantener remoto",
+        "transfer_to_local": "Transferir a local"
     },
     "error": {
         "invalid_credentials": "Credenciales incorrectas",

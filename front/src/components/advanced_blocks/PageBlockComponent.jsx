@@ -17,6 +17,8 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
     const [noteData, setNoteData] = useState(null);
     const [checking, setChecking] = useState(true);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    // State for rerender
+    const [updateTick, setUpdateTick] = useState(0)
 
     // Reference to external div to control focus
     const containerRef = useRef(null);
@@ -83,12 +85,47 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
         }
     };
 
+    // Conflict resolving properties
+    const role = editor.options.editorProps?.panelRole;
+    const isRemoteConflictPanel = role === 'conflict-remote';
+    const localEditor = editor.options.editorProps?.localEditor;
+
+    useEffect(() => {
+        // Just look for local editor updates if we are in remote editor
+        if (isRemoteConflictPanel && localEditor) {
+            const updateHandler = () => {
+                // Rerender
+                setUpdateTick(tick => tick + 1);
+            };
+
+            localEditor.on('update', updateHandler);
+            return () => localEditor.off('update', updateHandler);
+        }
+    }, [isRemoteConflictPanel, localEditor]);
+
     if (checking || !noteData) return null;
+
+    const isGhost = noteData.is_deleted === 1;
+
+    const checkIfExistsInLocal = () => {
+        if (!localEditor) return false;
+
+        let exists = false;
+        localEditor.state.doc.descendants((childNode) => {
+            if (childNode.type.name === 'pageBlock' && childNode.attrs.noteId === noteId) {
+                exists = true;
+                return false;
+            }
+        });
+        return exists;
+    };
+
+    const alreadyInLocal = isRemoteConflictPanel ? checkIfExistsInLocal() : false;
 
     // Function for conflict resolution to paste the pageBlockComponent at the end of the local editor
     const handleTransferToLocal = (e) => {
         e.stopPropagation();
-        if (!localEditor) return;
+        if (!localEditor || alreadyInLocal) return;
 
         const endOfDoc = localEditor.state.doc.content.size;
 
@@ -100,12 +137,6 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
             })
             .run();
     };
-
-    // Conflict resolving properties
-    const role = editor.options.editorProps?.panelRole;
-    const isRemoteConflictPanel = role === 'conflict-remote';
-    const localEditor = editor.options.editorProps?.localEditor;
-    const isGhost = noteData.is_deleted === 1;
 
     return (
         <NodeViewWrapper
@@ -137,28 +168,28 @@ const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
                     {noteData.title}
                 </span>
 
-                {isRemoteConflictPanel && localEditor && (
+                {isRemoteConflictPanel && localEditor && !alreadyInLocal && (
                     <button
                         onClick={handleTransferToLocal}
                         className="cursor-pointer bg-primary text-white p-1.5 hover:scale-110 active:scale-95 rounded-lg transition-all shadow-md shadow-primary/20 shrink-0"
-                        title={t('conflict.transfer_to_local') || "Traer a mi versión"}
+                        title={t('conflict.transfer_to_local')}
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </button>
                 )}
 
-                <button
-                    onClick={(e) => {
-                        if (!isGhost) {
+                {!isGhost && !isRemoteConflictPanel && (
+                    <button
+                        onClick={(e) => {
                             e.stopPropagation(); // Avoid navigate to page
                             setIsDeleteModalOpen(true);
-                        }
-                    }}
-                    className="cursor-pointer opacity-0 group-hover/page:opacity-100 p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-zinc-400 hover:text-red-600 rounded-md transition-all"
-                    title={t('common.delete') || "Delete"}
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
+                        }}
+                        className="cursor-pointer opacity-0 group-hover/page:opacity-100 p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-zinc-400 hover:text-red-600 rounded-md transition-all"
+                        title={t('common.delete') || "Delete"}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                )}
             </div>
 
             <DeleteConfirmModal
