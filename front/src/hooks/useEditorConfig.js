@@ -40,7 +40,16 @@ import { Commands } from '../components/slash_commands/Commands';
 import getSuggestionConfig from '../components/slash_commands/suggestions';
 
 
-export const useEditorConfig = ({ onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, handleKeyDown }) => {
+export const useEditorConfig = ({
+    onUpdate,
+    onArrowUpAtStart,
+    handleEmojiCommand,
+    createSubnote,
+    selectNote,
+    handleKeyDownProp,
+    extraProps = {},
+    customClass = ''
+}) => {
     const { t } = useTranslation();
 
     const lowlight = createLowlight();
@@ -160,10 +169,12 @@ export const useEditorConfig = ({ onUpdate, onArrowUpAtStart, handleEmojiCommand
         ],
         onUpdate,
         editorProps: {
+            ...extraProps,
             attributes: {
-                class: 'prose dark:prose-invert prose-slate max-w-none focus:outline-none p-8 min-h-[500px] transition-colors duration-300 break-words',
+                class: customClass || 'prose dark:prose-invert prose-slate max-w-none focus:outline-none p-8 min-h-[500px] transition-colors duration-300 break-words',
+                ...extraProps.attributes,
             },
-            handleKeyDown: handleKeyDown,
+            handleKeyDown: handleKeyDownProp || (() => false),
         },
     }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote]);
 }

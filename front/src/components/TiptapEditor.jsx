@@ -122,27 +122,10 @@ const editorConfig = useEditorConfig({
       saveContentToDB(jsonContent);
     }, 2000);
   },
-  handleKeyDown: (view, event) => {
-    if (event.key === 'ArrowUp') {
-      const { state } = view;
-      const { selection } = state;
-      const { $from } = selection;
-
-      // Check if cursor is at first block
-      // $from.pos <= 1 means we are at beginning of page
-      if ($from.pos <= 1) {
-        titleRef.current?.focus();
-        // Selects the title for easy change
-        titleRef.current?.select();
-        return true;
-      }
-    }
-    return false;
-  },
   handleEmojiCommand: handleEmojiCommand,
   createSubnote: async (parentId) => await createSubnoteRef.current(parentId),
   selectNote: (note) => selectNoteRef.current(note),
-  handleKeyDown: handleKeyDown
+  handleKeyDownProp: handleKeyDown
 });
 
 const editor = useEditor(editorConfig);
@@ -294,7 +277,7 @@ const saveTitle = async () => {
 
     if (result?.error === 'COLLISION') {
       // Feedback to user
-      showToast(t('editor.errors.name_collision') || "Ya existe una nota con ese nombre en esta ubicación", "error");
+      showToast(t('editor.errors.name_collision'), "error");
 
       // Revert title change
       setTitle(activeNote.title);
@@ -329,7 +312,6 @@ const handleRemoveIcon = async (e) => {
   if (!activeNote) return;
 
   setIcon('');
-  // Actualizamos a null en la DB
   await noteService.update(activeNote.note_id, { icon: null });
 
   onNoteUpdate();
