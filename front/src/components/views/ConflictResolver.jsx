@@ -11,7 +11,19 @@ import { useEditorConfig } from '../../hooks/useEditorConfig';
 import EmojiPicker from '../util/EmojiPicker';
 import NoteIcon from '../util/NoteIcon';
 
-
+/**
+ * View for conflict resolving.
+ *  
+ *  On non mobile devices: Displays a view with two editors. The left one shows the current local version
+ *  and the right one shows the last synced remote version of the note on conflict.
+ * 
+ *  On mobile devices: There's also two editors but not displayed at the same time. The user
+ *  can swap between editors with tabs
+ * 
+ * On both cases the local editor is editable while the remote editor y read-only.
+ * The user can select which version want's to keep, the local or the remote one.
+ *
+ */
 const ConflictResolver = ({ note, onClose, onResolved }) => {
   const { t } = useTranslation();
   const { createSubnote, selectNote } = useNote();

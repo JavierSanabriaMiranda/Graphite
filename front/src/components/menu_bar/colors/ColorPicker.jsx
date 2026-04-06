@@ -18,7 +18,6 @@ import {
  * It also includes a custom color selector and a reset button.
  * 
  * @param {Object} editor - The editor instance
- * @returns 
  */
 const ColorPicker = ({ editor }) => {
     const { t } = useTranslation();

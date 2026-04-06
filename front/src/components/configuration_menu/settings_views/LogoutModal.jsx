@@ -9,6 +9,9 @@ import {
     useInteractions
 } from '@floating-ui/react';
 
+/**
+ * Modal to confirm logout
+ */
 const LogoutModal = ({ isOpen, onClose, onConfirm, isUnsynced }) => {
     const { t } = useTranslation();
 

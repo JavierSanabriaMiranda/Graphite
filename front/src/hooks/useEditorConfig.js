@@ -39,7 +39,9 @@ import { BlockMoving } from '../components/extensions/BlockMoving';
 import { Commands } from '../components/slash_commands/Commands';
 import getSuggestionConfig from '../components/slash_commands/suggestions';
 
-
+/**
+ * Custom hook used to config a Tiptap editor
+ */
 export const useEditorConfig = ({
     onUpdate,
     onArrowUpAtStart,

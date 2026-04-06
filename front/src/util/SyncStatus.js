@@ -1,3 +1,6 @@
+/**
+ * "Enum" that represents the sync status of a note
+ */
 export const SyncStatus = {
     ONLINE: 'ONLINE',               // Note is fully synced with the server.
     OFFLINE_STALE: 'OFFLINE_STALE', // Editing local version (may have something newer in the cloud).

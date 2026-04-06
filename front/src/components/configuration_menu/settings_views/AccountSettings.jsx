@@ -1,6 +1,12 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
 
+/**
+ * View that represents the account tab settings
+ * 
+ * @param {Function} t - i18n function to use internationalized strings 
+ * @param {Function} onLogoutClick - Function that handles click on logout button
+ */
 const AccountSettings = ({ t, onLogoutClick }) => {
 
     return (

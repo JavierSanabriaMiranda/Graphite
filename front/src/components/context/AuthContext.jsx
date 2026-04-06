@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, Component } from 'react';
 import { isTokenValid } from '../../util/auth';
 import { deriveKEK, wrapDEK, unwrapDEK, deriveAuthHash } from '../../util/crypto';
 import { authService } from '../../services/api';
@@ -11,6 +11,11 @@ import ApiError from '../../custom_errors/ApiError';
 
 const AuthContext = createContext();
 
+/**
+ * This wrapper manages the state of the current authenticated user
+ * 
+ * @param {Component} children - Component that will be able to access to the auth functions 
+ */
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);

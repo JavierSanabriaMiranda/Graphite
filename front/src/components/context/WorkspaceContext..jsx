@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, Component } from 'react';
 import { workspaceService } from '../../services/db/workspaceService';
 import { syncService } from '../../services/db/syncService';
 import { useAuth } from './AuthContext';
@@ -6,6 +6,12 @@ import { userService } from '../../services/db/userService';
 
 const WorkspaceContext = createContext();
 
+/**
+ * WorkspaceProvider Component
+ * This wrapper manages the state of the currently selected workspace
+ * 
+ * @param {Component} children - The components that will have access to this context.
+ */
 export const WorkspaceProvider = ({ children }) => {
     const { dek, isAuthenticated } = useAuth();
     const [workspaces, setWorkspaces] = useState([]);
@@ -22,6 +28,12 @@ export const WorkspaceProvider = ({ children }) => {
         }
     }, [activeWorkspace]);
 
+    /**
+     * Creates a new workspace with the name and the icon inserted as param and saves it on db
+     * 
+     * @param {String} name - Of the new workspace
+     * @param {String} icon - Of the new workspace
+     */
     const createNewWorkspace = async (name, icon) => {
         try {
             const user = await userService.getCurrentUser();
@@ -41,7 +53,9 @@ export const WorkspaceProvider = ({ children }) => {
         }
     };
 
-    // Initial load of workspaces when user logs in
+    /**
+     * Syncs workspaces from server when user logs in
+     */
     const loadWorkspaces = useCallback(async () => {
         if (!isAuthenticated) return;
 
@@ -85,6 +99,12 @@ export const WorkspaceProvider = ({ children }) => {
         }
     }, [dek]);
 
+    /**
+     * Updates the current selected workspace name with the name inserted as param
+     * 
+     * @param {String} newName - New name of the current selected workspace
+     * @returns 
+     */
     const updateWorkspaceName = async (newName) => {
         if (!activeWorkspace) return;
         try {
@@ -104,6 +124,12 @@ export const WorkspaceProvider = ({ children }) => {
         }
     };
 
+    /**
+     * Updates the current selected workspace icon with the name inserted as param
+     * 
+     * @param {String} newIcon - New icon of the current selected workspace
+     * @returns 
+     */
     const updateWorkspaceIcon = async (newIcon) => {
         if (!activeWorkspace) return;
         try {
@@ -123,6 +149,11 @@ export const WorkspaceProvider = ({ children }) => {
         }
     };
 
+    /**
+     * Deletes the workspace whose id is inserted as param from the db
+     * 
+     * @param {String} workspaceId - Of the workspace to delete
+     */
     const deleteWorkspace = async (workspaceId) => {
         try {
             await workspaceService.delete(workspaceId);

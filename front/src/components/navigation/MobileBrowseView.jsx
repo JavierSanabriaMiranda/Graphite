@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, FolderOpen, ChevronRight } from 'lucide-react';
+import { Plus, FolderOpen } from 'lucide-react';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NavItem from './NavItem';
 import WorkspaceSelector from './WorkspaceSelector';
 import { useWorkspace } from '../context/WorkspaceContext.';
 
+/**
+ * View that represents the hierarchical notes structure of the user workspace.
+ * It also has the WorkspaceSelector that allows the user to change the current workspace
+ */
 const MobileBrowseView = () => {
     const { t } = useTranslation();
     const { refreshTrigger, createRootNote } = useNote();

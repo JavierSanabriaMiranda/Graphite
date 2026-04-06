@@ -22,7 +22,6 @@ import { useToast } from './context/ToastContext';
 import { useIsMobile } from '../hooks/useIsMobile'
 
 import { SyncStatus } from '../util/SyncStatus';
-import { useWorkspace } from './context/WorkspaceContext.';
 import { useEditorConfig } from '../hooks/useEditorConfig';
 
 const EMPTY_DOC = {
@@ -30,13 +29,15 @@ const EMPTY_DOC = {
   content: [{ type: 'paragraph' }]
 };
 
+/**
+ * Main class of the project that represents the editor where the user will write and read their notes. 
+ */
 const TiptapEditor = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const { dek, isAuthenticated } = useAuth();
 
   const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing, syncStatus, refreshCurrentNote } = useNote();
-  const { activeWorkspace } = useWorkspace();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -60,6 +61,9 @@ const TiptapEditor = () => {
     selectNoteRef.current = selectNote;
   }, [createSubnote, selectNote]);
 
+  /**
+   * Function for showing emoji picker on users cursor coords when using emoji slash command
+   */
   const handleEmojiCommand = () => {
     // Get cursor coords
     const { view } = editor;
@@ -86,6 +90,10 @@ const TiptapEditor = () => {
     });
   };
 
+  /**
+   * Function for handle arrowUp key down. When using this key on the start of editor, moves the 
+   * cursor to the note title
+   */
   const handleKeyDown = (view, event) => {
     if(event.key === 'ArrowUp') {
     const { state } = view;
@@ -130,7 +138,9 @@ const editorConfig = useEditorConfig({
 
 const editor = useEditor(editorConfig);
 
-// Function to inject content into the editor
+/**
+ * Function to inject content into the editor
+ */
 const injectContentToEditor = useCallback((content, callback = null) => {
   if (!editor || editor.isDestroyed) return;
 
@@ -163,7 +173,9 @@ const injectContentToEditor = useCallback((content, callback = null) => {
   }, 0);
 }, [editor]);
 
-// Effect to load selected note
+/**
+ * Effect to load selected note
+ */
 useEffect(() => {
   if (!editor || editor.isDestroyed) return;
 
@@ -213,7 +225,9 @@ useEffect(() => {
 
 }, [activeNote?.note_id, activeNote?.content, isSyncing, syncStatus, editor, injectContentToEditor]);
 
-// Sync title when note changes
+/**
+ * Sync title when note changes
+ */
 useEffect(() => {
   if (activeNote) {
     setTitle(activeNote.title || '');
@@ -224,7 +238,11 @@ useEffect(() => {
   }
 }, [activeNote]);
 
-// Force save note content when changing note
+/**
+ * Force save note content when changing note.
+ * When the note is syncing, the note didn't change, the note is on OFFLINE_EMPTY state or is on conflict resolving,
+ * the content won't be saved
+ */
 useEffect(() => {
   const noteIdAtEffectTime = activeNote?.note_id;
 
@@ -256,13 +274,18 @@ const triggerRemoteSync = async () => {
   }
 };
 
-// Save changes on db and tells the sidebar
+/**
+ * Save changes on db and tells the sidebar
+ */
 const handleTitleChange = async (e) => {
   const newTitle = e.target.value;
   setTitle(newTitle);
 };
 
-// When pressing Enter or ArrowDown on title, goes to the start of editor
+/**
+ *  Handles Enter and ArrowDown keys on title. 
+ * When pressing one of these keys on title, cursor goes to the start of editor
+ */
 const handleTitleKeyDown = (e) => {
   if (e.key === 'Enter' || e.key === 'ArrowDown') {
     e.preventDefault();
@@ -270,7 +293,9 @@ const handleTitleKeyDown = (e) => {
   }
 };
 
-// Saves title on db
+/**
+ * Saves title on db when the note is on apropiate state.
+ */
 const saveTitle = async () => {
   if (activeNote && title.trim() !== '' && title !== activeNote.title && !isSyncing && syncStatus !== SyncStatus.OFFLINE_EMPTY && !isResolvingConflict) {
     const result = await noteService.update(activeNote.note_id, { title: title, is_dirty: 1 });
@@ -293,7 +318,9 @@ const saveTitle = async () => {
   }
 };
 
-// Handles the page icon selection
+/**
+ * Sets the icon selected for the note and saves changes on db
+ */
 const handleIconSelect = async (char) => {
   if (!activeNote) return;
 
@@ -306,7 +333,9 @@ const handleIconSelect = async (char) => {
   triggerRemoteSync();
 };
 
-// Handles when the page icon is removed
+/**
+ * Removes note icon and saves changes on db
+ */
 const handleRemoveIcon = async (e) => {
   e.stopPropagation(); // Avoids emoji picker for opening
   if (!activeNote) return;
@@ -317,8 +346,10 @@ const handleRemoveIcon = async (e) => {
   onNoteUpdate();
 };
 
-// Saves the current note content to DB
-// This automatically triggers when user stops typing for 1 second
+/**
+ * Saves the current note content to DB
+ * This automatically triggers when user stops typing for 1 second
+ */
 const saveContentToDB = async (content, id = null) => {
   const targetId = id || activeNote?.note_id;
 

@@ -22,6 +22,9 @@ const getAuthHeader = async () => {
     }
 };
 
+/**
+ * Service to handle authentication with the remote server via API REST
+ */
 export const authService = {
 
     /**
@@ -66,6 +69,9 @@ export const authService = {
     },
 };
 
+/**
+ * Service to handle workspaces with the remote server via API REST
+ */
 export const remoteWorkspaceService = {
     /**
      * Synchronizes a workspace entity with the remote server.
@@ -94,6 +100,9 @@ export const remoteWorkspaceService = {
     }
 };
 
+/**
+ * Service to handle notes with the remote server via API REST
+ */
 export const remoteNoteService = {
     /**
      * Synchronizes a note entity with the remote server.

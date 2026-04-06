@@ -8,6 +8,12 @@ import NavItem from './NavItem';
 import { useUI } from '../context/UIContext';
 import WorkspaceSelector from './WorkspaceSelector';
 
+/**
+ * Component that represents on non mobile devices a bar on the left side of the screen that
+ * shows the hierarchical notes structure for navigation.
+ * It also shows the WorkspaceSelector for changing the current workspace, the button for 
+ * opening the SettingsModal and a button for creating a new root page.
+ */
 const Sidebar = ({ isOpen, setIsOpen }) => {
     const { t } = useTranslation();
     const { refreshTrigger, createRootNote } = useNote();

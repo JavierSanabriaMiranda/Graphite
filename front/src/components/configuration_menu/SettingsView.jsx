@@ -10,6 +10,11 @@ import LogoutModal from './settings_views/LogoutModal';
 import { noteService } from '../../services/db/noteService';
 import { workspaceService } from '../../services/db/workspaceService';
 
+/**
+ * Content shown on the SettingsModal. 
+ *  On non mobile devices: Has a sidebar with tabs to change the current view displayed and also a logout button
+ *  On mobile devices: Has tabs at the top to change the current view displayed
+ */
 const SettingsView = ({ t, onClose, isMobile }) => {
     const [activeTab, setActiveTab] = useState('general');
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);

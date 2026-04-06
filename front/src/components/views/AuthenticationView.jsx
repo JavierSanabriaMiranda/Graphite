@@ -6,6 +6,9 @@ import ChangeThemeButton from '../util/ChangeThemeButton';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import PasswordInput from '../util/PasswordInput';
 
+/**
+ * View that allows the user to authenticate with a login or a sign up form.
+ */
 const AuthenticationView = () => {
     const { t } = useTranslation();
     const { login, signUp } = useAuth();

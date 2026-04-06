@@ -1,6 +1,11 @@
 import React from 'react';
 import LanguageSelector from '../LanguageSelector';
 
+/**
+ * View that represents the general tab settings
+ * 
+ * @param {Function} t - i18n function to use internationalized strings 
+ */
 const GeneralSettings = ({ t }) => {
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">

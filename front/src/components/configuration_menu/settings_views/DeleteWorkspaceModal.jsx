@@ -9,6 +9,9 @@ import {
     useInteractions
 } from '@floating-ui/react';
 
+/**
+ * Modal to confirm a workspace deletion
+ */
 const DeleteWorkspaceModal = ({ isOpen, onClose, workspaceName, onConfirm }) => {
     const { t } = useTranslation();
 

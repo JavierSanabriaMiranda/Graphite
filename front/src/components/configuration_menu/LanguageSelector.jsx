@@ -2,6 +2,10 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import SearchablePicker from '../util/SearchablePicker';
 
+/**
+ * Floating selector that shows the current supported languages and manages
+ * the application language change
+ */
 const LanguageSelector = () => {
     const { t, i18n } = useTranslation();
 

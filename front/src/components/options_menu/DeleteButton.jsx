@@ -1,6 +1,9 @@
 import { Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * Button to delete the current selected note
+ */
 const DeleteButton = ({ onClick }) => {
   const { t } = useTranslation();
   return (

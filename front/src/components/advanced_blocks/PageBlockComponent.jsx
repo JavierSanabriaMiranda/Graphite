@@ -10,6 +10,15 @@ import { useNote } from '../context/NoteContext';
 import NoteIcon from '../util/NoteIcon';
 import DeleteConfirmModal from '../options_menu/DeleteConfirmModal';
 
+/**
+ * Component that represents a subpage inside the editor content.
+ * When clicked it selects the subpage on the editor.
+ * It has a button with a trash icon that allows the page to be removed. If the page that represents
+ * the PageBlock has is_removed = 1, then the component won't be shown.
+ * 
+ * Has also special behavior when in conflict resolving, showing a left arrow button that allows the user to copy-paste
+ * the PageBlockComponent from the remote editor to the local one.
+ */
 const PageBlockComponent = ({ node, deleteNode, selected, getPos, editor }) => {
     const { t } = useTranslation();
     const { noteId } = node.attrs;

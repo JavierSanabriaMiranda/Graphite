@@ -1,4 +1,7 @@
-// front/src/services/db/welcomeContent.js
+/**
+ * Content of the pages inserted on db when a user is authenticated for the first time
+ * @param {String} lang - lang of the app to select the welcome notes language
+ */
 export const getWelcomeNote = (lang) => {
   const content = {
     es: {

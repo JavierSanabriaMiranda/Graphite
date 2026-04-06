@@ -16,7 +16,7 @@ const NoteContext = createContext();
  * This wrapper manages the state of the currently selected note and a global 
  * refresh trigger to synchronize data across the Sidebar, Editor, and Navigation.
  * 
- * @param {Object} props.children - The components that will have access to this context.
+ * @param {Component} children - The components that will have access to this context.
  */
 export const NoteProvider = ({ children }) => {
     const { dek } = useAuth();
@@ -56,7 +56,13 @@ export const NoteProvider = ({ children }) => {
      * Updates the currently active note.
      * Uses useCallback to prevent child components from re-rendering unless the selectedNote changes.
      * 
-     * @param {Object} note - The note object to be set as active.
+     * It uses optimistic loading when the selected page has content stored locally. Then syncs
+     * the remote state for getting the most updated version and updates the content.
+     * 
+     * When selectedNote has no content but has metadata (title and icon) shows a loading
+     * state and sets the metadata as the selected note for updating title and icon on editor
+     * 
+     * @param {Object} noteMetadata - The note object to be set as active.
      */
     const selectNote = useCallback(async (noteMetadata) => {
         if (isSyncing) return;
@@ -100,6 +106,9 @@ export const NoteProvider = ({ children }) => {
 
     }, [dek, isSyncing]);
 
+    /**
+     * Refresh the current note state by selecting it again
+     */
     const refreshCurrentNote = useCallback(async () => {
         if (selectedNoteRef.current) {
             const noteRefresh = await noteService.getByNoteId(selectedNoteRef.current.note_id);

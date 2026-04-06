@@ -16,6 +16,10 @@ import { useTranslation } from 'react-i18next';
 import { useWorkspace } from '../context/WorkspaceContext.';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
+/**
+ * Component that allows the user to change the current workspace.
+ * It shows the current user workspaces with a floating menu using floating-ui
+ */
 const WorkspaceSelector = () => {
     const { t } = useTranslation();
     const { workspaces, activeWorkspace, selectWorkspace, openCreation } = useWorkspace();

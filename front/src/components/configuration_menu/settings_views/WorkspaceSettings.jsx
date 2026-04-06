@@ -5,6 +5,11 @@ import DeleteWorkspaceModal from './DeleteWorkspaceModal';
 import { useToast } from '../../context/ToastContext';
 import EmojiPicker from '../../util/EmojiPicker';
 
+/**
+ * View that represents the workspace tab settings
+ * 
+ * @param {Function} t - i18n function to use internationalized strings 
+ */
 const WorkspaceSettings = ({ t }) => {
     const { showToast } = useToast();
 

@@ -5,6 +5,14 @@ import { useWorkspace } from '../context/WorkspaceContext.';
 import EmojiPicker from '../util/EmojiPicker';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
+/**
+ * View that allows the user to create a new workspace. 
+ * It shows a simple form to insert the new workspace name and select the workspace icon.
+ * 
+ * @param {boolean} showCancelBtn - boolean that represents if the view must have or not a cancel button.
+ *                                  It won't be shown when te user doesn't have workspaces to force him to
+ *                                  create a new one
+ */
 const CreateWorkspaceView = ({ showCancelBtn = true }) => {
     const { t } = useTranslation();
     const { closeCreation, createNewWorkspace } = useWorkspace();
