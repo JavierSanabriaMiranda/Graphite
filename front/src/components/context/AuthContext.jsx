@@ -29,12 +29,13 @@ export const AuthProvider = ({ children }) => {
                     await logout();
                 }
                 else {
-                    setDek(new Uint8Array(data.dek));
+                    const dekBytes = new Uint8Array(data.dek);
+                    setDek(dekBytes);
                     setIsAuthenticated(true);
                     const user = userService.getCurrentUser()
                     // INITIAL SYNC: Refresh metadata on app start
                     if (navigator.onLine) {
-                        syncService.pullAllMetadata(dek, user.id);
+                        syncService.pullAllMetadata(dekBytes, user.id);
                     }
                 }
             } catch (e) {
