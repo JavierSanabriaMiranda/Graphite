@@ -115,12 +115,12 @@ const ensureRemoteChildrenMetadata = async (parentId, dek, db) => {
 
         await db.execute(
             `INSERT INTO NOTES (
-                note_id, workspace_id, parent_id, title, icon, note_path, note_version, is_dirty
+                note_id, workspace_id, parent_id, title, icon, note_path, note_version, is_deleted, is_dirty
             )
-             VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
              ON CONFLICT(note_id) DO UPDATE SET
-                title = excluded.title, icon = excluded.icon, parent_id = excluded.parent_id`,
-            [child.noteId, child.workspaceId, parentId, title, icon, notePath, child.noteVersion]
+                title = excluded.title, icon = excluded.icon, parent_id = excluded.parent_id, is_deleted = excluded.is_deleted`,
+            [child.noteId, child.workspaceId, parentId, title, icon, notePath, child.noteVersion, child.is_deleted]
         );
     }
 };
