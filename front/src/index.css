@@ -548,6 +548,44 @@ Placeholder style
 }
 
 /* ====================
+Fonts style
+==================== */
+
+/* ======= Inter ======= */
+
+/* Normal */
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Italic */
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/Inter-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/Inter-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Bold italic */
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/Inter-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* ====================
 Emojis style
 ==================== */
 
