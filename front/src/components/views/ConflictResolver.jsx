@@ -10,6 +10,7 @@ import { useEditorConfig } from '../../hooks/useEditorConfig';
 
 import EmojiPicker from '../util/EmojiPicker';
 import NoteIcon from '../util/NoteIcon';
+import { useSettings } from '../context/SettingsContext';
 
 /**
  * View for conflict resolving.
@@ -27,6 +28,7 @@ import NoteIcon from '../util/NoteIcon';
 const ConflictResolver = ({ note, onClose, onResolved }) => {
   const { t } = useTranslation();
   const { createSubnote, selectNote } = useNote();
+  const { defaultFont } = useSettings();
   const isMobile = useIsMobile();
 
   const [mobileTab, setMobileTab] = useState('local');
@@ -43,7 +45,8 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
     extraProps: {
       panelRole: 'conflict-local',
       allowDeleted: true,
-    }
+    },
+    defaultFont: defaultFont
   });
 
   // Left editor: Local version
@@ -60,7 +63,8 @@ const ConflictResolver = ({ note, onClose, onResolved }) => {
       panelRole: 'conflict-remote',
       localEditor: localEditor,
       allowDeleted: true
-    }
+    },
+    defaultFont: defaultFont
   });
 
   // Right editor: Cloud version (remote)

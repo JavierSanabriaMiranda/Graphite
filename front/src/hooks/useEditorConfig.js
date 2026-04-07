@@ -50,9 +50,11 @@ export const useEditorConfig = ({
     selectNote,
     handleKeyDownProp,
     extraProps = {},
-    customClass = ''
+    customClass = '',
+    defaultFont = 'Inter'
 }) => {
     const { t } = useTranslation();
+    const fontStack = `${defaultFont}, ui-sans-serif, system-ui, sans-serif, var(--font-emoji)`;
 
     const lowlight = createLowlight();
 
@@ -174,9 +176,10 @@ export const useEditorConfig = ({
             ...extraProps,
             attributes: {
                 class: customClass || 'prose dark:prose-invert prose-slate max-w-none focus:outline-none p-8 min-h-[500px] transition-colors duration-300 break-words',
+                style: `font-family: ${fontStack};`,
                 ...extraProps.attributes,
             },
             handleKeyDown: handleKeyDownProp || (() => false),
         },
-    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote]);
+    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont]);
 }

@@ -178,6 +178,12 @@
                 "title": "Idioma de la aplicación",
                 "description": "Selecciona el idioma para la interfaz de Graphite.",
                 "search": "Buscar idioma"
+            },
+            "font": {
+                "title": "Fuente por defecto",
+                "description": "Esta fuente se aplicará por defecto en todas las notas de la aplicación menos en aquellos textos en los que hayas modificado la fuente a mano",
+                "search": "Buscar fuente...",
+                "restart_notice": "Fuente cambiada correctamente. Los cambios se aplicarán al reiniciar la aplicación"
             }
         },
         "account": {

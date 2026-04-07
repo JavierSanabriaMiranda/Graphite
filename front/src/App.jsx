@@ -17,6 +17,7 @@ import AuthenticationView from './components/views/AuthenticationView';
 import { useOnlineSync } from './hooks/useOnlineSync';
 import CreateWorkspaceView from './components/views/CreateWorkspaceView';
 import { Loader2 } from 'lucide-react';
+import { SettingsProvider } from './components/context/SettingsContext';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
@@ -64,27 +65,31 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
         ${!isMobile && isSidebarPinned ? 'pl-64' : 'pl-0'}
         ${isMobile ? 'pb-16' : ''}
       `}>
-        <ToastProvider>
-          {activeTab === 'editor' && <TiptapEditor />}
-          {activeTab === 'search' && (isMobile ? (
-            <div className="p-8">Sección de Búsqueda</div>
-          ) : (
-            <TiptapEditor />
-          ))}
-          {activeTab === 'browse' && (
-            isMobile ? (
-              <MobileBrowseView />
+        <SettingsProvider>
+          <ToastProvider>
+            {activeTab === 'editor' && <TiptapEditor />}
+            {activeTab === 'search' && (isMobile ? (
+              <div className="p-8">Sección de Búsqueda</div>
             ) : (
               <TiptapEditor />
-            )
-          )}
-        </ToastProvider>
+            ))}
+            {activeTab === 'browse' && (
+              isMobile ? (
+                <MobileBrowseView />
+              ) : (
+                <TiptapEditor />
+              )
+            )}
+          </ToastProvider>
+        </SettingsProvider>
       </main>
 
       {/* Global components (Portals) */}
-      <ToastProvider>
-        <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
-      </ToastProvider>
+      <SettingsProvider>
+        <ToastProvider>
+          <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
+        </ToastProvider>
+      </SettingsProvider>
       {isMobile && (
         <BottomNavbar activeTab={activeTab} onTabChange={handleTabChange} />
       )}
@@ -123,7 +128,6 @@ const DataWrapper = ({ isMobile }) => {
     setIsSidebarPinned(!isMobile);
   }, [isMobile]);
 
-  // While stronghold is opening
   if (authLoading) {
     return (
       <div className="h-screen w-full flex flex-col items-center justify-center bg-main-bg text-primary">
@@ -142,17 +146,19 @@ const DataWrapper = ({ isMobile }) => {
   if (dataLoading) return null;
 
   return (
-    <UIProvider>
-      <WorkspaceProvider>
-        <NoteProvider>
-          <AppContent
-            isMobile={isMobile}
-            isSidebarPinned={isSidebarPinned}
-            setIsSidebarPinned={setIsSidebarPinned}
-          />
-        </NoteProvider>
-      </WorkspaceProvider>
-    </UIProvider>
+    <SettingsProvider>
+      <UIProvider>
+        <WorkspaceProvider>
+          <NoteProvider>
+            <AppContent
+              isMobile={isMobile}
+              isSidebarPinned={isSidebarPinned}
+              setIsSidebarPinned={setIsSidebarPinned}
+            />
+          </NoteProvider>
+        </WorkspaceProvider>
+      </UIProvider>
+    </SettingsProvider>
   );
 };
 

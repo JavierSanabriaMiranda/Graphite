@@ -10,11 +10,6 @@ const FONTS = [
     { id: 'Times New Roman', label: 'Times New Roman', type: 'serif' },
 ];
 
-const getBaseFont = (fontValue) => {
-    if (!fontValue) return 'Inter';
-    return fontValue.split(',')[0].replace(/['"]/g, '').trim();
-};
-
 /**
  * Component to select the font of the text. Opens a floating menu to select the font with a 
  * field to search by text
@@ -22,7 +17,7 @@ const getBaseFont = (fontValue) => {
  * @param {Object} editor - The editor instance
  * @param {Object} state - The state of the menu bar, used to know the current text type 
  */
-const FontSelector = ({ editor, state }) => {
+const FontSelector = ({ editor, state, userDefaultFont }) => {
     const { t } = useTranslation();
     const EMOJI_STACK = 'var(--font-emoji)';
 
@@ -36,6 +31,11 @@ const FontSelector = ({ editor, state }) => {
             display: <span style={{ fontFamily: font.id }}>{font.label}</span>
         }));
     }, []);
+
+    const getBaseFont = (fontValue) => {
+        if (!fontValue) return userDefaultFont || 'Inter';
+        return fontValue.split(',')[0].replace(/['"]/g, '').trim();
+    };
 
     const handleSelect = (fontId) => {
         // Concat selected font with emoji font

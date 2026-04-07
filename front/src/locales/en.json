@@ -179,6 +179,12 @@
                 "title": "Application language",
                 "description": "Select the language for Graphite's interface.",
                 "search": "Search language"
+            },
+            "font": {
+                "title": "Default font",
+                "description": "This font will be applied by default to all notes in the app, except for those texts where you have manually changed the font",
+                "search": "Search font...",
+                "restart_notice": "Font changed successfully. Changes will take effect after restarting the app."
             }
         },
         "account": {
