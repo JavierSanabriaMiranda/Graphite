@@ -32,10 +32,10 @@ export const AuthProvider = ({ children }) => {
                     const dekBytes = new Uint8Array(data.dek);
                     setDek(dekBytes);
                     setIsAuthenticated(true);
-                    const user = userService.getCurrentUser()
+                    const user = await userService.getCurrentUser()
                     // INITIAL SYNC: Refresh metadata on app start
                     if (navigator.onLine) {
-                        syncService.pullAllMetadata(dekBytes, user.id);
+                        await syncService.pullAllMetadata(dekBytes, user.user_id);
                     }
                 }
             } catch (e) {
