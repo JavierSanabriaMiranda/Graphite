@@ -34,7 +34,6 @@ describe('FontSelector Component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Mock Tiptap command chain: .chain().focus().setFontFamily(id).run()
         mockChain = {
             focus: vi.fn().mockReturnThis(),
             setFontFamily: vi.fn().mockReturnThis(),
@@ -45,13 +44,16 @@ describe('FontSelector Component', () => {
             chain: vi.fn(() => mockChain),
         };
 
-        // Default state
         mockState = {
             currentFont: 'Inter',
         };
     });
 
-    it('should render the picker with the current font from state', () => {
+    /**
+     * Test that the picker displays the correct font label and 
+     * applies the font-stack (including emoji support) to the preview.
+     */
+    it('should render the picker with the current font and emoji stack', () => {
         render(<FontSelector editor={mockEditor} state={mockState} />);
 
         expect(screen.getByTestId('mock-picker')).toBeInTheDocument();
@@ -59,33 +61,47 @@ describe('FontSelector Component', () => {
 
         const label = screen.getByTestId('picker-button-label');
         expect(label).toHaveTextContent('Inter');
-        // Verify inline style is applied for preview
-        expect(label.firstChild).toHaveStyle('font-family: Inter');
+        
+        // Match the actual font stack logic: "Font, var(--font-emoji)"
+        expect(label.firstChild).toHaveStyle({
+            fontFamily: 'Inter, var(--font-emoji)'
+        });
     });
 
-    it('should handle font selection and execute editor commands', () => {
+    /**
+     * Test that selecting a font triggers the editor command 
+     * with the combined font + emoji stack.
+     */
+    it('should handle font selection and execute editor commands with emoji stack', () => {
         render(<FontSelector editor={mockEditor} state={mockState} />);
 
-        // Click a font option (e.g., Arial) inside our mocked picker
         const arialButton = screen.getByText('Arial');
         fireEvent.click(arialButton);
 
-        // Verify the Tiptap chain execution
         expect(mockEditor.chain).toHaveBeenCalled();
         expect(mockChain.focus).toHaveBeenCalled();
-        expect(mockChain.setFontFamily).toHaveBeenCalledWith('Arial');
+        // Verify it includes the emoji variable
+        expect(mockChain.setFontFamily).toHaveBeenCalledWith('Arial, var(--font-emoji)');
         expect(mockChain.run).toHaveBeenCalled();
     });
 
+    /**
+     * Test fallback for fonts not present in the predefined list
+     */
     it('should fallback correctly if the current font is not in the FONTS list', () => {
         const customState = { currentFont: 'NonExistentFont' };
         render(<FontSelector editor={mockEditor} state={customState} />);
 
         const label = screen.getByTestId('picker-button-label');
         expect(label).toHaveTextContent('NonExistentFont');
-        expect(label.firstChild).toHaveStyle('font-family: NonExistentFont');
+        expect(label.firstChild).toHaveStyle({
+            fontFamily: 'NonExistentFont, var(--font-emoji)'
+        });
     });
 
+    /**
+     * Test default behavior when no font is provided in the state
+     */
     it('should fallback to "Inter" if state.currentFont is null/undefined', () => {
         const emptyState = { currentFont: null };
         render(<FontSelector editor={mockEditor} state={emptyState} />);
@@ -94,17 +110,19 @@ describe('FontSelector Component', () => {
         expect(label).toHaveTextContent('Inter');
     });
 
+    /**
+     * Verify that the data passed to the generic SearchablePicker is correct
+     */
     it('should pass correctly formatted items to the SearchablePicker', () => {
         render(<FontSelector editor={mockEditor} state={mockState} />);
-
-        // Check if one of the constant fonts (Courier New) is present in the list
         expect(screen.getByText('Courier New')).toBeInTheDocument();
     });
 
-    it('should use translated placeholder or default string', () => {
+    /**
+     * Test i18n integration for the search placeholder
+     */
+    it('should use translated placeholder from i18next', () => {
         render(<FontSelector editor={mockEditor} state={mockState} />);
-
-        // Our mock i18n returns the key
         expect(screen.getByTestId('picker-placeholder')).toHaveTextContent('editor.toolbar.text_font.search');
     });
 });

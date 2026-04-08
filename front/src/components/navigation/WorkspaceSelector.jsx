@@ -13,7 +13,7 @@ import {
 } from '@floating-ui/react';
 import { Check, ChevronsUpDown, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useWorkspace } from '../context/WorkspaceContext.';
+import { useWorkspace } from '../context/WorkspaceContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
 /**

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SmilePlus, ArrowRight, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useWorkspace } from '../context/WorkspaceContext.';
+import { useWorkspace } from '../context/WorkspaceContext';
 import EmojiPicker from '../util/EmojiPicker';
 import { useIsMobile } from '../../hooks/useIsMobile';
 

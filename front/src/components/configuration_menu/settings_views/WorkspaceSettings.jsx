@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Trash2, Smile } from 'lucide-react';
-import { useWorkspace } from '../../context/WorkspaceContext.';
+import { useWorkspace } from '../../context/WorkspaceContext';
 import DeleteWorkspaceModal from './DeleteWorkspaceModal';
 import { useToast } from '../../context/ToastContext';
 import EmojiPicker from '../../util/EmojiPicker';

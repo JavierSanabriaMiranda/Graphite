@@ -3,7 +3,7 @@ import { PanelLeft, Settings, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
-import { useWorkspace } from '../context/WorkspaceContext.';
+import { useWorkspace } from '../context/WorkspaceContext';
 import NavItem from './NavItem';
 import { useUI } from '../context/UIContext';
 import WorkspaceSelector from './WorkspaceSelector';

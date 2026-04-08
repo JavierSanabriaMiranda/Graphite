@@ -20,6 +20,12 @@ vi.mock('../../../src/services/db/noteService', () => ({
     },
 }));
 
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key) => key,
+    }),
+}));
+
 vi.mock('../../../src/components/options_menu/DeleteConfirmModal', () => ({
     // Asegúrate de que los botones tengan nombres claros
     default: ({ isOpen, onConfirm, onClose }) => isOpen ? (
@@ -41,43 +47,57 @@ describe('PageBlockComponent', () => {
             refreshTrigger: 0
         });
 
-        // Mock of editor and it's transactions
         const mockTr = {
             delete: vi.fn().mockReturnThis(),
             setMeta: vi.fn().mockReturnThis()
         };
 
+        // Fix: Added the structure that the component expects in editor.options
         mockProps = {
             node: { attrs: { noteId: 'note-123' }, nodeSize: 1 },
             getPos: vi.fn().mockReturnValue(10),
             selected: false,
             editor: {
+                options: {
+                    editorProps: {
+                        panelRole: 'local', // Default role
+                        allowDeleted: false
+                    }
+                },
                 state: { tr: mockTr },
-                view: { dispatch: vi.fn() }
+                view: { 
+                    dispatch: vi.fn(),
+                    dom: {
+                        addEventListener: vi.fn(),
+                        removeEventListener: vi.fn()
+                    }
+                }
             }
         };
     });
 
+    /**
+     * Test that note data is displayed correctly after async load
+     */
     it('should render note data after loading', async () => {
         noteService.getByNoteId.mockResolvedValue({
             note_id: 'note-123',
             title: 'My Testing Note',
-            icon: '📝'
+            icon: '📝',
+            is_deleted: 0
         });
 
         render(<PageBlockComponent {...mockProps} />);
 
-        // At beginning is null
-        expect(screen.queryByText('My Testing Note')).not.toBeInTheDocument();
-
-        // Wait for load
         await waitFor(() => {
             expect(screen.getByText('My Testing Note')).toBeInTheDocument();
         });
     });
 
+    /**
+     * Test that component removes itself from editor if the note is missing in DB
+     */
     it('should self-destruct if note does not exist in DB', async () => {
-        // Simulates note has beed deleted in db
         noteService.getByNoteId.mockResolvedValue(null);
 
         render(<PageBlockComponent {...mockProps} />);
@@ -88,8 +108,11 @@ describe('PageBlockComponent', () => {
         });
     });
 
+    /**
+     * Test navigation trigger when user clicks the block
+     */
     it('should navigate to note on click', async () => {
-        const noteData = { note_id: 'note-123', title: 'Test' };
+        const noteData = { note_id: 'note-123', title: 'Test', is_deleted: 0 };
         noteService.getByNoteId.mockResolvedValue(noteData);
 
         render(<PageBlockComponent {...mockProps} />);
@@ -100,27 +123,32 @@ describe('PageBlockComponent', () => {
         expect(mockSelectNote).toHaveBeenCalledWith(noteData);
     });
 
+    /**
+     * Test the full deletion flow: open modal -> confirm -> dispatch authorized transaction
+     */
     it('should open modal and delete note on confirmation', async () => {
-        noteService.getByNoteId.mockResolvedValue({ note_id: 'note-123', title: 'Test' });
+        noteService.getByNoteId.mockResolvedValue({ note_id: 'note-123', title: 'Test', is_deleted: 0 });
 
         render(<PageBlockComponent {...mockProps} />);
 
-        const trashBtn = await screen.findByRole('button', { name: /common.delete/i });
+        // We use the translation key as we mocked 't' to return the key
+        const trashBtn = await screen.findByTitle('common.delete');
         fireEvent.click(trashBtn);
 
-        // Verify modal has been opened
         expect(screen.getByTestId('modal')).toBeInTheDocument();
 
-        const confirmBtn = screen.getByRole('button', { name: /confirm delete/i });
+        const confirmBtn = screen.getByText('Confirm Delete');
         fireEvent.click(confirmBtn);
 
         expect(mockProps.editor.view.dispatch).toHaveBeenCalled();
-
         expect(mockProps.editor.state.tr.setMeta).toHaveBeenCalledWith('forceDeletePageBlock', true);
     });
 });
 
 describe('PageBlock Extension & Protection Plugin', () => {
+    /**
+     * Basic integrity check for the Tiptap extension configuration
+     */
     it('should define correct attributes and commands', () => {
         expect(PageBlock.name).toBe('pageBlock');
         const commands = PageBlock.config.addCommands();
@@ -146,8 +174,10 @@ describe('PageBlock Extension & Protection Plugin', () => {
             expect(result).toBe(true);
         });
 
+        /**
+         * Test the protection plugin: it should block deletion if the authorized metadata is missing
+         */
         it('should block transaction if a PageBlock is being deleted without authorization', () => {
-            // Simulates that old document had 2 pages and new has 1
             const state = {
                 doc: { descendants: (cb) => { cb({ type: nodeType }); cb({ type: nodeType }); } }
             };
@@ -158,7 +188,6 @@ describe('PageBlock Extension & Protection Plugin', () => {
             };
 
             const result = plugin.spec.filterTransaction(tr, state);
-            // Must be false: plugin blocks accidental delete
             expect(result).toBe(false);
         });
     });

@@ -5,7 +5,7 @@ import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
 import NavItem from './NavItem';
 import WorkspaceSelector from './WorkspaceSelector';
-import { useWorkspace } from '../context/WorkspaceContext.';
+import { useWorkspace } from '../context/WorkspaceContext';
 
 /**
  * View that represents the hierarchical notes structure of the user workspace.

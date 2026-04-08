@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useAuth } from './AuthContext';
 import { syncService } from '../../services/db/syncService';
-import { useWorkspace } from './WorkspaceContext.';
+import { useWorkspace } from './WorkspaceContext';
 import { SyncStatus } from '../../util/SyncStatus';
 
 /**

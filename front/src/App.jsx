@@ -6,7 +6,7 @@ import Sidebar from './components/navigation/Sidebar';
 import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
 import { NoteProvider } from './components/context/NoteContext';
-import { WorkspaceProvider, useWorkspace } from './components/context/WorkspaceContext.';
+import { WorkspaceProvider, useWorkspace } from './components/context/WorkspaceContext';
 import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';

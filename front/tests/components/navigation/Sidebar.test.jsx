@@ -4,7 +4,7 @@ import Sidebar from '../../../src/components/navigation/Sidebar';
 import { useNote } from '../../../src/components/context/NoteContext';
 import { noteService } from '../../../src/services/db/noteService';
 import { useUI } from '../../../src/components/context/UIContext';
-import { useWorkspace } from '../../../src/components/context/WorkspaceContext.';
+import { useWorkspace } from '../../../src/components/context/WorkspaceContext';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
@@ -24,7 +24,7 @@ vi.mock('../../../src/services/db/noteService', () => ({
     },
 }));
 
-vi.mock('../../../src/components/context/WorkspaceContext.', () => ({
+vi.mock('../../../src/components/context/WorkspaceContext', () => ({
     useWorkspace: vi.fn(),
 }));
 
