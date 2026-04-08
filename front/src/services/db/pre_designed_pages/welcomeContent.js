@@ -20,15 +20,6 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
                   "text": "¡Tu herramienta de gestión de notas!"
                 }
               ]
@@ -41,15 +32,6 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
                   "text": "Graphite es un editor de texto que te ayudará a organizar tu información y tus ideas."
                 }
               ]
@@ -62,15 +44,6 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
                   "text": "Este es un editor de texto enriquecido lo que significa que puedes hacer cosas tan chulas como estas:"
                 }
               ]
@@ -94,13 +67,6 @@ export const getWelcomeNote = (lang) => {
                           "type": "text",
                           "marks": [
                             {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
-                            {
                               "type": "bold"
                             }
                           ],
@@ -122,13 +88,6 @@ export const getWelcomeNote = (lang) => {
                         {
                           "type": "text",
                           "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
                             {
                               "type": "italic"
                             }
@@ -152,13 +111,6 @@ export const getWelcomeNote = (lang) => {
                           "type": "text",
                           "marks": [
                             {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
-                            {
                               "type": "underline"
                             }
                           ],
@@ -180,13 +132,6 @@ export const getWelcomeNote = (lang) => {
                         {
                           "type": "text",
                           "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
                             {
                               "type": "strike"
                             }
@@ -210,13 +155,6 @@ export const getWelcomeNote = (lang) => {
                           "type": "text",
                           "marks": [
                             {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
-                            {
                               "type": "code"
                             }
                           ],
@@ -236,15 +174,6 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
                   "text": "Y eso no es todo, tambien tienes una gran variedad de "
                 },
                 {
@@ -253,7 +182,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#eab308"
                       }
                     }
@@ -266,7 +195,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -287,7 +216,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#ef4444"
                       }
                     }
@@ -300,7 +229,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -313,7 +242,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#3b82f6"
                       }
                     }
@@ -326,7 +255,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -339,7 +268,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#22c55e"
                       }
                     }
@@ -352,7 +281,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -365,7 +294,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#eab308"
                       }
                     }
@@ -378,7 +307,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -391,7 +320,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#a855f7"
                       }
                     }
@@ -404,7 +333,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -417,7 +346,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#ff2ee3"
                       }
                     }
@@ -438,7 +367,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -459,13 +388,6 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "text",
                       "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Inter, var(--font-emoji)",
-                            "color": null
-                          }
-                        },
                         {
                           "type": "italic"
                         }
@@ -490,15 +412,6 @@ export const getWelcomeNote = (lang) => {
                   "content": [
                     {
                       "type": "text",
-                      "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Inter, var(--font-emoji)",
-                            "color": null
-                          }
-                        }
-                      ],
                       "text": "Un destacado para mostrar texto con un estilo que llame más la atención"
                     }
                   ]
@@ -525,15 +438,6 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
                   "text": "Además, tambien puedes ocultar cosas para que no te molesten usando los contenidos desplegables"
                 }
               ]
@@ -541,7 +445,7 @@ export const getWelcomeNote = (lang) => {
             {
               "type": "toggleBlock",
               "attrs": {
-                "isOpen": true
+                "isOpen": false
               },
               "content": [
                 {
@@ -549,15 +453,6 @@ export const getWelcomeNote = (lang) => {
                   "content": [
                     {
                       "type": "text",
-                      "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Inter, var(--font-emoji)",
-                            "color": null
-                          }
-                        }
-                      ],
                       "text": "Este es un contenido desplegable"
                     }
                   ]
@@ -573,15 +468,6 @@ export const getWelcomeNote = (lang) => {
                       "content": [
                         {
                           "type": "text",
-                          "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            }
-                          ],
                           "text": "Y dentro guarda una lista de tareas por completar"
                         }
                       ]
@@ -603,15 +489,6 @@ export const getWelcomeNote = (lang) => {
                               "content": [
                                 {
                                   "type": "text",
-                                  "marks": [
-                                    {
-                                      "type": "textStyle",
-                                      "attrs": {
-                                        "fontFamily": "Inter, var(--font-emoji)",
-                                        "color": null
-                                      }
-                                    }
-                                  ],
                                   "text": "Instalar Graphite"
                                 }
                               ]
@@ -632,15 +509,6 @@ export const getWelcomeNote = (lang) => {
                               "content": [
                                 {
                                   "type": "text",
-                                  "marks": [
-                                    {
-                                      "type": "textStyle",
-                                      "attrs": {
-                                        "fontFamily": "Inter, var(--font-emoji)",
-                                        "color": null
-                                      }
-                                    }
-                                  ],
                                   "text": "Crear tu primera nota"
                                 }
                               ]
@@ -668,114 +536,13 @@ export const getWelcomeNote = (lang) => {
         body: JSON.stringify({
           type: "doc",
           content: [
+            { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Y esto es una subnota" }] },
+            { type: "paragraph", content: [{ type: "text", text: "Graphite te permite guardar notas dentro de otras notas. ¡Tendrás que jugar un poco con ello!" }] },
             {
-              "type": "heading",
-              "attrs": {
-                "textAlign": null,
-                "level": 2
-              },
-              "content": [
-                {
-                  "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
-                  "text": "Y esto es una subnota"
-                }
+              type: "bulletList", content: [
+                { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Usa la barra lateral para organizar tus espacios." }] }] },
+                { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Atajos de teclado para formato rápido." }] }] }
               ]
-            },
-            {
-              "type": "paragraph",
-              "attrs": {
-                "textAlign": null
-              },
-              "content": [
-                {
-                  "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
-                  "text": "Graphite te permite guardar notas dentro de otras notas. ¡Tendrás que jugar un poco con ello!"
-                }
-              ]
-            },
-            {
-              "type": "bulletList",
-              "attrs": {
-                "listStyle": "default"
-              },
-              "content": [
-                {
-                  "type": "listItem",
-                  "content": [
-                    {
-                      "type": "paragraph",
-                      "attrs": {
-                        "textAlign": null
-                      },
-                      "content": [
-                        {
-                          "type": "text",
-                          "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            }
-                          ],
-                          "text": "Usa la barra lateral para organizar tus espacios."
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "listItem",
-                  "content": [
-                    {
-                      "type": "paragraph",
-                      "attrs": {
-                        "textAlign": null
-                      },
-                      "content": [
-                        {
-                          "type": "text",
-                          "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            }
-                          ],
-                          "text": "Atajos de teclado para formato rápido."
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "paragraph",
-              "attrs": {
-                "textAlign": null
-              }
             }
           ]
         })
@@ -798,16 +565,7 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
-                  "text": "Your note management tool!"
+                  "text": "Welcome to Graphite!"
                 }
               ]
             },
@@ -819,16 +577,7 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
-                  "text": "Graphite is a text editor that will help you organize your information and ideas."
+                  "text": "Graphite is a text editor designed to help you organize your information and ideas."
                 }
               ]
             },
@@ -840,15 +589,6 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
                   "text": "This is a rich text editor, which means you can do cool things like these:"
                 }
               ]
@@ -872,13 +612,6 @@ export const getWelcomeNote = (lang) => {
                           "type": "text",
                           "marks": [
                             {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
-                            {
                               "type": "bold"
                             }
                           ],
@@ -900,13 +633,6 @@ export const getWelcomeNote = (lang) => {
                         {
                           "type": "text",
                           "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
                             {
                               "type": "italic"
                             }
@@ -930,13 +656,6 @@ export const getWelcomeNote = (lang) => {
                           "type": "text",
                           "marks": [
                             {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
-                            {
                               "type": "underline"
                             }
                           ],
@@ -958,13 +677,6 @@ export const getWelcomeNote = (lang) => {
                         {
                           "type": "text",
                           "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
                             {
                               "type": "strike"
                             }
@@ -988,17 +700,10 @@ export const getWelcomeNote = (lang) => {
                           "type": "text",
                           "marks": [
                             {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            },
-                            {
                               "type": "code"
                             }
                           ],
-                          "text": "Code"
+                          "text": "Inline code"
                         }
                       ]
                     }
@@ -1014,15 +719,6 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
                   "text": "And that's not all, you also have a wide variety of "
                 },
                 {
@@ -1031,7 +727,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#eab308"
                       }
                     }
@@ -1044,7 +740,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -1065,7 +761,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#ef4444"
                       }
                     }
@@ -1078,7 +774,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -1091,7 +787,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#3b82f6"
                       }
                     }
@@ -1104,7 +800,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -1117,7 +813,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#22c55e"
                       }
                     }
@@ -1130,7 +826,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -1143,7 +839,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#eab308"
                       }
                     }
@@ -1156,7 +852,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -1169,7 +865,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#a855f7"
                       }
                     }
@@ -1182,7 +878,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
@@ -1195,7 +891,7 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": "#ff2ee3"
                       }
                     }
@@ -1216,12 +912,12 @@ export const getWelcomeNote = (lang) => {
                     {
                       "type": "textStyle",
                       "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
+                        "fontFamily": null,
                         "color": null
                       }
                     }
                   ],
-                  "text": "Plus, you can add different very cool blocks such as:"
+                  "text": "Furthermore, you can add various cool blocks such as:"
                 }
               ]
             },
@@ -1238,17 +934,10 @@ export const getWelcomeNote = (lang) => {
                       "type": "text",
                       "marks": [
                         {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Inter, var(--font-emoji)",
-                            "color": null
-                          }
-                        },
-                        {
                           "type": "italic"
                         }
                       ],
-                      "text": "A quote to tell things that important people said a long time ago..."
+                      "text": "A quote to share things that important people said a long time ago..."
                     }
                   ]
                 }
@@ -1268,16 +957,7 @@ export const getWelcomeNote = (lang) => {
                   "content": [
                     {
                       "type": "text",
-                      "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Inter, var(--font-emoji)",
-                            "color": null
-                          }
-                        }
-                      ],
-                      "text": "A callout to show text with a style that draws more attention"
+                      "text": "A callout to highlight text with a style that grabs more attention"
                     }
                   ]
                 }
@@ -1291,7 +971,7 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "text": "// Or even code to show off your programming skills\nprivate void main(String args[]) {\n\tSystem.out.println(\"Hello World!\");\n}"
+                  "text": "// Or even code to showcase your programming skills\nprivate void main(String args[]) {\n\tSystem.out.println(\"Hello World!\");\n}"
                 }
               ]
             },
@@ -1303,23 +983,14 @@ export const getWelcomeNote = (lang) => {
               "content": [
                 {
                   "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
-                  "text": "Additionally, you can also hide things so they don't bother you using collapsible content"
+                  "text": "Additionally, you can also hide content to keep things tidy using toggle blocks"
                 }
               ]
             },
             {
               "type": "toggleBlock",
               "attrs": {
-                "isOpen": true
+                "isOpen": false
               },
               "content": [
                 {
@@ -1327,16 +998,7 @@ export const getWelcomeNote = (lang) => {
                   "content": [
                     {
                       "type": "text",
-                      "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Inter, var(--font-emoji)",
-                            "color": null
-                          }
-                        }
-                      ],
-                      "text": "This is collapsible content"
+                      "text": "This is a toggle block"
                     }
                   ]
                 },
@@ -1351,16 +1013,7 @@ export const getWelcomeNote = (lang) => {
                       "content": [
                         {
                           "type": "text",
-                          "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            }
-                          ],
-                          "text": "And inside it keeps a list of tasks to complete"
+                          "text": "And inside, it holds a task list to complete"
                         }
                       ]
                     },
@@ -1381,15 +1034,6 @@ export const getWelcomeNote = (lang) => {
                               "content": [
                                 {
                                   "type": "text",
-                                  "marks": [
-                                    {
-                                      "type": "textStyle",
-                                      "attrs": {
-                                        "fontFamily": "Inter, var(--font-emoji)",
-                                        "color": null
-                                      }
-                                    }
-                                  ],
                                   "text": "Install Graphite"
                                 }
                               ]
@@ -1410,132 +1054,11 @@ export const getWelcomeNote = (lang) => {
                               "content": [
                                 {
                                   "type": "text",
-                                  "marks": [
-                                    {
-                                      "type": "textStyle",
-                                      "attrs": {
-                                        "fontFamily": "Inter, var(--font-emoji)",
-                                        "color": null
-                                      }
-                                    }
-                                  ],
                                   "text": "Create your first note"
                                 }
                               ]
                             }
                           ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }),
-      },
-      subnote: {
-        icon: "👋",
-        title: "Subnote!",
-        body: JSON.stringify({
-          type: "doc",
-          content: [
-            {
-              "type": "heading",
-              "attrs": {
-                "textAlign": null,
-                "level": 2
-              },
-              "content": [
-                {
-                  "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
-                  "text": "And this is a subnote"
-                }
-              ]
-            },
-            {
-              "type": "paragraph",
-              "attrs": {
-                "textAlign": null
-              },
-              "content": [
-                {
-                  "type": "text",
-                  "marks": [
-                    {
-                      "type": "textStyle",
-                      "attrs": {
-                        "fontFamily": "Inter, var(--font-emoji)",
-                        "color": null
-                      }
-                    }
-                  ],
-                  "text": "Graphite allows you to save notes inside other notes. You'll have to play with it!"
-                }
-              ]
-            },
-            {
-              "type": "bulletList",
-              "attrs": {
-                "listStyle": "default"
-              },
-              "content": [
-                {
-                  "type": "listItem",
-                  "content": [
-                    {
-                      "type": "paragraph",
-                      "attrs": {
-                        "textAlign": null
-                      },
-                      "content": [
-                        {
-                          "type": "text",
-                          "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            }
-                          ],
-                          "text": "Use the sidebar to organize your workspace."
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "listItem",
-                  "content": [
-                    {
-                      "type": "paragraph",
-                      "attrs": {
-                        "textAlign": null
-                      },
-                      "content": [
-                        {
-                          "type": "text",
-                          "marks": [
-                            {
-                              "type": "textStyle",
-                              "attrs": {
-                                "fontFamily": "Inter, var(--font-emoji)",
-                                "color": null
-                              }
-                            }
-                          ],
-                          "text": "Shortcuts for quick formatting."
                         }
                       ]
                     }
@@ -1548,6 +1071,23 @@ export const getWelcomeNote = (lang) => {
               "attrs": {
                 "textAlign": null
               }
+            }
+          ]
+        }),
+      },
+      subnote: {
+        icon: "👋",
+        title: "Subnote!",
+        body: JSON.stringify({
+          type: "doc",
+          content: [
+            { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "And this is a subnote" }] },
+            { type: "paragraph", content: [{ type: "text", text: "Graphite allows you to create notes into notes. Have fun with it!" }] },
+            {
+              type: "bulletList", content: [
+                { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Use sidebar to organize your workspace" }] }] },
+                { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Keyboard shortcuts for fast formatting" }] }] }
+              ]
             }
           ]
         })
