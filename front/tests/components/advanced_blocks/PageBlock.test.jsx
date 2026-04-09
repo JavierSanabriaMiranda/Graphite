@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import React from 'react';
 import PageBlockComponent, { PageBlock } from '../../../src/components/advanced_blocks/PageBlockComponent';
 import { noteService } from '../../../src/services/db/noteService';
 import { useNote } from '../../../src/components/context/NoteContext';
@@ -190,5 +189,180 @@ describe('PageBlock Extension & Protection Plugin', () => {
             const result = plugin.spec.filterTransaction(tr, state);
             expect(result).toBe(false);
         });
+    });
+});
+
+describe('PageBlockComponent - Conflict Resolution Logic', () => {
+    let mockProps;
+    const mockSelectNote = vi.fn();
+    const mockChain = vi.fn().mockReturnThis();
+    const mockFocus = vi.fn().mockReturnThis();
+    const mockInsertContentAt = vi.fn().mockReturnThis();
+    const mockRun = vi.fn().mockReturnThis();
+
+    const mockLocalEditor = {
+        state: {
+            doc: {
+                content: { size: 100 },
+                descendants: vi.fn()
+            }
+        },
+        chain: mockChain,
+        on: vi.fn(),
+        off: vi.fn()
+    };
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockChain.mockReturnValue({ focus: mockFocus.mockReturnValue({ insertContentAt: mockInsertContentAt.mockReturnValue({ run: mockRun }) }) });
+
+        mockProps = {
+            node: { attrs: { noteId: 'note-remote' }, nodeSize: 1 },
+            getPos: vi.fn().mockReturnValue(0),
+            selected: false,
+            editor: {
+                options: {
+                    editorProps: {
+                        panelRole: 'conflict-remote',
+                        localEditor: mockLocalEditor
+                    }
+                },
+                view: { dom: { addEventListener: vi.fn(), removeEventListener: vi.fn() } }
+            }
+        };
+    });
+
+    it('should show the transfer button only if not already in local editor', async () => {
+        noteService.getByNoteId.mockResolvedValue({ note_id: 'note-remote', title: 'Remote Note' });
+        
+        // Simulate it doesn't exist on local editor
+        mockLocalEditor.state.doc.descendants.mockImplementation((cb) => {
+            cb({ type: { name: 'other' }, attrs: {} }); 
+        });
+
+        render(<PageBlockComponent {...mockProps} />);
+
+        await waitFor(() => {
+            expect(screen.getByTitle('conflict.transfer_to_local')).toBeInTheDocument();
+        });
+    });
+
+    it('should hide transfer button if block already exists in local editor', async () => {
+        noteService.getByNoteId.mockResolvedValue({ note_id: 'note-remote', title: 'Remote Note' });
+        
+        // Simulate it exists on local editor
+        mockLocalEditor.state.doc.descendants.mockImplementation((cb) => {
+            cb({ type: { name: 'pageBlock' }, attrs: { noteId: 'note-remote' } }); 
+        });
+
+        render(<PageBlockComponent {...mockProps} />);
+
+        await waitFor(() => {
+            expect(screen.queryByTitle('conflict.transfer_to_local')).not.toBeInTheDocument();
+        });
+    });
+
+    it('should transfer block to local editor when arrow button is clicked', async () => {
+        noteService.getByNoteId.mockResolvedValue({ note_id: 'note-remote', title: 'Remote Note' });
+        mockLocalEditor.state.doc.descendants.mockImplementation(() => {});
+
+        render(<PageBlockComponent {...mockProps} />);
+
+        const transferBtn = await screen.findByTitle('conflict.transfer_to_local');
+        fireEvent.click(transferBtn);
+
+        expect(mockLocalEditor.chain).toHaveBeenCalled();
+        expect(mockInsertContentAt).toHaveBeenCalledWith(100, {
+            type: 'pageBlock',
+            attrs: { noteId: 'note-remote' }
+        });
+    });
+});
+
+describe('PageBlockComponent - Keyboard Events', () => {
+    let mockProps;
+    const mockSelectNote = vi.fn();
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockProps = {
+            node: { attrs: { noteId: 'note-1' }, nodeSize: 1 },
+            getPos: vi.fn(),
+            selected: true,
+            editor: {
+                options: { editorProps: { panelRole: 'local' } },
+                view: { 
+                    dom: { 
+                        addEventListener: vi.fn(), 
+                        removeEventListener: vi.fn() 
+                    } 
+                }
+            }
+        };
+        useNote.mockReturnValue({ selectNote: mockSelectNote });
+    });
+
+    it('should select note when Enter is pressed on the container', async () => {
+        const noteData = { note_id: 'note-1', title: 'Keyboard Test' };
+        noteService.getByNoteId.mockResolvedValue(noteData);
+
+        render(<PageBlockComponent {...mockProps} />);
+        
+        const block = await screen.findByRole('button', { name: /keyboard test/i });
+        
+        fireEvent.keyDown(block, { key: 'Enter', code: 'Enter' });
+
+        expect(mockSelectNote).toHaveBeenCalledWith(noteData);
+    });
+
+    it('should handle editor-level Enter key when selected', async () => {
+        const noteData = { note_id: 'note-1', title: 'Editor Key Test' };
+        noteService.getByNoteId.mockResolvedValue(noteData);
+
+        render(<PageBlockComponent {...mockProps} />);
+
+        // get registered function on addEventListener
+        await waitFor(() => expect(mockProps.editor.view.dom.addEventListener).toHaveBeenCalled());
+        const handler = mockProps.editor.view.dom.addEventListener.mock.calls[0][1];
+
+        const mockEvent = { 
+            key: 'Enter', 
+            preventDefault: vi.fn(), 
+            stopImmediatePropagation: vi.fn() 
+        };
+        
+        handler(mockEvent);
+
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(mockSelectNote).toHaveBeenCalledWith(noteData);
+    });
+});
+
+describe('PageBlockComponent - Visual States', () => {
+    it('should show ghost state (unclickable) if note is deleted but allowed to be shown', async () => {
+        // Simulate conflict mode where deletions can be shown
+        const mockProps = {
+            node: { attrs: { noteId: 'note-del' }, nodeSize: 1 },
+            getPos: vi.fn(),
+            editor: {
+                options: { editorProps: { allowDeleted: true, panelRole: 'conflict-local' } },
+                view: { dom: { addEventListener: vi.fn(), removeEventListener: vi.fn() } }
+            }
+        };
+        
+        const noteData = { note_id: 'note-del', title: 'Deleted Note', is_deleted: 1 };
+        noteService.getByNoteId.mockResolvedValue(noteData);
+        const mockSelectNote = vi.fn();
+        useNote.mockReturnValue({ selectNote: mockSelectNote });
+
+        render(<PageBlockComponent {...mockProps} />);
+
+        const block = await screen.findByRole('button');
+        fireEvent.click(block);
+
+        // Can't navigate if is_deleted === 1
+        expect(mockSelectNote).not.toHaveBeenCalled();
+        // Remove button can't exist if is_deleted === 1
+        expect(screen.queryByTitle('common.delete')).not.toBeInTheDocument();
     });
 });
