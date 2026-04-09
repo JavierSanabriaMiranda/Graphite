@@ -164,7 +164,7 @@ const AuthenticationView = () => {
 
                             {/* Alerts */}
                             {(status === 'error' || status === 'password_mismatch') && (
-                                <div className="flex items-center gap-2 text-red-500 text-[11px] font-bold bg-red-500/10 p-4 rounded-2xl animate-in shake">
+                                <div role="alert" className="flex items-center gap-2 text-red-500 text-[11px] font-bold bg-red-500/10 p-4 rounded-2xl animate-in shake">
                                     <AlertCircle className="w-4 h-4 shrink-0" />
                                     {message}
                                 </div>
