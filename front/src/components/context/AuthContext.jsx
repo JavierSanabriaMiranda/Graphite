@@ -132,11 +132,19 @@ export const AuthProvider = ({ children }) => {
             throw new ApiError("weak_password", 400);
         }
         // Email validation (basic regex)
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!validateEmail(email)) {
             throw new ApiError("invalid_email_format", 400);
         }
     }
+
+    const validateEmail = (email) => {
+        // Limit email length (based on RFC 5321 it's 254 chars)
+        if (!email || email.length > 254) return false;
+
+        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+        return emailRegex.test(email);
+    };
 
     const saveSessionLocally = async (token, dek) => {
         await invoke('save_secure_data', {
