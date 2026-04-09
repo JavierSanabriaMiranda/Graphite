@@ -69,7 +69,7 @@ describe('syncService Suite', () => {
 
     describe('getPendingUploads', () => {
         /**
-         * Test that the service retrieves all entities marked as 'dirty' 
+         * Test that the service retrieves all entities marked as 'dirty'
          * (unsynced changes).
          */
         it('should fetch all rows marked as dirty from notes and workspaces', async () => {
@@ -87,6 +87,48 @@ describe('syncService Suite', () => {
 
             expect(result.notes).toEqual(mockNotes);
             expect(result.workspaces).toEqual(mockWorkspaces);
+        });
+    });
+
+    describe('markAsClean', () => {
+        it('should update is_dirty flag to 0 for a note', async () => {
+            await syncService.markAsClean('NOTES', 'note_id', 'n1');
+
+            expect(mockDb.execute).toHaveBeenCalledWith(
+                "UPDATE NOTES SET is_dirty = 0 WHERE note_id = ?",
+                ['n1']
+            );
+        });
+
+        it('should update is_dirty flag to 0 for a workspace', async () => {
+            await syncService.markAsClean('WORKSPACES', 'workspace_id', 'ws1');
+
+            expect(mockDb.execute).toHaveBeenCalledWith(
+                "UPDATE WORKSPACES SET is_dirty = 0 WHERE workspace_id = ?",
+                ['ws1']
+            );
+        });
+    });
+
+    describe('syncPendingData', () => {
+        it('should return early if dek is not provided', async () => {
+            const result = await syncService.syncPendingData(null);
+
+            expect(result).toBeUndefined();
+            expect(mockDb.select).not.toHaveBeenCalled();
+        });
+
+        it('should call purgeSyncedDeletes after syncing', async () => {
+            const dek = new Uint8Array(32);
+            vi.spyOn(syncService, 'getPendingUploads').mockResolvedValue({
+                notes: [],
+                workspaces: []
+            });
+
+            await syncService.syncPendingData(dek);
+
+            expect(mockDb.execute).toHaveBeenCalled();
+            vi.restoreAllMocks();
         });
     });
 });
