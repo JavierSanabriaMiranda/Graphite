@@ -3,7 +3,9 @@
         "cancel": "Cancel",
         "delete": "Delete",
         "no_result": "No results",
-        "search": "Search..."
+        "search": "Search...",
+        "loading": "Loading...",
+        "retry": "Retry"
     },
     "editor": {
         "placeholder": "Write something incredible...",
@@ -18,6 +20,10 @@
             "title": "No page selected",
             "description": "There's no page selected. Select one or create a new one"
         },
+        "offline_empty_title": "Content not available",
+        "offline_empty_desc": "You need to connect to the internet to download this note for the first time on this device.",
+        "sync_warning_title": "Synchronization pending",
+        "sync_warning_description": "This note may not be up to date. Modifying it's content may cause synchronization conflicts. Connect to the internet to resolve pending changes.",
         "toolbar": {
             "tools": "Tools",
             "block_type": {
@@ -151,6 +157,10 @@
             "toggle": {
                 "title": "Toggle",
                 "search": "toggle,expandable,hidden,collapsible"
+            },
+            "emoji": {
+                "title": "Emoji",
+                "search": "emoji,icon,faces"
             }
         }
     },
@@ -163,11 +173,51 @@
     },
     "settings": {
         "title": "Settings",
-        "general": "General",
-        "language": {
-            "title": "App Language",
-            "description": "Select the language for Graphite's interface.",
-            "search": "Search language"
+        "general": {
+            "general": "General",
+            "language": {
+                "title": "Application language",
+                "description": "Select the language for Graphite's interface.",
+                "search": "Search language"
+            },
+            "font": {
+                "title": "Default font",
+                "description": "This font will be applied by default to all notes in the app, except for those texts where you have manually changed the font",
+                "search": "Search font...",
+                "restart_notice": "Font changed successfully. Changes will take effect after restarting the app."
+            }
+        },
+        "account": {
+            "account": "User Account",
+            "account_section": "Account",
+            "logout": {
+                "logout": "Logout",
+                "title": "Logout",
+                "description": "Close your session at this device",
+                "confirm_title": "Confirm Logout",
+                "confirm_description": "Are you sure you want to logout?",
+                "unsynced_title": "Unsaved Changes",
+                "unsynced_description": "There are notes or spaces that have not been synchronized with the cloud. If you log out now, you will lose these changes permanently."
+            }
+        },
+        "workspace": {
+            "workspace": "Workspace",
+            "workspace_section": "Workspace",
+            "name_title": "Workspace Name",
+            "name_description": "Change the name of your workspace",
+            "delete_title": "Delete Workspace",
+            "delete_description": "Delete your workspace and all its content. This action cannot be undone",
+            "delete_button": "Delete Workspace",
+            "delete_confirm_title": "Confirm Delete",
+            "delete_confirm_description": "Are you sure you want to delete the workspace \"{{name}}\"? All its content will be deleted and cannot be recovered.",
+            "delete_success": "The workspace has been deleted successfully",
+            "icon_title": "Workspace Icon",
+            "icon_description": "Customize the appearance of your workspace with an icon.",
+            "change_icon": "Change Icon",
+            "add_icon": "Add icon",
+            "icon_hint": "Select an emoji for your workspace",
+            "update_success": "The workspace has been updated successfully",
+            "update_error": "Error while updating the workspace"
         }
     },
     "nav": {
@@ -175,6 +225,63 @@
         "search": "Search",
         "browse": "Browse",
         "settings": "Settings"
+    },
+    "workspaces": {
+        "title": "Workspaces",
+        "create": "Create new workspace",
+        "create_title": "Create Workspace",
+        "create_subtitle": "Welcome to the canvas where your thoughts take shape. Design an environment that inspires you to write, organize, and most importantly, create without limits.",
+        "button_create": "Create Workspace",
+        "icon": "Icon",
+        "set_name": "Set Name",
+        "name_placeholder": "e.g. Writing Project 2026",
+        "name_placeholder_mobile": "ej. Phone Notes"
+    },
+    "identification": {
+        "username": "USERNAME",
+        "username_placeholder": "Introduce a username...",
+        "email": "EMAIL",
+        "email_placeholder": "Type your email...",
+        "password": "PASSWORD",
+        "password_placeholder": "Type your password...",
+        "confirm_password": "CONFIRM PASSWORD",
+        "password_mismatch": "Passwords doesn't match",
+        "login": {
+            "login": "Log In",
+            "title": "Welcome\nback!",
+            "register_footer": "Don't have an account? ",
+            "button": "LOGIN"
+        },
+        "register": {
+            "register": "SIGN UP",
+            "title": "Join Graphite!",
+            "login_footer": "Already have an account? ",
+            "button": "SIGN UP"
+        }
+    },
+    "conflict": {
+        "conflict": "Conflict",
+        "conflict_detected_title": "Conflict detected in this note",
+        "conflict_detected_desc": "Click the button on the right to resolve the conflict manually",
+        "resolve_conflict": "Resolve conflict",
+        "conflict_warning_pathbar": "Remote changes detected. Click here to resolve the conflict.",
+        "resolve_title": "Conflict resolution in \"{{name}}\"",
+        "resolve_desc": "Resolve conflicts by accepting the changes from the version you want to keep or by merging changes in the left editor",
+        "local_label": "Local version (Editable)",
+        "remote_label": "Remote version (Read-only)",
+        "keep_local": "Keep local version",
+        "keep_local_short": "Keep local",
+        "keep_remote": "Keep remote version",
+        "keep_remote_short": "Keep remote",
+        "transfer_to_local": "Transfer to local"
+    },
+    "error": {
+        "invalid_credentials": "Invalid credentials",
+        "connection_error": "Error while connecting to the server",
+        "already_registered": "This user is already registered. Try login in",
+        "invalid_email_format": "Invalid email format",
+        "invalid_username_format": "Invalid username format. Username must be between 3 and 20 characters long and cannot contain special characters",
+        "weak_password": "Weak password. Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number and a special character (@$!%*?&)."
     },
     "emojis": {
         "emojis": "Emoji",

@@ -3,6 +3,11 @@ import React, { createContext, useContext, useState } from 'react';
 // Create context
 const UIContext = createContext();
 
+/**
+ * This wrapper manages the UI navigation mainly on mobile devices
+ * 
+ * @param {Component} children - Component that will be able to access to the UI functions 
+ */
 export const UIProvider = ({ children }) => {
   // Settings modal state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);

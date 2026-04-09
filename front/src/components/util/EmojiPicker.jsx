@@ -21,12 +21,16 @@ const Icon = ({ d, className = "w-4 h-4", strokeWidth = 2 }) => (
  * @param {Component} childer - Children to be wrapped. It can open the EmojiPicker floating menu 
  * @param {Boolean} showIconsMenu - True if the icons menu must be shown, false otherwise
  */
-const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
+const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReference = null }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [view, setView] = useState('emojis');
     const [activeCategory, setActiveCategory] = useState('people');
+
+    useEffect(() => {
+        if (externalReference) setIsOpen(true);
+    }, [externalReference]);
 
     const scrollContainerRef = useRef(null);
 
@@ -41,9 +45,17 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
 
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
-        onOpenChange: setIsOpen,
+        onOpenChange: (open) => {
+            setIsOpen(open);
+            // If close and comming from externalReference,clean parent state
+            if (!open && externalReference && externalReference.onClose) externalReference.onClose();
+        },
         middleware: [offset(8), flip(), shift()],
         whileElementsMounted: autoUpdate,
+        // If external reference, use it instead of child
+        elements: {
+            reference: externalReference?.element || null,
+        }
     });
 
     const { getReferenceProps, getFloatingProps } = useInteractions([
@@ -79,13 +91,16 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true }) => {
         onSelect(item.char);
         setIsOpen(false);
         setSearch('');
+        if (externalReference?.onClose) externalReference.onClose();
     };
 
     return (
         <>
-            <div ref={refs.setReference} {...getReferenceProps()} className="cursor-pointer">
-                {children}
-            </div>
+            {children && (
+                <div ref={refs.setReference} {...getReferenceProps()} className="cursor-pointer">
+                    {children}
+                </div>
+            )}
 
             <FloatingPortal>
                 <div

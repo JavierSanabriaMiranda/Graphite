@@ -24,6 +24,17 @@ vi.mock('../../src/hooks/useIsMobile', () => ({
     useIsMobile: vi.fn(),
 }));
 
+// Mock SyncStatus
+vi.mock('../../src/util/SyncStatus', () => ({
+    SyncStatus: {
+        CONFLICT: 'CONFLICT',
+        OFFLINE_STALE: 'OFFLINE_STALE',
+        ONLINE: 'ONLINE',
+        LOADING: 'LOADING',
+        OFFLINE_EMPTY: 'OFFLINE_EMPTY'
+    }
+}));
+
 // Mock child components
 vi.mock('../../src/components/util/ChangeThemeButton', () => ({ default: () => <button>ThemeBtn</button> }));
 vi.mock('../../src/components/options_menu/OptionsMenu', () => ({ default: () => <button>Options</button> }));
@@ -282,6 +293,173 @@ describe('PathBar Component', () => {
             );
 
             expect(breadcrumbButtons).toHaveLength(0);
+        });
+    });
+
+    describe('Conflict Handling', () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            vi.mocked(useIsMobile).mockReturnValue(false);
+
+            useNote.mockReturnValue({
+                selectedNote: mockActiveNote,
+                selectNote: mockOnNoteSelect,
+                refreshTrigger: 0,
+                syncStatus: 'CONFLICT'
+            });
+
+            noteService.getByNoteId.mockResolvedValue(mockActiveNote);
+        });
+
+        it('should display conflict button when syncStatus is CONFLICT', async () => {
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            const conflictButton = await screen.findByText('conflict.conflict');
+            expect(conflictButton).toBeInTheDocument();
+            expect(conflictButton.closest('button')).toHaveClass('bg-red-500/10');
+        });
+
+        it('should call onResolveConflict when conflict button is clicked', async () => {
+            const mockOnResolveConflict = vi.fn();
+
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} onResolveConflict={mockOnResolveConflict} />);
+            });
+
+            const conflictButton = await screen.findByText('conflict.conflict');
+
+            await act(async () => {
+                fireEvent.click(conflictButton);
+            });
+
+            expect(mockOnResolveConflict).toHaveBeenCalled();
+        });
+
+        it('should show conflict tooltip when hovering over conflict button', async () => {
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            const conflictButton = await screen.findByText('conflict.conflict');
+            const tooltip = await screen.findByText('conflict.conflict_warning_pathbar');
+
+            expect(tooltip).toBeInTheDocument();
+            expect(tooltip.closest('div')).toHaveClass('opacity-0');
+        });
+    });
+
+    describe('Offline Stale Warning', () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            vi.mocked(useIsMobile).mockReturnValue(false);
+
+            useNote.mockReturnValue({
+                selectedNote: mockActiveNote,
+                selectNote: mockOnNoteSelect,
+                refreshTrigger: 0,
+                syncStatus: 'OFFLINE_STALE'
+            });
+
+            noteService.getByNoteId.mockResolvedValue(mockActiveNote);
+        });
+
+        it('should display offline stale warning when syncStatus is OFFLINE_STALE', async () => {
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            const warningTitle = await screen.findByText('editor.sync_warning_title');
+            expect(warningTitle).toBeInTheDocument();
+        });
+
+        it('should show sync warning description in tooltip', async () => {
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            const warningDesc = await screen.findByText('editor.sync_warning_description');
+            expect(warningDesc).toBeInTheDocument();
+        });
+    });
+
+    describe('Props and State Management', () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            vi.mocked(useIsMobile).mockReturnValue(false);
+        });
+
+        it('should accept and use onResolveConflict prop', async () => {
+            const mockResolveConflict = vi.fn();
+
+            useNote.mockReturnValue({
+                selectedNote: mockActiveNote,
+                selectNote: mockOnNoteSelect,
+                refreshTrigger: 0,
+                syncStatus: 'CONFLICT'
+            });
+
+            noteService.getByNoteId.mockResolvedValue(mockActiveNote);
+
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={{}} onResolveConflict={mockResolveConflict} />);
+            });
+
+            expect(mockResolveConflict).not.toHaveBeenCalled();
+        });
+
+        it('should accept and render editor prop', async () => {
+            const mockEditor = { commands: {} };
+
+            useNote.mockReturnValue({
+                selectedNote: mockActiveNote,
+                selectNote: mockOnNoteSelect,
+                refreshTrigger: 0,
+            });
+
+            noteService.getByNoteId.mockResolvedValue(mockActiveNote);
+
+            await act(async () => {
+                render(<PathBar saveStatus="saved" editor={mockEditor} />);
+            });
+
+            // App renders successfully with editor prop (would error if not accepted)
+            expect(screen.getByText('ThemeBtn')).toBeInTheDocument();
+        });
+
+        it('should maintain separate sync statuses for different notes', async () => {
+            const note1 = { ...mockActiveNote, note_id: 'n1' };
+            const note2 = { ...mockActiveNote, note_id: 'n2' };
+
+            useNote.mockReturnValue({
+                selectedNote: note1,
+                selectNote: mockOnNoteSelect,
+                refreshTrigger: 0,
+                syncStatus: 'CONFLICT'
+            });
+
+            noteService.getByNoteId.mockResolvedValue(note1);
+
+            const { rerender } = render(<PathBar saveStatus="saved" editor={{}} />);
+
+            await waitFor(() => expect(noteService.getByNoteId).toHaveBeenCalledWith('n1'));
+
+            // Change to different note without conflict
+            useNote.mockReturnValue({
+                selectedNote: note2,
+                selectNote: mockOnNoteSelect,
+                refreshTrigger: 0,
+                syncStatus: 'ONLINE'
+            });
+
+            noteService.getByNoteId.mockResolvedValue(note2);
+
+            await act(async () => {
+                rerender(<PathBar saveStatus="saved" editor={{}} />);
+            });
+
+            await waitFor(() => expect(noteService.getByNoteId).toHaveBeenCalledWith('n2'));
         });
     });
 });

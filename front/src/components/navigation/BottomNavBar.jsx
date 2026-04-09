@@ -2,6 +2,15 @@ import React from 'react';
 import { PenLine, Search, Folder, Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * Navigation bar for mobile devices that is displayed at the bottom of the screen 
+ * and allows the user to change the view using multiple tabs
+ * 
+ * @param {String} activeTab - current selected tab
+ * @param {Function} onTabChange - callback function to call when selecting a tab
+ *  
+ * @returns 
+ */
 const BottomNavbar = ({ activeTab = 'editor', onTabChange }) => {
     const { t } = useTranslation();
 

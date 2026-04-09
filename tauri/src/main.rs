@@ -1,19 +1,7 @@
-// Command definition example
-#[tauri::command]
-fn process_text(texto: String) -> String {
-    let respuesta = format!(
-        "Rust dice: {}",
-        texto.to_uppercase().chars().rev().collect::<String>()
-    );
-
-    return respuesta;
-}
+// Avoid Windows cmd to open on release mode
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_sql::Builder::new().build())
-        // Register command
-        .invoke_handler(tauri::generate_handler![process_text])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    // Call run() function on lib.rs
+    graphite_lib::run(); 
 }

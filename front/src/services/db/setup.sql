@@ -12,12 +12,12 @@ CREATE TABLE IF NOT EXISTS USERS (
 
 CREATE TABLE IF NOT EXISTS WORKSPACES (
     workspace_id TEXT PRIMARY KEY,
-    owner_id TEXT REFERENCES USERS(user_id),
+    owner_id TEXT REFERENCES USERS(user_id) ON DELETE CASCADE,
     name TEXT NOT NULL,
+    icon TEXT,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     is_dirty INTEGER DEFAULT 0,
-    is_deleted INTEGER DEFAULT 0,
-    UNIQUE(owner_id, name)
+    is_deleted INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS NOTES (
@@ -34,7 +34,11 @@ CREATE TABLE IF NOT EXISTS NOTES (
     is_deleted INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    note_version INTEGER DEFAULT 1
+    note_version INTEGER DEFAULT 1,
+    conflict_title TEXT,
+    conflict_icon TEXT,
+    conflict_content TEXT,
+    remote_version INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS NOTE_LINKS (

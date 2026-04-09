@@ -2,13 +2,17 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import SearchablePicker from '../util/SearchablePicker';
 
+/**
+ * Floating selector that shows the current supported languages and manages
+ * the application language change
+ */
 const LanguageSelector = () => {
     const { t, i18n } = useTranslation();
 
     // language data
     const languages = useMemo(() => [
-        { value: 'en', label: 'English', icon: '🇺🇸' },
-        { value: 'es', label: 'Español', icon: '🇪🇸' },
+        { value: 'en', label: 'English' },
+        { value: 'es', label: 'Español' },
     ], []);
 
     // Find current language for button label
@@ -21,7 +25,6 @@ const LanguageSelector = () => {
             onSelect={(value) => i18n.changeLanguage(value)}
             buttonLabel={
                 <div className="flex items-center gap-2">
-                    <span>{currentLanguage.icon}</span>
                     <span>{currentLanguage.label}</span>
                 </div>
             }

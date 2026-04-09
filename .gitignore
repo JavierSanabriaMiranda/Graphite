@@ -48,18 +48,16 @@ gen/
 .classpath
 
 ### --- Spring Boot Specific ---
-# Ignoramos logs de la aplicación
 /logs
 *.log
 
-# Si usas Spring Boot DevTools
 .sts4-cache/
 
 ### --- Environment & Secrets ---
-# ¡MUY IMPORTANTE para tu TFG!
-# No subir credenciales reales si las pruebas en local
 .env
 .env.local
+.env.development
+.env.production
 src/main/resources/application-local.properties
 src/main/resources/secrets.properties
 

@@ -3,7 +3,9 @@
         "cancel": "Cancelar",
         "delete": "Borrar",
         "no_result": "No hay resultados",
-        "search": "Buscar..."
+        "search": "Buscar...",
+        "loading": "Cargando...",
+        "retry": "Reintentar"
     },
     "editor": {
         "placeholder": "Escribe algo increíble...",
@@ -18,6 +20,10 @@
             "title": "Ninguna página seleccionada",
             "description": "No hay ninguna página seleccionada. Selecciona una o crea una nueva"
         },
+        "offline_empty_title": "Contenido no disponible",
+        "offline_empty_desc": "Necesitas conectarte a internet para descargar esta nota por primera vez en este dispositivo.",
+        "sync_warning_title": "Sincronización pendiente",
+        "sync_warning_description": "Esta nota puede no estar actualizada. Modificar su contenido puede causar conflictos de sincronización. Conéctate a internet para resolver los cambios pendientes.",
         "toolbar": {
             "tools": "Herramientas",
             "block_type": {
@@ -150,6 +156,10 @@
             "toggle": {
                 "title": "Contenido Desplegable",
                 "search": "desplegable,oculto,toggle,contenido"
+            },
+            "emoji": {
+                "title": "Emojis",
+                "search": "emoji,icono,caras"
             }
         }
     },
@@ -162,11 +172,51 @@
     },
     "settings": {
         "title": "Ajustes",
-        "general": "General",
-        "language": {
-            "title": "Idioma de la aplicación",
-            "description": "Selecciona el idioma para la interfaz de Graphite.",
-            "search": "Buscar idioma"
+        "general": {
+            "general": "General",
+            "language": {
+                "title": "Idioma de la aplicación",
+                "description": "Selecciona el idioma para la interfaz de Graphite.",
+                "search": "Buscar idioma"
+            },
+            "font": {
+                "title": "Fuente por defecto",
+                "description": "Esta fuente se aplicará por defecto en todas las notas de la aplicación menos en aquellos textos en los que hayas modificado la fuente a mano",
+                "search": "Buscar fuente...",
+                "restart_notice": "Fuente cambiada correctamente. Los cambios se aplicarán al reiniciar la aplicación"
+            }
+        },
+        "account": {
+            "account": "Cuenta de usuario",
+            "account_section": "Cuenta",
+            "logout": {
+                "logout": "Cerrar Sesión",
+                "title": "Cerrar Sesión",
+                "description": "Cierra tu sesión activa en este dispositivo",
+                "confirm_title": "Confirmar cierre de sesión",
+                "confirm_description": "¿Estás seguro de que quieres cerrar sesión?",
+                "unsynced_title": "Cambios sin guardar",
+                "unsynced_description": "Hay notas o espacios que aún no se han sincronizados con la nube. Si cierras sesión ahora, perderás estos cambios permanentemente."
+            }
+        },
+        "workspace": {
+            "workspace": "Espacio de trabajo",
+            "workspace_section": "Espacio de trabajo",
+            "name_title": "Nombre del espacio de trabajo",
+            "name_description": "Cambia el nombre de tu espacio de trabajo",
+            "delete_title": "Borrar espacio de trabajo",
+            "delete_description": "Borra tu espacio de trabajo y todo su contenido. Esta acción no se puede deshacer",
+            "delete_button": "Borrar espacio de trabajo",
+            "delete_confirm_title": "Confirmar borrado",
+            "delete_confirm_description": "¿Estás seguro de que quieres borrar el espacio de trabajo \"{{name}}\"? Todo su contenido será eliminado y no podrás recuperarlo.",
+            "delete_success": "El espacio de trabajo se ha borrado correctamente",
+            "icon_title": "Icono del espacio de trabajo",
+            "icon_description": "Personaliza el aspecto de tu espacio de trabajo con un icono.",
+            "change_icon": "Cambiar icono",
+            "add_icon": "Añadir icono",
+            "icon_hint": "Selecciona un emoji para tu espacio de trabajo",
+            "update_success": "El espacio de trabajo se ha actualizado correctamente",
+            "update_error": "Error al actualizar el espacio de trabajo"
         }
     },
     "nav": {
@@ -174,6 +224,63 @@
         "search": "Buscar",
         "browse": "Navegar",
         "settings": "Ajustes"
+    },
+    "workspaces": {
+        "title": "Espacios de Trabajo",
+        "create": "Crear nuevo espacio de trabajo",
+        "create_title": "Crear Nuevo Espacio",
+        "create_subtitle": "Bienvenido al lienzo donde tus pensamientos toman forma. Diseña un entorno que te inspire a escribir, a organizar y, sobre todo, a crear sin límites.",
+        "button_create": "Crear Espacio",
+        "icon": "Icono",
+        "set_name": "Establecer nombre",
+        "name_placeholder": "ej. Proyecto de Escritura 2026",
+        "name_placeholder_mobile": "ej. Notas móviles"
+    },
+    "identification": {
+        "username": "NOMBRE DE USUARIO",
+        "username_placeholder": "Introduce un nombre de usuario...",
+        "email": "CORREO ELECTRÓNICO",
+        "email_placeholder": "Introduce tu correo electrónico...",
+        "password": "CONTRASEÑA",
+        "password_placeholder": "Introduce tu contraseña...",
+        "confirm_password": "CONFIRMA CONTRASEÑA",
+        "password_mismatch": "Las contraseñas no coinciden",
+        "login": {
+            "login": "INICIA SESION",
+            "title": "¡Bienvenido de nuevo!",
+            "register_footer": "¿No tienes cuenta? ",
+            "button": "INICIAR SESIÓN"
+        },
+        "register": {
+            "register": "REGISTRATE",
+            "title": "¡Únete a Graphite!",
+            "login_footer": "¿Ya tienes cuenta? ",
+            "button": "CREAR CUENTA"
+        }
+    },
+    "conflict": {
+        "conflict": "Conflicto",
+        "conflict_detected_title": "Se ha detectado un conflicto en esta nota",
+        "conflict_detected_desc": "Pulsa en el botón de la derecha para resolver el conflicto manualmente",
+        "resolve_conflict": "Resolver conflicto",
+        "conflict_warning_pathbar": "Se han detectado cambios remotos. Pulsa aquí para resolver el conflicto.",
+        "resolve_title": "Resolución de conflictos en \"{{name}}\"",
+        "resolve_desc": "Resuelve los conflictos aceptando los cambios del lado que quieras conservar o fusionando cambios en el editor izquierdo",
+        "local_label": "Versión local (Editable)",
+        "remote_label": "Versión remota (Solo lectura)",
+        "keep_local": "Mantener versión local",
+        "keep_local_short": "Mantener local",
+        "keep_remote": "Mantener versión remota",
+        "keep_remote_short": "Mantener remoto",
+        "transfer_to_local": "Transferir a local"
+    },
+    "error": {
+        "invalid_credentials": "Credenciales incorrectas",
+        "connection_error": "Error de conexión con el servidor",
+        "already_registered": "Este usuario ya está registrado. Prueba iniciando sesión",
+        "invalid_email_format": "Formato de correo electrónico inválido",
+        "invalid_username_format": "Formato de nombre de usuario inválido. El nombre de usuario debe tener entre 3 y 20 caracteres y no puede contener caracteres especiales",
+        "weak_password": "Contraseña débil. La contraseña debe tener al menos 8 caracteres e incluir una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&)."
     },
     "emojis": {
         "emoji": "Emoji",

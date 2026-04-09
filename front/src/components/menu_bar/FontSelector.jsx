@@ -17,8 +17,9 @@ const FONTS = [
  * @param {Object} editor - The editor instance
  * @param {Object} state - The state of the menu bar, used to know the current text type 
  */
-const FontSelector = ({ editor, state }) => {
+const FontSelector = ({ editor, state, userDefaultFont }) => {
     const { t } = useTranslation();
+    const EMOJI_STACK = 'var(--font-emoji)';
 
     const pickerItems = useMemo(() => {
         return FONTS.map(font => ({
@@ -31,19 +32,31 @@ const FontSelector = ({ editor, state }) => {
         }));
     }, []);
 
-    const handleSelect = (fontId) => {
-        editor.chain().focus().setFontFamily(fontId).run();
+    const getBaseFont = (fontValue) => {
+        if (!fontValue) return userDefaultFont || 'Inter';
+        return fontValue.split(',')[0].replace(/['"]/g, '').trim();
     };
 
-    const currentFont = FONTS.find(f => f.id === state.currentFont) || { label: state.currentFont || 'Inter', id: state.currentFont || 'Inter' };
+    const handleSelect = (fontId) => {
+        // Concat selected font with emoji font
+        // Example result: "Georgia, var(--font-emoji)"
+        const fullFontStack = `${fontId}, ${EMOJI_STACK}`;
+        editor.chain().focus().setFontFamily(fullFontStack).run();
+    };
+
+    const activeFontId = getBaseFont(state.currentFont);
+    const currentFont = FONTS.find(f => f.id === activeFontId) || {
+        label: activeFontId || 'Inter',
+        id: activeFontId || 'Inter'
+    };
 
     return (
         <SearchablePicker
             items={pickerItems}
-            value={state.currentFont}
+            value={activeFontId}
             onSelect={handleSelect}
             buttonLabel={
-                <span style={{ fontFamily: currentFont.id }}>
+                <span style={{ fontFamily: `${currentFont.id}, var(--font-emoji)` }}>
                     {currentFont.label}
                 </span>
             }

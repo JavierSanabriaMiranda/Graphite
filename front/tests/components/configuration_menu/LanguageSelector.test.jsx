@@ -41,14 +41,23 @@ describe('LanguageSelector Component', () => {
         });
     });
 
+    /**
+     * Test that the component correctly displays English when 
+     * the i18n instance is set to 'en'
+     */
     it('should render the picker with current language (English)', () => {
         render(<LanguageSelector />);
+        
         expect(screen.getByTestId('current-value')).toHaveTextContent('en');
         const label = screen.getByTestId('label-content');
-        expect(label).toHaveTextContent('🇺🇸');
+        
+        // Note: Flags removed as per current component implementation
         expect(label).toHaveTextContent('English');
     });
 
+    /**
+     * Verify that the UI updates the label when the language in context changes to Spanish
+     */
     it('should show Español when the current language is es', () => {
         vi.mocked(useTranslation).mockReturnValue({
             t: (key) => key,
@@ -62,22 +71,30 @@ describe('LanguageSelector Component', () => {
 
         expect(screen.getByTestId('current-value')).toHaveTextContent('es');
         const label = screen.getByTestId('label-content');
-        expect(label).toHaveTextContent('🇪🇸');
         expect(label).toHaveTextContent('Español');
     });
 
+    /**
+     * Test user interaction: selecting a language must call i18n.changeLanguage
+     */
     it('should call i18n.changeLanguage when a language is selected', () => {
         render(<LanguageSelector />);
+        
         const esButton = screen.getByText('Español');
         fireEvent.click(esButton);
+        
         expect(mockChangeLanguage).toHaveBeenCalledWith('es');
     });
 
-    it('should fallback to first language if current language is not in the list', () => {
+    /**
+     * Test the resilience of the component: fallback to the first available language 
+     * if the system reports an unsupported language code.
+     */
+    it('should fallback to first language if current language is not in the supported list', () => {
         vi.mocked(useTranslation).mockReturnValue({
             t: (key) => key,
             i18n: {
-                language: 'fr', // Not supported language
+                language: 'fr', // Not supported language in our hardcoded list
                 changeLanguage: mockChangeLanguage,
             },
         });

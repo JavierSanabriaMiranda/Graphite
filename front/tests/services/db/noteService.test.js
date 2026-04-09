@@ -101,6 +101,8 @@ describe('noteService Suite', () => {
                 expect.stringContaining("UPDATE NOTES SET title = $1, note_path = $2, is_dirty = $3, updated_at = $4 WHERE note_id = $5"),
                 expect.arrayContaining(['New Title', '/New Title', 1])
             );
+
+            vi.restoreAllMocks();
         });
 
         it('should return COLLISION error if the new path exists', async () => {
@@ -114,6 +116,8 @@ describe('noteService Suite', () => {
 
             expect(result).toEqual({ error: 'COLLISION', message: 'Path already exists' });
             expect(mockDb.execute).not.toHaveBeenCalled();
+
+            vi.restoreAllMocks();
         });
     });
 
@@ -125,6 +129,133 @@ describe('noteService Suite', () => {
                 expect.stringContaining("WITH RECURSIVE descendant_notes"),
                 ['n1']
             );
+        });
+    });
+
+    describe('getRootNotes', () => {
+        it('should fetch root notes ordered by title', async () => {
+            const rootNotes = [{ title: 'Note A' }, { title: 'Note B' }];
+            mockDb.select.mockResolvedValue(rootNotes);
+
+            const result = await noteService.getRootNotes('ws-1');
+
+            expect(mockDb.select).toHaveBeenCalledWith(
+                expect.stringContaining("SELECT * FROM NOTES WHERE workspace_id = $1 AND parent_id IS NULL"),
+                ['ws-1']
+            );
+            expect(result).toHaveLength(2);
+        });
+    });
+
+    describe('getSubnotes', () => {
+        it('should get all child notes for a parent', async () => {
+            const subnotes = [{ title: 'Child 1' }, { title: 'Child 2' }];
+            mockDb.select.mockResolvedValue(subnotes);
+
+            const result = await noteService.getSubnotes('parent-1');
+
+            expect(mockDb.select).toHaveBeenCalledWith(
+                expect.stringContaining("SELECT * FROM NOTES WHERE parent_id = $1"),
+                ['parent-1']
+            );
+            expect(result).toHaveLength(2);
+        });
+    });
+
+    describe('getNoteByPath', () => {
+        it('should return note matching path and workspace', async () => {
+            const note = { note_id: 'n1', note_path: '/Root/Child' };
+            mockDb.select.mockClear();
+            mockDb.select.mockResolvedValue([note]);
+
+            const result = await noteService.getNoteByPath('/Root/Child', 'ws-1');
+
+            expect(result).toEqual(note);
+        });
+    });
+
+    describe('incrementVersion', () => {
+        it('should update note version', async () => {
+            await noteService.incrementVersion('n1', 5);
+
+            expect(mockDb.execute).toHaveBeenCalledWith(
+                expect.stringContaining("UPDATE NOTES SET note_version = $1 WHERE note_id = $2"),
+                [5, 'n1']
+            );
+        });
+    });
+
+    describe('getNotesNotSynced', () => {
+        it('should return all dirty and not deleted notes', async () => {
+            const dirtyNotes = [{ note_id: 'n1', is_dirty: 1 }];
+            mockDb.select.mockResolvedValue(dirtyNotes);
+
+            const result = await noteService.getNotesNotSynced();
+
+            expect(mockDb.select).toHaveBeenCalledWith(
+                expect.stringContaining("SELECT * FROM NOTES WHERE is_dirty = 1 AND is_deleted = 0")
+            );
+            expect(result).toHaveLength(1);
+        });
+    });
+
+    describe('setConflict', () => {
+        it('should set conflict data on a note', async () => {
+            await noteService.setConflict('n1', 'Conflict Title', '📝', '{"type":"doc"}', 2);
+
+            expect(mockDb.execute).toHaveBeenCalledWith(
+                expect.stringContaining("UPDATE NOTES SET conflict_title = $1, conflict_icon = $2, conflict_content = $3, remote_version = $4"),
+                ['Conflict Title', '📝', '{"type":"doc"}', 2, 'n1']
+            );
+        });
+    });
+
+    describe('resolveConflict', () => {
+        it('should resolve conflict and clear conflict fields', async () => {
+            // Need to mock update to avoid internal calls
+            vi.spyOn(noteService, 'update').mockResolvedValue({});
+            vi.spyOn(noteService, 'resurrectNotes').mockResolvedValue({});
+            mockDb.select.mockResolvedValue([]);
+
+            const content = { type: 'doc', content: [] };
+            await noteService.resolveConflict('n1', 'Title', '📝', content, 3);
+
+            // Should have called update with the new title and icon
+            expect(noteService.update).toHaveBeenCalledWith('n1', { title: 'Title', icon: '📝' });
+
+            vi.restoreAllMocks();
+        });
+    });
+
+    describe('resurrectNotes', () => {
+        it('should undelete notes when provided with note IDs', async () => {
+            mockDb.execute.mockClear();
+
+            await noteService.resurrectNotes(['n1', 'n2']);
+
+            // Verify execute was called with update SQL containing the note IDs
+            const calls = mockDb.execute.mock.calls;
+            expect(calls.length).toBeGreaterThan(0);
+            // Check that the SQL contains UPDATE and the parameters include the IDs
+            const [sql, params] = calls[0];
+            expect(sql).toContain('UPDATE NOTES');
+            expect(sql).toContain('is_deleted = 0');
+        });
+
+        it('should handle empty array without executing', async () => {
+            mockDb.execute.mockClear();
+
+            await noteService.resurrectNotes([]);
+
+            expect(mockDb.execute).not.toHaveBeenCalled();
+        });
+
+        it('should handle null without executing', async () => {
+            mockDb.execute.mockClear();
+
+            await noteService.resurrectNotes(null);
+
+            expect(mockDb.execute).not.toHaveBeenCalled();
         });
     });
 });

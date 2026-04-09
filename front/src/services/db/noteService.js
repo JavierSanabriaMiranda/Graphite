@@ -1,4 +1,6 @@
 import { getDB } from '.';
+import i18next from 'i18next';
+import { getWelcomeNote } from './pre_designed_pages/welcomeContent'
 
 const emptyContent = JSON.stringify({
     type: 'doc',
@@ -9,12 +11,64 @@ const emptyContent = JSON.stringify({
     ],
 });
 
+const getChildIdsFromContent = (json) => {
+    const ids = [];
+    const traverse = (node) => {
+        if (node.type === 'pageBlock' && node.attrs?.noteId) {
+            ids.push(node.attrs.noteId);
+        }
+        if (node.content) {
+            node.content.forEach(traverse);
+        }
+    };
+    if (json) traverse(json);
+    return ids;
+};
+
 /**
  * Service for CRUD operations in Notes table
  */
 export const noteService = {
 
 
+    addWelcomeNotes: async (workspaceUuid) => {
+        const db = await getDB();
+
+        const lang = i18next.language?.split('-')[0] || 'en';
+        const localizedContent = getWelcomeNote(lang);
+        const welcome = localizedContent.welcome_note;
+        const subnote = localizedContent.subnote;
+
+        const noteUuid = crypto.randomUUID();
+        const subnoteUuid = crypto.randomUUID();
+
+        await db.execute(
+            `INSERT INTO NOTES (note_id, workspace_id, title, content, note_path, icon, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, $6, 1)`,
+            [
+                noteUuid,
+                workspaceUuid,
+                welcome.title,
+                welcome.body,
+                "/" + welcome.title,
+                welcome.icon
+            ]
+        );
+
+        await db.execute(
+            `INSERT INTO NOTES (note_id, parent_id, workspace_id, title, content, note_path, icon, is_dirty) 
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, 1)`,
+            [
+                subnoteUuid,
+                noteUuid,
+                workspaceUuid,
+                subnote.title,
+                subnote.body,
+                "/" + welcome.title + "/" + subnote.title,
+                subnote.icon
+            ]
+        );
+    },
 
     /**
      * Get all the notes of a workspace
@@ -251,9 +305,81 @@ export const noteService = {
         UPDATE NOTES 
         SET 
             is_deleted = 1, 
-            is_dirty = 1, 
+            is_dirty = 1,
             updated_at = CURRENT_TIMESTAMP 
         WHERE note_id IN (SELECT note_id FROM descendant_notes)
         `, [noteId]);
+    },
+
+    incrementVersion: async (noteId, newVersion) => {
+        const db = await getDB();
+        return await db.execute(
+            `UPDATE NOTES SET note_version = $1 WHERE note_id = $2`,
+            [newVersion, noteId]
+        );
+    },
+
+    getNotesNotSynced: async () => {
+        const db = await getDB();
+        return await db.select(
+            "SELECT * FROM NOTES WHERE is_dirty = 1 AND is_deleted = 0"
+        );
+    },
+
+    setConflict: async (noteId, conflictTitle, conflictIcon, conflictContent, remoteVersion) => {
+        const db = await getDB();
+        return await db.execute(
+            `UPDATE NOTES SET conflict_title = $1, conflict_icon = $2, conflict_content = $3, remote_version = $4 WHERE note_id = $5`,
+            [conflictTitle, conflictIcon, conflictContent, remoteVersion, noteId]
+        );
+    },
+
+    resolveConflict: async (noteId, title, icon, content, version) => {
+        const db = await getDB();
+        await noteService.update(noteId, { title: title, icon: icon })
+        await db.execute(
+            `UPDATE NOTES SET 
+                content = $1, note_version = $2,  
+                conflict_content = NULL, remote_version = NULL, 
+                is_deleted = 0, is_dirty = 1 
+            WHERE note_id = $3`,
+            [JSON.stringify(content), version, noteId]
+        );
+
+        // Get the IDs of the subpages that are on new content
+        const validChildIds = getChildIdsFromContent(content);
+
+        if (validChildIds.length > 0) {
+            // Mark all notes that aren't in validChildIds and whose parent is current note to not be in new content
+            const placeholders = validChildIds.map(() => '?').join(',');
+            await db.execute(
+                `UPDATE NOTES SET is_deleted = 1, is_dirty = 1 
+             WHERE parent_id = ? AND note_id NOT IN (${placeholders})`,
+                [noteId, ...validChildIds]
+            );
+            // Mark all notes that are in validChildIds to not be deleted
+            await noteService.resurrectNotes(validChildIds)
+        } else {
+            // If new content doesn't have supages, all local subpages gets deleted
+            await db.execute(
+                `UPDATE NOTES SET is_deleted = 1, is_dirty = 1 WHERE parent_id = ?`,
+                [noteId]
+            );
+        }
+    },
+
+    resurrectNotes: async (noteIds) => {
+        if (!noteIds || noteIds.length === 0) return;
+        const db = await getDB();
+        const placeholders = noteIds.map(() => '?').join(',');
+
+        // Mark as not deleted
+        await db.execute(
+            `UPDATE NOTES SET 
+            is_deleted = 0, 
+            is_dirty = 1 
+            WHERE note_id IN (${placeholders})`,
+            noteIds
+        );
     }
 };

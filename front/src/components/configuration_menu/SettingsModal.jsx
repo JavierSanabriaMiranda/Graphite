@@ -12,6 +12,9 @@ import {
 import { useIsMobile } from '../../hooks/useIsMobile';
 import SettingsView from './SettingsView';
 
+/**
+ * Floating modal (on non mobile devices) that shows the settings view
+ */
 const SettingsModal = ({ isOpen, onClose }) => {
     const { t } = useTranslation();
 

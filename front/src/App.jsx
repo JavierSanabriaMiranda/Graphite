@@ -1,19 +1,30 @@
 import { useState, useEffect } from 'react';
 import TiptapEditor from './components/TiptapEditor';
+import { useTranslation } from 'react-i18next';
 import { ToastProvider } from './components/context/ToastContext';
 import Sidebar from './components/navigation/Sidebar';
 import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
 import { NoteProvider } from './components/context/NoteContext';
+import { WorkspaceProvider, useWorkspace } from './components/context/WorkspaceContext';
 import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
 import SettingsModal from './components/configuration_menu/SettingsModal';
 import MobileBrowseView from './components/navigation/MobileBrowseView';
+import { useAuth, AuthProvider } from './components/context/AuthContext';
+import AuthenticationView from './components/views/AuthenticationView';
+import { useOnlineSync } from './hooks/useOnlineSync';
+import CreateWorkspaceView from './components/views/CreateWorkspaceView';
+import { Loader2 } from 'lucide-react';
+import { SettingsProvider } from './components/context/SettingsContext';
 
 // Component to access to the context inside the app
-const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWorkspace }) => {
+const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
+  const { t } = useTranslation();
+
   const { isSettingsOpen, closeSettings, activeTab, setActiveTab, openSettings } = useUI();
+  const { isCreatingWorkspace, isLoading: wsLoading, workspaces } = useWorkspace();
 
   const handleTabChange = (tabId) => {
     if (tabId === 'settings') {
@@ -23,6 +34,21 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
     }
   };
 
+  if (wsLoading) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-main-bg text-primary">
+        <Loader2 className="w-10 h-10 animate-spin mb-4" />
+        <p className="text-xs font-black uppercase tracking-widest opacity-50">{t('common.loading')}</p>
+      </div>
+    );
+  }
+
+  if (isCreatingWorkspace) {
+    return (
+      <CreateWorkspaceView showCancelBtn={workspaces.length > 0} />
+    );
+  }
+
   return (
     <div className="flex h-dvh bg-main-bg text-text-primary overflow-hidden">
       {/* SIDEBAR: just in desktop */}
@@ -30,7 +56,6 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
         <Sidebar
           isOpen={isSidebarPinned}
           setIsOpen={setIsSidebarPinned}
-          workspace={currentWorkspace}
         />
       )}
 
@@ -40,27 +65,31 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
         ${!isMobile && isSidebarPinned ? 'pl-64' : 'pl-0'}
         ${isMobile ? 'pb-16' : ''}
       `}>
-        <ToastProvider>
-          {/* Aquí podrías alternar componentes según activeTab */}
-          {activeTab === 'editor' && <TiptapEditor />}
-          {activeTab === 'search' && (isMobile ? (
-            <div className="p-8">Sección de Búsqueda</div>
-          ) : (
-            <TiptapEditor />
-          ))}
-          {activeTab === 'browse' && (
-            isMobile ? (
-              <MobileBrowseView workspace={currentWorkspace} />
+        <SettingsProvider>
+          <ToastProvider>
+            {activeTab === 'editor' && <TiptapEditor />}
+            {activeTab === 'search' && (isMobile ? (
+              <div className="p-8">Sección de Búsqueda</div>
             ) : (
               <TiptapEditor />
-            )
-          )}
-        </ToastProvider>
+            ))}
+            {activeTab === 'browse' && (
+              isMobile ? (
+                <MobileBrowseView />
+              ) : (
+                <TiptapEditor />
+              )
+            )}
+          </ToastProvider>
+        </SettingsProvider>
       </main>
 
       {/* Global components (Portals) */}
-      <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
-
+      <SettingsProvider>
+        <ToastProvider>
+          <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
+        </ToastProvider>
+      </SettingsProvider>
       {isMobile && (
         <BottomNavbar activeTab={activeTab} onTabChange={handleTabChange} />
       )}
@@ -68,38 +97,79 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned, currentWork
   );
 };
 
-function App() {
-  const isMobile = useIsMobile()
+// Middle component to handle data loading from user just after login
+const DataWrapper = ({ isMobile }) => {
+  useOnlineSync();
+
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [isSidebarPinned, setIsSidebarPinned] = useState(true);
   const [currentWorkspace, setCurrentWorkspace] = useState(null);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
-    const init = async () => {
-      const user = await userService.getCurrentUser();
-      if (user) {
-        const workspaces = await workspaceService.getByUser(user.user_id);
-        if (workspaces.length > 0) setCurrentWorkspace(workspaces[0]);
+    const initData = async () => {
+      if (isAuthenticated) {
+        try {
+          const user = await userService.getCurrentUser();
+          if (user) {
+            const workspaces = await workspaceService.getByUser(user.user_id);
+            if (workspaces.length > 0) setCurrentWorkspace(workspaces[0]);
+          }
+        } catch (e) {
+          console.error("Error cargando datos:", e);
+        }
       }
+      setDataLoading(false);
     };
-    init();
-  }, []);
+    initData();
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    setIsSidebarPinned(!isMobile)
-  }, [isMobile])
+    setIsSidebarPinned(!isMobile);
+  }, [isMobile]);
+
+  if (authLoading) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-main-bg text-primary">
+        <Loader2 className="w-10 h-10 animate-spin mb-4" />
+        <p className="text-xs font-black uppercase tracking-widest opacity-50">Desbloqueando Graphite...</p>
+      </div>
+    );
+  }
+
+  // If there's no session, go to login
+  if (!isAuthenticated) {
+    return <AuthenticationView />;
+  }
+
+  // If authenticated but loading workspace
+  if (dataLoading) return null;
 
   return (
-    <UIProvider>
-      <NoteProvider workspace={currentWorkspace}>
-        <AppContent
-          isMobile={isMobile}
-          isSidebarPinned={isSidebarPinned}
-          setIsSidebarPinned={setIsSidebarPinned}
-          currentWorkspace={currentWorkspace}
-        />
-      </NoteProvider>
-    </UIProvider>
+    <SettingsProvider>
+      <UIProvider>
+        <WorkspaceProvider>
+          <NoteProvider>
+            <AppContent
+              isMobile={isMobile}
+              isSidebarPinned={isSidebarPinned}
+              setIsSidebarPinned={setIsSidebarPinned}
+            />
+          </NoteProvider>
+        </WorkspaceProvider>
+      </UIProvider>
+    </SettingsProvider>
+  );
+};
+
+function App() {
+  const isMobile = useIsMobile();
+
+  return (
+    <AuthProvider>
+      <DataWrapper isMobile={isMobile} />
+    </AuthProvider>
   );
 }
 
-export default App
+export default App;

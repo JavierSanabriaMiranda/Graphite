@@ -12,6 +12,9 @@ import {
     useInteractions
 } from '@floating-ui/react';
 
+/**
+ * Modal to confirm a note deletion
+ */
 const DeleteConfirmModal = ({ isOpen, onClose, noteToDelete, onConfirm }) => {
     const { t } = useTranslation();
     const { selectedNote, selectNote, triggerRefresh } = useNote();

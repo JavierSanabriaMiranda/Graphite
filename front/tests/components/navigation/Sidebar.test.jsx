@@ -4,6 +4,7 @@ import Sidebar from '../../../src/components/navigation/Sidebar';
 import { useNote } from '../../../src/components/context/NoteContext';
 import { noteService } from '../../../src/services/db/noteService';
 import { useUI } from '../../../src/components/context/UIContext';
+import { useWorkspace } from '../../../src/components/context/WorkspaceContext';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
@@ -23,9 +24,17 @@ vi.mock('../../../src/services/db/noteService', () => ({
     },
 }));
 
+vi.mock('../../../src/components/context/WorkspaceContext', () => ({
+    useWorkspace: vi.fn(),
+}));
+
 // Mock child components
 vi.mock('../../../src/components/navigation/NavItem', () => ({
     default: ({ note }) => <div data-testid="nav-item">{note.title}</div>,
+}));
+
+vi.mock('../../../src/components/navigation/WorkspaceSelector', () => ({
+    default: () => <div data-testid="workspace-selector">My Workspace</div>,
 }));
 
 vi.mock('../../../src/components/configuration_menu/SettingsModal', () => ({
@@ -41,7 +50,7 @@ describe('Sidebar Component', () => {
     const mockNotes = [{ note_id: '1', title: 'Note 1' }, { note_id: '2', title: 'Note 2' }];
     const mockSetIsOpen = vi.fn();
     const mockCreateRootNote = vi.fn();
-    const mockOpenSettings = vi.fn(); // Mock para la función de ajustes
+    const mockOpenSettings = vi.fn();
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -53,6 +62,10 @@ describe('Sidebar Component', () => {
 
         vi.mocked(useUI).mockReturnValue({
             openSettings: mockOpenSettings,
+        });
+
+        vi.mocked(useWorkspace).mockReturnValue({
+            activeWorkspace: mockWorkspace,
         });
 
         noteService.getRootNotes.mockResolvedValue(mockNotes);
@@ -78,7 +91,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should toggle sidebar when the PanelLeft button is clicked', () => {
-        render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />);
+        render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} />);
 
         // We select the specific toggle button. 
         // first button in the header (before Settings and Add Note).
@@ -92,7 +105,7 @@ describe('Sidebar Component', () => {
 
     it('should handle hover sensor logic when closed', () => {
         // Render closed
-        render(<Sidebar isOpen={false} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />);
+        render(<Sidebar isOpen={false} setIsOpen={mockSetIsOpen}/>);
 
         const aside = screen.getByRole('complementary', { hidden: true });
         expect(aside).toHaveClass('-translate-x-full');
@@ -108,7 +121,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should call openSettings when the configuration button is clicked', async () => {
-        render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />);
+        render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} />);
 
         const settingsBtn = screen.getByText('sidebar.configuration').closest('button');
 
@@ -120,7 +133,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should call createRootNote when the add button is clicked', () => {
-        render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />);
+        render(<Sidebar isOpen={true} setIsOpen={mockSetIsOpen}/>);
 
         const addBtn = screen.getByText('sidebar.new_note').closest('button');
         fireEvent.click(addBtn);
@@ -130,7 +143,7 @@ describe('Sidebar Component', () => {
 
     it('should render a blur backdrop only when floating and hovered', () => {
         const { container } = render(
-            <Sidebar isOpen={false} setIsOpen={mockSetIsOpen} workspace={mockWorkspace} />
+            <Sidebar isOpen={false} setIsOpen={mockSetIsOpen} />
         );
 
         // Initial: closed and not hovered, no blur

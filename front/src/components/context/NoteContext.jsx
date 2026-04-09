@@ -1,6 +1,10 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
+import { useAuth } from './AuthContext';
+import { syncService } from '../../services/db/syncService';
+import { useWorkspace } from './WorkspaceContext';
+import { SyncStatus } from '../../util/SyncStatus';
 
 /**
  * Context object to hold the global state of the active note and UI synchronization.
@@ -12,25 +16,30 @@ const NoteContext = createContext();
  * This wrapper manages the state of the currently selected note and a global 
  * refresh trigger to synchronize data across the Sidebar, Editor, and Navigation.
  * 
- * @param {Object} props.children - The components that will have access to this context.
+ * @param {Component} children - The components that will have access to this context.
  */
-export const NoteProvider = ({ children, workspace }) => {
+export const NoteProvider = ({ children }) => {
+    const { dek } = useAuth();
     const { t } = useTranslation();
+    const { activeWorkspace: workspace } = useWorkspace();
+
     const [selectedNote, setSelectedNote] = useState(null);
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [syncStatus, setSyncStatus] = useState('ONLINE');
 
     const selectedNoteRef = useRef(selectedNote);
-    const workspaceRef = useRef(workspace)
 
     // sync refs when state changes
     useEffect(() => {
         selectedNoteRef.current = selectedNote;
     }, [selectedNote]);
 
+    // Clear selected note when workspace changes
     useEffect(() => {
-        workspaceRef.current = workspace;
+        setSelectedNote(null);
     }, [workspace]);
 
     /**
@@ -47,12 +56,65 @@ export const NoteProvider = ({ children, workspace }) => {
      * Updates the currently active note.
      * Uses useCallback to prevent child components from re-rendering unless the selectedNote changes.
      * 
-     * @param {Object} note - The note object to be set as active.
+     * It uses optimistic loading when the selected page has content stored locally. Then syncs
+     * the remote state for getting the most updated version and updates the content.
+     * 
+     * When selectedNote has no content but has metadata (title and icon) shows a loading
+     * state and sets the metadata as the selected note for updating title and icon on editor
+     * 
+     * @param {Object} noteMetadata - The note object to be set as active.
      */
-    const selectNote = useCallback((note) => {
-        if (note?.note_id === selectedNote?.note_id) return;
-        setSelectedNote(note);
-    }, [selectedNote]);
+    const selectNote = useCallback(async (noteMetadata) => {
+        if (isSyncing) return;
+        if (!noteMetadata) {
+            setSelectedNote(null);
+            return;
+        }
+
+        // Optimistic loading (if note has content show it inmediately)
+        if (noteMetadata.content) {
+            setSelectedNote(noteMetadata);
+            setSyncStatus(SyncStatus.ONLINE); // Temporal state
+        }
+        // If no content, we need to fetch it. Show loading state.
+        else {
+            setIsSyncing(true);
+            setSyncStatus(SyncStatus.LOADING);
+            setSelectedNote(noteMetadata); // Set metadata to show title and icon while loading
+        }
+
+        // Sync logic in background, we will update the note once we have the result
+        try {
+            // Fetch full content with sync logic
+            const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
+            // Security verification: Is the user still looking at the same note they requested to sync? 
+            // If not, we should not update the state to avoid confusion.
+            if (selectedNoteRef.current?.note_id === noteMetadata.note_id) {
+                setSelectedNote(result.note);
+                setSyncStatus(result.status);
+            }
+
+        } catch (error) {
+            console.error("Error on note background sync:", error);
+            if (!noteMetadata.content) {
+                setSyncStatus(SyncStatus.OFFLINE_EMPTY);
+            }
+        } finally {
+            setIsSyncing(false);
+            triggerRefresh();
+        }
+
+    }, [dek, isSyncing]);
+
+    /**
+     * Refresh the current note state by selecting it again
+     */
+    const refreshCurrentNote = useCallback(async () => {
+        if (selectedNoteRef.current) {
+            const noteRefresh = await noteService.getByNoteId(selectedNoteRef.current.note_id);
+            selectNote(noteRefresh)
+        }
+    }, [selectNote]);
 
     /**
      * Creates a new root note
@@ -77,8 +139,9 @@ export const NoteProvider = ({ children, workspace }) => {
     * @returns {Promise<Object|null>} The newly created note object
     */
     const createSubnote = useCallback(async (parentId = null) => {
+        if (!workspace) return;
         // If no ID, use the current selected note
-        const currentWorkspace = workspaceRef.current;
+        const currentWorkspace = workspace;
         const effectiveParentId = parentId || selectedNoteRef.current?.note_id;
 
         if (!currentWorkspace || !effectiveParentId) {
@@ -104,13 +167,16 @@ export const NoteProvider = ({ children, workspace }) => {
             console.error("Error creating subnote:", error);
             return null;
         }
-    }, [t, triggerRefresh]);
+    }, [workspace, t, triggerRefresh]);
 
     // Context value object containing the state and the updater functions
     const value = {
         selectedNote,
+        isSyncing,
+        syncStatus,
         setSelectedNote, // Raw setter for direct manipulation if needed
         selectNote,
+        refreshCurrentNote,
         refreshTrigger,
         triggerRefresh,
         createRootNote,

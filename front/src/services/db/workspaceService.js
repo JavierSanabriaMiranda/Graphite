@@ -5,6 +5,19 @@ import { getDB } from '.';
  */
 export const workspaceService = {
 
+    addWelcomeWorkspace: async (userId) => {
+        const db = await getDB();
+
+        const workspaceUuid = crypto.randomUUID();
+
+        await db.execute(
+            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_dirty) VALUES ($1, $2, $3, $4, 1)",
+            [workspaceUuid, userId, "Personal", '🔒']
+        );
+
+        return workspaceUuid;
+    },
+
     /**
      * Get all the workspaces from the user whose id is inserted as parameter
      * 
@@ -13,20 +26,13 @@ export const workspaceService = {
      */
     getByUser: async (userId) => {
         const db = await getDB();
-        return await db.select("SELECT * FROM WORKSPACES where owner_id = $1", [userId]);
+        return await db.select("SELECT * FROM WORKSPACES where owner_id = $1 AND is_deleted = 0", [userId]);
     },
 
-
-    /**
-     * Gets the workspaces with the name and owner specified as params (it should be just one)
-     * 
-     * @param {string} userId 
-     * @param {string} name 
-     * @returns Workspaces with the name and owner specified as params
-     */
-    getByUserAndName: async (userId, name) => {
+    getById: async (workspaceId) => {
         const db = await getDB();
-        return await db.select("SELECT * FROM WORKSPACES where owner_id = $1 AND name = $2", [userId, name]);
+        const results = await db.select("SELECT * FROM WORKSPACES where workspace_id = $1 AND is_deleted = 0", [workspaceId]);
+        return results.length > 0 ? results[0] : null;
     },
 
     /**
@@ -34,20 +40,61 @@ export const workspaceService = {
      * 
      * @param {string} ownerId - ID of the user owner of the workspace to create
      * @param {string} name - Name of the workspace to create
+     * @param {string} icon - Icon for the workspace to create
      */
-    create: async (ownerId, name) => {
+    create: async (ownerId, name, icon=null) => {
         const db = await getDB();
-        const sameNameWorkspaces = await workspaceService.getByUserAndName(ownerId, name)
-
-        if (sameNameWorkspaces.length > 0) {
-            throw new Error(`User already have a workspace with name "${name}"`);
-        }
 
         const workspaceId = crypto.randomUUID();
 
-        return await db.execute(
-            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, is_dirty) VALUES ($1, $2, $3, 1)",
-            [workspaceId, ownerId, name]
+        await db.execute(
+            "INSERT INTO WORKSPACES (workspace_id, owner_id, name, icon, is_dirty) VALUES ($1, $2, $3, $4, 1)",
+            [workspaceId, ownerId, name, icon]
+        );
+
+        return await workspaceService.getById(workspaceId);
+    },
+
+    updateName: async (workspaceId, newName) => {
+        const db = await getDB();
+        await db.execute(
+            "UPDATE WORKSPACES SET name = $1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $2",
+            [newName, workspaceId]
+        );
+    },
+
+    updateIcon: async (workspaceId, newIcon) => {
+        const db = await getDB();
+        await db.execute(
+            "UPDATE WORKSPACES SET icon = $1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $2",
+            [newIcon, workspaceId]
+        );
+    },
+
+
+    /**
+     * Marks as deleted the workspace whose id is inserted as parameter, and all its notes. 
+     * The workspace and notes won't be deleted from the database until the sync process runs.
+     * 
+     * @param {string} workspaceId - Id of the workspace to delete
+     */
+    delete: async (workspaceId) => {
+        const db = await getDB();
+
+        await db.execute(
+            "UPDATE WORKSPACES SET is_deleted = 1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $1",
+            [workspaceId]
+        );
+        await db.execute(
+            "UPDATE NOTES SET is_deleted = 1, is_dirty = 1, updated_at = CURRENT_TIMESTAMP WHERE workspace_id = $1",
+            [workspaceId]
+        );
+    },
+
+    getWorkspacesNotSynced: async () => {
+        const db = await getDB();
+        return await db.select(
+            "SELECT * FROM WORKSPACES WHERE is_dirty = 1 AND is_deleted = 0"
         );
     }
 };

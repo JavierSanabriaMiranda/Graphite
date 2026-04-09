@@ -47,7 +47,7 @@ export const ToastProvider = ({ children }) => {
               <span className="text-sm font-medium">{toast.message}</span>
               <button 
                 onClick={() => removeToast(toast.id)}
-                className="ml-4 hover:opacity-70 transition-opacity"
+                className="cursor-pointer ml-4 hover:opacity-70 transition-opacity"
               >
                 ✕
               </button>
