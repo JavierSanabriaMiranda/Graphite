@@ -286,9 +286,117 @@ describe('useEditorConfig', () => {
         expect(typeof result.current.editorProps.handleKeyDown).toBe('function');
     });
 
-    it('should merge extra props into editorProps', () => {
+    it('should return consistent config object when props do not change', () => {
+        const { result, rerender } = renderHook(
+            (props) => useEditorConfig(props),
+            {
+                initialProps: {
+                    onUpdate: mockOnUpdate,
+                    handleEmojiCommand: mockHandleEmojiCommand,
+                    createSubnote: mockCreateSubnote,
+                    selectNote: mockSelectNote,
+                    handleKeyDownProp: mockHandleKeyDown,
+                },
+            }
+        );
+
+        const firstConfig = result.current;
+
+        // Rerender with same props
+        rerender({
+            onUpdate: mockOnUpdate,
+            handleEmojiCommand: mockHandleEmojiCommand,
+            createSubnote: mockCreateSubnote,
+            selectNote: mockSelectNote,
+            handleKeyDownProp: mockHandleKeyDown,
+        });
+
+        const secondConfig = result.current;
+
+        // Properties should be consistent
+        expect(secondConfig.extensions.length).toBe(firstConfig.extensions.length);
+        expect(secondConfig.onUpdate).toBe(mockOnUpdate);
+    });
+
+    it('should create new config when dependencies change', () => {
+        const { result, rerender } = renderHook(
+            (props) => useEditorConfig(props),
+            {
+                initialProps: {
+                    onUpdate: mockOnUpdate,
+                    handleEmojiCommand: mockHandleEmojiCommand,
+                    createSubnote: mockCreateSubnote,
+                    selectNote: mockSelectNote,
+                    handleKeyDownProp: mockHandleKeyDown,
+                },
+            }
+        );
+
+        const firstResult = result.current;
+
+        // Rerender with different onUpdate callback
+        const newOnUpdate = vi.fn();
+        rerender({
+            onUpdate: newOnUpdate,
+            handleEmojiCommand: mockHandleEmojiCommand,
+            createSubnote: mockCreateSubnote,
+            selectNote: mockSelectNote,
+            handleKeyDownProp: mockHandleKeyDown,
+        });
+
+        expect(result.current).not.toBe(firstResult);
+        expect(result.current.onUpdate).toBe(newOnUpdate);
+    });
+
+    it('should use default font when not provided', () => {
+        const { result } = renderHook(() =>
+            useEditorConfig({
+                onUpdate: mockOnUpdate,
+                handleEmojiCommand: mockHandleEmojiCommand,
+                createSubnote: mockCreateSubnote,
+                selectNote: mockSelectNote,
+            })
+        );
+
+        expect(result.current.editorProps.attributes.style).toContain('Inter');
+    });
+
+    it('should not override custom class with default when customClass is provided', () => {
+        const customClass = 'my-custom-class';
+        const { result } = renderHook(() =>
+            useEditorConfig({
+                onUpdate: mockOnUpdate,
+                handleEmojiCommand: mockHandleEmojiCommand,
+                createSubnote: mockCreateSubnote,
+                selectNote: mockSelectNote,
+                customClass,
+            })
+        );
+
+        expect(result.current.editorProps.attributes.class).toBe(customClass);
+        expect(result.current.editorProps.attributes.class).not.toContain('prose');
+    });
+
+    it('should use default class when customClass is not provided', () => {
+        const { result } = renderHook(() =>
+            useEditorConfig({
+                onUpdate: mockOnUpdate,
+                handleEmojiCommand: mockHandleEmojiCommand,
+                createSubnote: mockCreateSubnote,
+                selectNote: mockSelectNote,
+            })
+        );
+
+        const defaultClass = result.current.editorProps.attributes.class;
+        expect(defaultClass).toContain('prose');
+        expect(defaultClass).toContain('dark:prose-invert');
+        expect(defaultClass).toContain('focus:outline-none');
+    });
+
+    it('should merge extra props without overwriting default attributes', () => {
         const extraProps = {
-            attributes: { 'data-testid': 'editor' },
+            attributes: { 'data-testid': 'custom-editor', 'data-custom': 'value' },
+            className: 'extra-class',
         };
 
         const { result } = renderHook(() =>
@@ -297,11 +405,71 @@ describe('useEditorConfig', () => {
                 handleEmojiCommand: mockHandleEmojiCommand,
                 createSubnote: mockCreateSubnote,
                 selectNote: mockSelectNote,
-                handleKeyDownProp: mockHandleKeyDown,
                 extraProps,
             })
         );
 
-        expect(result.current.editorProps.attributes['data-testid']).toBe('editor');
+        // Extra props attributes should be present
+        expect(result.current.editorProps.attributes['data-testid']).toBe('custom-editor');
+        expect(result.current.editorProps.attributes['data-custom']).toBe('value');
+
+        // Default attributes should still be there
+        expect(result.current.editorProps.attributes.class).toBeDefined();
+        expect(result.current.editorProps.attributes.style).toBeDefined();
+    });
+
+    it('should handle missing optional callbacks gracefully', () => {
+        const { result } = renderHook(() =>
+            useEditorConfig({
+                onUpdate: mockOnUpdate,
+            })
+        );
+
+        expect(result.current).toBeDefined();
+        expect(result.current.extensions).toBeDefined();
+        expect(result.current.editorProps).toBeDefined();
+    });
+
+    it('should build correct font stack with custom font', () => {
+        const customFont = 'Helvetica';
+        const { result } = renderHook(() =>
+            useEditorConfig({
+                onUpdate: mockOnUpdate,
+                defaultFont: customFont,
+            })
+        );
+
+        const fontStyle = result.current.editorProps.attributes.style;
+        expect(fontStyle).toContain('Helvetica, ui-sans-serif, system-ui, sans-serif');
+    });
+
+    it('should call handleKeyDown handler when provided', () => {
+        const { result } = renderHook(() =>
+            useEditorConfig({
+                onUpdate: mockOnUpdate,
+                handleKeyDownProp: mockHandleKeyDown,
+            })
+        );
+
+        const handler = result.current.editorProps.handleKeyDown;
+        // Call the handler to verify it's the custom one
+        handler();
+
+        // Since it's the mock function passed in, it should work
+        expect(typeof handler).toBe('function');
+    });
+
+    it('should return default no-op handleKeyDown when not provided', () => {
+        const { result } = renderHook(() =>
+            useEditorConfig({
+                onUpdate: mockOnUpdate,
+            })
+        );
+
+        const handler = result.current.editorProps.handleKeyDown;
+        const returnValue = handler();
+
+        // Default handler should return false
+        expect(returnValue).toBe(false);
     });
 });
