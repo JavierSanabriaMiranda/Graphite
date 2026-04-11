@@ -5,15 +5,39 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import SearchablePicker from '../util/SearchablePicker';
 import { useToast } from '../context/ToastContext';
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 /**
  * Custom code block component with syntax highlighting, a language selector and a copy content button
  */
-export const CodeBlockComponent = ({ node, updateAttributes, extension, editor }) => {
+export const CodeBlockComponent = ({ node, updateAttributes, extension, editor, getPos }) => {
 
     const { t } = useTranslation();
     const { language } = node.attrs;
     const { showToast } = useToast();
+    const isMobile = useIsMobile()
+
+    /**
+     * LOGIC TO DETECT FOCUS
+     * We depend on editor.state.selection to ensure re-render when the cursor moves.
+     */
+    const isFocusedInside = useMemo(() => {
+        if (!editor || !editor.isFocused) return false;
+
+        const { from, to } = editor.state.selection;
+        
+        // getPos() gives us the starting position of this code block in the document
+        const pos = getPos();
+        
+        if (pos === undefined) return false;
+
+        const nodeSize = node.nodeSize;
+
+        // The cursor is inside if the selection range is between [pos] and [pos + nodeSize]
+        return from >= pos && to <= pos + nodeSize;
+        
+        // We add editor.state.selection as a dependency to force re-calculation on every cursor movement
+    }, [editor.state.selection, editor.isFocused, getPos, node.nodeSize]);
 
     const languageNames = {
         'c': 'C',
@@ -65,7 +89,12 @@ export const CodeBlockComponent = ({ node, updateAttributes, extension, editor }
             {/* Button container */}
             <div
                 contentEditable={false}
-                className="absolute right-3 top-3 z-10 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                className={`absolute right-3 top-3 z-10 flex items-center gap-1.5 
+                    transition-all duration-300
+                    ${isMobile 
+                        ? (isFocusedInside ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none") 
+                        : "opacity-0 group-hover:opacity-100"
+                    }`}
             >
                 {/* Select language button */}
                 <SearchablePicker
