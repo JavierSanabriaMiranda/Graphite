@@ -444,7 +444,7 @@ const TiptapEditor = () => {
                       <NoteIcon iconChar={icon} />
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className={`flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 ${isMobile ? "opacity-100" : "opacity-0"} group-hover:opacity-100 transition-opacity`}>
                       <span className="text-4xl">+</span>
                       <span className="text-xs font-medium uppercase tracking-tighter">{t('editor.add_icon')}</span>
                     </div>

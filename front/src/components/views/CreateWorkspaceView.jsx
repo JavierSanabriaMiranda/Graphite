@@ -76,7 +76,7 @@ const CreateWorkspaceView = ({ showCancelBtn = true }) => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder={isMobile ? t('workspaces.name_placeholder_mobile') : t('workspaces.name_placeholder')}
-                            className={`${isMobile ? "text-xl" : "text-4xl"} w-full bg-transparent font-medium text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700 outline-none border-b border-zinc-800 focus:border-primary transition-colors pb-4`}
+                            className={`${isMobile ? "text-xl" : "text-4xl"} w-full bg-transparent font-medium text-black dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700 outline-none border-b border-zinc-800 focus:border-primary transition-colors pb-4`}
                         />
                     </div>
                 </div>
