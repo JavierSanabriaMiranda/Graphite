@@ -9,6 +9,10 @@ Object.assign(navigator, {
     },
 });
 
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({ t: (key) => key })
+}));
+
 vi.mock('@tiptap/react', async () => {
     const actual = await vi.importActual('@tiptap/react');
     return {
@@ -47,7 +51,13 @@ describe('CodeBlockComponent', () => {
             extension: {
                 options: { lowlight: { listLanguages: () => ['javascript', 'python'] } }
             },
-            editor: { commands: { focus: vi.fn() } },
+            editor: {
+                isFocused: false,
+                state: {
+                    selection: { from: 0, to: 0 }
+                },
+                commands: { focus: vi.fn() }
+            },
             t: (key) => key
         };
     });

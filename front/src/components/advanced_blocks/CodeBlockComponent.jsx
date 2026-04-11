@@ -22,7 +22,7 @@ export const CodeBlockComponent = ({ node, updateAttributes, extension, editor, 
      * We depend on editor.state.selection to ensure re-render when the cursor moves.
      */
     const isFocusedInside = useMemo(() => {
-        if (!editor || !editor.isFocused) return false;
+        if (!editor || !editor.isFocused || !editor.state?.selection) return false;
 
         const { from, to } = editor.state.selection;
         
@@ -37,7 +37,7 @@ export const CodeBlockComponent = ({ node, updateAttributes, extension, editor, 
         return from >= pos && to <= pos + nodeSize;
         
         // We add editor.state.selection as a dependency to force re-calculation on every cursor movement
-    }, [editor.state.selection, editor.isFocused, getPos, node.nodeSize]);
+    }, [editor?.state?.selection, editor?.isFocused, getPos, node.nodeSize]);
 
     const languageNames = {
         'c': 'C',
