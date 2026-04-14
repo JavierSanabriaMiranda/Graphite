@@ -163,7 +163,7 @@ export const useEditorConfig = ({
                     }
 
                     // Global placeholder (when editor is empty)
-                    if (editor.isEmpty && node.type.name === 'paragraph') {
+                    if (node.type.name === 'paragraph' && node.content.size === 0) {
                         return i18next.t('editor.placeholder');
                     }
 

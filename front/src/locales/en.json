@@ -8,7 +8,7 @@
         "retry": "Retry"
     },
     "editor": {
-        "placeholder": "Write something incredible...",
+        "placeholder": "Press '/' for commands",
         "toggle_title": "Toggle title...",
         "toggle_empty": "This content can be hidden in the toggle",
         "add_icon": "Add Icon",
