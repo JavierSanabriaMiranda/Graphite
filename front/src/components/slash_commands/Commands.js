@@ -1,6 +1,7 @@
 import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import getSuggestionConfig from './suggestions';
+import { PluginKey } from '@tiptap/pm/state'
 
 /**
  * Tiptap Extension that enables "Slash Commands"
@@ -29,6 +30,7 @@ export const Commands = Extension.create({
       Suggestion({
         editor: this.editor,
         ...this.options.suggestion,
+        pluginKey: new PluginKey('slashMenuSuggestion'),
       }),
     ];
   },

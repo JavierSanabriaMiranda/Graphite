@@ -38,6 +38,8 @@ import { PageBlock } from '../components/advanced_blocks/PageBlockComponent';
 import { BlockMoving } from '../components/extensions/BlockMoving';
 import { Commands } from '../components/slash_commands/Commands';
 import getSuggestionConfig from '../components/slash_commands/suggestions';
+import { NoteLink } from '../components/slash_commands/NoteLinkExtension';
+import { getNoteLinkSuggestionConfig } from '../components/slash_commands/noteLinksSuggestions';
 
 /**
  * Custom hook used to config a Tiptap editor
@@ -47,11 +49,12 @@ export const useEditorConfig = ({
     onArrowUpAtStart,
     handleEmojiCommand,
     createSubnote,
+    allNotes,
     selectNote,
     handleKeyDownProp,
     extraProps = {},
     customClass = '',
-    defaultFont = 'Inter'
+    defaultFont = 'Inter',
 }) => {
     const { t } = useTranslation();
     const fontStack = `${defaultFont}, ui-sans-serif, system-ui, sans-serif, var(--font-emoji)`;
@@ -146,6 +149,28 @@ export const useEditorConfig = ({
                     handleEmojiCommand
                 ),
             }),
+            NoteLink.configure({
+                suggestion: {
+                    ...getNoteLinkSuggestionConfig(allNotes),
+                    char: '[[',
+                    command: ({ editor, range, props }) => {
+                        editor
+                            .chain()
+                            .focus()
+                            .deleteRange(range)
+                            .insertContent([
+                                {
+                                    type: 'noteLink',
+                                    attrs: {
+                                        noteId: props.noteId,
+                                    },
+                                },
+                                { type: 'text', text: ' ' },
+                            ])
+                            .run();
+                    },
+                },
+            }),
             Placeholder.configure({
                 includeChildren: true,
                 placeholder: ({ node, editor, pos }) => {
@@ -181,5 +206,5 @@ export const useEditorConfig = ({
             },
             handleKeyDown: handleKeyDownProp || (() => false),
         },
-    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont]);
+    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont, allNotes]);
 }

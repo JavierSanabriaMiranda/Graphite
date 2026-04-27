@@ -39,7 +39,17 @@ const TiptapEditor = () => {
   const { dek, isAuthenticated } = useAuth();
   const { defaultFont } = useSettings();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing, syncStatus, refreshCurrentNote } = useNote();
+  const { 
+    selectedNote: activeNote, 
+    triggerRefresh: onNoteUpdate, 
+    createRootNote, 
+    createSubnote, 
+    selectNote, 
+    isSyncing, 
+    syncStatus, 
+    refreshCurrentNote,
+    allNotes
+  } = useNote();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -57,11 +67,16 @@ const TiptapEditor = () => {
   // References to context functions
   const createSubnoteRef = useRef(createSubnote);
   const selectNoteRef = useRef(selectNote);
+  const notesRef = useRef(allNotes);
 
   useEffect(() => {
     createSubnoteRef.current = createSubnote;
     selectNoteRef.current = selectNote;
   }, [createSubnote, selectNote]);
+
+  useEffect(() => {
+    notesRef.current = allNotes;
+  }, [allNotes]);
 
   /**
    * Function for showing emoji picker on users cursor coords when using emoji slash command
@@ -132,6 +147,7 @@ const TiptapEditor = () => {
         saveContentToDB(jsonContent);
       }, 2000);
     },
+    allNotes: notesRef,
     handleEmojiCommand: handleEmojiCommand,
     createSubnote: async (parentId) => await createSubnoteRef.current(parentId),
     selectNote: (note) => selectNoteRef.current(note),
@@ -140,6 +156,30 @@ const TiptapEditor = () => {
   });
 
   const editor = useEditor(editorConfig);
+
+
+  // Tiptap doesn't update extensions automatically if their props change. 
+  // We need to manually update the editor options when the list of notes changes to keep the note 
+  // links suggestions up to date.
+  useEffect(() => {
+    if (editor && !editor.isDestroyed && allNotes.length > 0) {
+      editor.setOptions({
+        extensions: editor.extensionManager.extensions.map(ext => {
+          if (ext.name === 'noteLink') {
+            return ext.configure({
+              suggestion: { items: ({ query }) => 
+                allNotes
+                  .filter(n => n.title?.toLowerCase().includes(query.toLowerCase()))
+                  .slice(0, 10)
+                  .map(n => ({ title: n.title, noteId: n.note_id, icon: n.icon }))
+              }
+            });
+          }
+          return ext;
+        })
+      });
+    }
+  }, [allNotes, editor]);
 
   /**
    * Function to inject content into the editor

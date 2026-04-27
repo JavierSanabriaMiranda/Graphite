@@ -171,6 +171,9 @@
         "loading": "Loading...",
         "workspace": "Workspace"
     },
+    "note_link": {
+        "broken_link": "Note not found"
+    },
     "settings": {
         "title": "Settings",
         "general": {

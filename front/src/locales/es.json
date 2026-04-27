@@ -170,6 +170,9 @@
         "loading": "Cargando...",
         "workspace": "Espacio de Trabajo"
     },
+    "note_link": {
+        "broken_link": "Nota no encontrada"
+    },
     "settings": {
         "title": "Ajustes",
         "general": {

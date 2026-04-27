@@ -23,6 +23,7 @@ export const NoteProvider = ({ children }) => {
     const { t } = useTranslation();
     const { activeWorkspace: workspace } = useWorkspace();
 
+    const [allNotes, setAllNotes] = useState([])
     const [selectedNote, setSelectedNote] = useState(null);
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
@@ -42,6 +43,19 @@ export const NoteProvider = ({ children }) => {
         setSelectedNote(null);
     }, [workspace]);
 
+    // Effect to load all notes of the workspace when it changes or when refreshTrigger updates (after a note update)
+    useEffect(() => {
+        const fetchAllNotes = async () => {
+            if (workspace) {
+                const notes = await noteService.getByWorkspace(workspace.workspace_id);
+                setAllNotes(notes);
+            } else {
+                setAllNotes([]);
+            }
+        };
+        fetchAllNotes();
+    }, [workspace, refreshTrigger]);
+
     /**
      * Increments the refresh counter.
      * Used whenever a note is updated in the database to force 
@@ -50,7 +64,6 @@ export const NoteProvider = ({ children }) => {
     const triggerRefresh = useCallback(() => {
         setRefreshTrigger(prev => prev + 1);
     }, []);
-
 
     /**
      * Updates the currently active note.
@@ -105,6 +118,11 @@ export const NoteProvider = ({ children }) => {
         }
 
     }, [dek, isSyncing]);
+
+    const selectNoteById = useCallback(async (noteId) => {
+        const note = await noteService.getByNoteId(noteId);
+        selectNote(note);
+    }, [selectNote]);
 
     /**
      * Refresh the current note state by selecting it again
@@ -176,11 +194,13 @@ export const NoteProvider = ({ children }) => {
         syncStatus,
         setSelectedNote, // Raw setter for direct manipulation if needed
         selectNote,
+        selectNoteById,
         refreshCurrentNote,
         refreshTrigger,
         triggerRefresh,
         createRootNote,
-        createSubnote
+        createSubnote,
+        allNotes
     };
 
     return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;
