@@ -89,6 +89,7 @@
             "show_info": "Show info",
             "hide_info": "Hide info",
             "created_at": "Created at",
+            "updated_at": "Last update",
             "backlinks": "Backlinks"
         },
         "options_menu": {
