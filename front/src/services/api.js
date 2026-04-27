@@ -149,7 +149,7 @@ export const remoteNoteService = {
             else {
                 throw new Error("Failed to fetch note metadata");
             }
-        } 
+        }
         return await response.json();
     },
 
@@ -160,6 +160,48 @@ export const remoteNoteService = {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}notes/${noteId}/content`, { headers });
         if (!response.ok) throw new Error("Failed to fetch note content");
+        return await response.json();
+    }
+};
+
+/**
+ * Service to handle note relationships (backlinks) with the remote server
+ */
+export const remoteNoteLinkService = {
+    /**
+     * Replaces all links for a source note on the server.
+     * @param {string} sourceNoteId 
+     * @param {Array<string>} targetNoteIds 
+     */
+    async updateRemoteLinks(sourceNoteId, targetNoteIds) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/${sourceNoteId}/links`, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify({ targetNoteIds })
+        });
+
+        if (!response.ok) throw new Error("Links sync failed");
+        return true;
+    },
+
+    /**
+     * Fetches all links that involves the specified note.
+     */
+    async getRemoteNoteGraph(noteId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/${noteId}/links`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch backlinks");
+        return await response.json();
+    },
+
+    /**
+     * Fetches all links in the specified workspace.
+     */
+    async getRemoteLinksByWorkspace(workspaceId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}workspaces/${workspaceId}/links`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch backlinks");
         return await response.json();
     }
 };

@@ -1,11 +1,22 @@
 import { getDB } from '.';
-import { remoteNoteService, remoteWorkspaceService } from '../api';
+import { remoteNoteService, remoteWorkspaceService, remoteNoteLinkService } from '../api';
 import { encryptData, decryptData } from '../../util/crypto';
 import { formatDateForServer } from '../../util/formatDate';
 import { noteService } from './noteService';
 import { SyncStatus } from '../../util/SyncStatus';
+import { noteLinkService } from './noteLinkService';
 
 // --- Private helper functions for sync logic ---
+
+/**
+ * Pushes local links of a note to the remote server.
+ */
+const syncNoteLinks = async (noteId) => {
+    const localLinks = await noteLinkService.getLinksBySource(noteId);
+    const targetIds = localLinks.map(l => l.target_id);
+
+    await remoteNoteLinkService.updateRemoteLinks(noteId, targetIds);
+};
 
 /**
  * Syncs the workspaces received as parameter with the remote server, encrypting them with the provided DEK. 
@@ -71,6 +82,11 @@ const syncNotes = async (notes, dek) => {
         const response = await remoteNoteService.updateRemoteNote(notePayload);
 
         if (response.ok) {
+            try {
+                await syncNoteLinks(note.note_id);
+            } catch (e) {
+                console.error("Failed to sync links for note:", note.note_id, e);
+            }
             const data = await response.json();
             const newVersion = data.newVersion;
 
@@ -177,6 +193,28 @@ const pullRemoteNotesOfAWorkspace = async (remoteNotes, dek, db) => {
                 "UPDATE NOTES SET parent_id = ? WHERE note_id = ?",
                 [rn.parentId, rn.noteId]
             );
+        }
+    }
+
+    // Get and insert links for each note of the workspace
+    if (remoteNotes.length > 0) {
+        const workspaceId = remoteNotes[0].workspaceId;
+        try {
+            // Get all workspace links from a single endpoint
+            const allWorkspaceLinks = await remoteNoteLinkService.getRemoteLinksByWorkspace(workspaceId);
+
+            for (const entry of allWorkspaceLinks) {
+                await db.execute("DELETE FROM NOTE_LINKS WHERE source_id = ?", [entry.sourceNoteId]);
+
+                for (const targetId of entry.targetNoteIds) {
+                    await db.execute(
+                        "INSERT INTO NOTE_LINKS (source_id, target_id) VALUES (?, ?)",
+                        [entry.sourceNoteId, targetId]
+                    );
+                }
+            }
+        } catch (e) {
+            console.warn("Sync: Error pulling workspace links", e);
         }
     }
 };
@@ -346,6 +384,30 @@ export const syncService = {
             if (!note.content || remoteMeta.noteVersion > note.note_version) {
                 const remoteFull = await remoteNoteService.getRemoteNoteContent(noteId);
                 const decryptedContent = await decryptData(remoteFull.encryptedPayload, dek, remoteFull.iv);
+
+                // Sync links from server to local
+                try {
+                    const graph = await remoteNoteLinkService.getRemoteNoteGraph(noteId);
+
+                    // Update outgoing links
+                    await db.execute("DELETE FROM NOTE_LINKS WHERE source_id = ?", [noteId]);
+                    for (const targetId of graph.outgoing) {
+                        await db.execute(
+                            "INSERT INTO NOTE_LINKS (source_id, target_id) VALUES (?, ?)",
+                            [noteId, targetId]
+                        );
+                    }
+
+                    // Update incoming links (backlinks)
+                    for (const sourceId of graph.incoming) {
+                        await db.execute(
+                            "INSERT OR IGNORE INTO NOTE_LINKS (source_id, target_id) VALUES (?, ?)",
+                            [sourceId, noteId]
+                        );
+                    }
+                } catch (e) {
+                    console.error("Sync: Error updating individual note links", e);
+                }
 
                 try {
                     // Get metadata from the childs of the content and update the childs that were not locally

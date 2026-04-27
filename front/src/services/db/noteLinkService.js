@@ -49,5 +49,18 @@ export const noteLinkService = {
              ORDER BY N.updated_at DESC`,
             [targetId]
         );
+    },
+
+    /**
+     * Gets all target note IDs that the source note points to
+     * @param {string} sourceId - The ID of the note to get links from
+     * @returns {Promise<Array>} List of target note IDs
+     */
+    getLinksBySource: async (sourceId) => {
+        const db = await getDB();
+        return await db.select(
+            `SELECT * FROM NOTE_LINKS WHERE source_id = $1`,
+            [sourceId]
+        );
     }
 };

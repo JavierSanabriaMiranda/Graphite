@@ -89,7 +89,7 @@ const Backlinks = ({ backlinks }) => {
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-left transition-colors cursor-pointer group outline-none"
                   >
                     <div className="w-5 h-5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform text-text-primary">
-                      {link.icon ? <NoteIcon iconChar={link.icon || '📄'} /> : <FileText />}
+                      {link.icon ? <NoteIcon iconChar={link.icon} /> : <FileText />}
                     </div>
                     <div className="flex flex-col truncate">
                       <span className="text-xs text-zinc-700 dark:text-zinc-200 truncate font-bold">
