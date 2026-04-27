@@ -153,6 +153,7 @@ export const useEditorConfig = ({
                 suggestion: {
                     ...getNoteLinkSuggestionConfig(allNotes),
                     char: '[[',
+                    allowSpaces: true,
                     command: ({ editor, range, props }) => {
                         editor
                             .chain()

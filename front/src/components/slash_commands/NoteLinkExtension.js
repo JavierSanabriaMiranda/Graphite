@@ -61,6 +61,8 @@ export const NoteLink = Node.create({
         editor: this.editor,
         ...this.options.suggestion,
         pluginKey: new PluginKey('noteLinkSuggestion'),
+        allowSpaces: true,
+        allowedPrefixes: null, 
       }),
     ]
   },
