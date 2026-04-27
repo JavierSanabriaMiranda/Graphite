@@ -13,6 +13,7 @@ import EmptyState from './util/EmptyState';
 import MobileFormattingSheet from './menu_bar/MobileFormattingSheet';
 import ChangeThemeButton from './util/ChangeThemeButton';
 import ConflictResolver from './views/ConflictResolver';
+import InfoBar from './InfoBar';
 
 import { noteService } from '../services/db/noteService';
 import { useAuth } from './context/AuthContext';
@@ -474,7 +475,7 @@ const TiptapEditor = () => {
         <div className={`max-w-5xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
 
           {/* Header */}
-          <div className="group mb-8 ml-7">
+          <div className="group mb-4 ml-7">
             <div className="relative w-fit group/icon-wrapper">
               {/* Page icon */}
               <EmojiPicker onSelect={handleIconSelect}>
@@ -515,6 +516,8 @@ const TiptapEditor = () => {
               className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all resize-none overflow-hidden py-2 leading-tight"
               style={{ fieldSizing: 'content' }}
             />
+
+            <InfoBar />
           </div>
 
           {/* Editor body */}

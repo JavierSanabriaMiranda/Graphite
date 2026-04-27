@@ -84,6 +84,12 @@
             "change_light_theme": "Cambiar a modo claro",
             "change_dark_theme": "Cambiar a modo oscuro"
         },
+        "info_bar": {
+            "show_info": "Mostrar info",
+            "hide_info": "Ocultar info",
+            "created_at": "Creado en",
+            "backlinks": "Enlaces entrantes"
+        },
         "options_menu": {
             "options_menu": "Opciones",
             "export": {

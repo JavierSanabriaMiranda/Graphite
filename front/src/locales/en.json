@@ -15,7 +15,7 @@
         "no_title_placeholder": "New page",
         "saving": "Saving...",
         "saved": "Saved",
-        "untitled_note": "New page",
+        "untitled_note": "New page",        
         "empty_state": {
             "title": "No page selected",
             "description": "There's no page selected. Select one or create a new one"
@@ -84,6 +84,12 @@
             "toggle_block": "Toggle content",
             "change_light_theme": "Change to light theme",
             "change_dark_theme": "Change to dark theme"
+        },
+        "info_bar": {
+            "show_info": "Show info",
+            "hide_info": "Hide info",
+            "created_at": "Created at",
+            "backlinks": "Backlinks"
         },
         "options_menu": {
             "options_menu": "Options menu",
