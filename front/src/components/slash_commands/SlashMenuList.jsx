@@ -117,9 +117,17 @@ const SlashMenuList = forwardRef((props, ref) => {
                                     {renderIcon(item.icon, isSelected)}
                                 </div>
 
-                                <span className={`flex-1 truncate ${isSelected ? 'font-bold' : 'font-medium'}`}>
-                                    {item.title}
-                                </span>
+                                <div className="flex flex-col flex-1 truncate">
+                                    <span className={`truncate ${isSelected ? 'font-bold' : 'font-medium'}`}>
+                                        {item.title}
+                                    </span>
+
+                                    {item.subtitle && (
+                                        <span className={`text-xs truncate font-bold opacity-60 ${isSelected ? 'text-primary/80' : 'text-zinc-500'}`}>
+                                            {item.subtitle}
+                                        </span>
+                                    )}
+                                </div>
                             </button>
                         );
                     })

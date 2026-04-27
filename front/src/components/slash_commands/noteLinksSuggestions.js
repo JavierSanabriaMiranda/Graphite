@@ -19,6 +19,7 @@ export const getNoteLinkSuggestionConfig = (notesRef) => ({
         if (searchWords.length === 0) {
             return currentNotes.slice(0, 10).map(note => ({
                 title: note.title || 'Untitled Note',
+                subtitle: note.note_path,
                 icon: note.icon,
                 noteId: note.note_id
             }));
@@ -32,6 +33,7 @@ export const getNoteLinkSuggestionConfig = (notesRef) => ({
             .slice(0, 10)
             .map(note => ({
                 title: note.title || 'Untitled Note',
+                subtitle: note.note_path,
                 icon: note.icon,
                 noteId: note.note_id
             }));
