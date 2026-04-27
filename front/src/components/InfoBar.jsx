@@ -37,20 +37,26 @@ const InfoBar = () => {
             <button
                 onClick={() => setShowInfoBar(!showInfoBar)}
                 className={`
-                    flex items-center gap-1.5 text-zinc-700 dark:text-zinc-400 hover:text-primary 
-                    transition-all duration-300 font-medium cursor-pointer p-1 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-800
-                    ${isMobile
+                flex items-center gap-1.5 text-zinc-700 dark:text-zinc-400 hover:text-primary 
+                transition-all duration-300 font-medium cursor-pointer p-1 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-800
+                ${isMobile
                         ? 'opacity-100'
                         : 'opacity-0 group-hover:opacity-100 transition-opacity'
                     }
-                `}
+            `}
             >
                 <Info className="w-4 h-4" />
                 {showInfoBar ? t('editor.info_bar.hide_info') : t('editor.info_bar.show_info')}
             </button>
 
             {showInfoBar && (
-                <div className="flex items-center gap-6 py-3 px-4 w-full animate-in slide-in-from-top-2 duration-200 border-b border-zinc-300 dark:border-zinc-700">
+                <div className={`
+                flex w-full py-3 px-4 animate-in slide-in-from-top-2 duration-200 border-b border-zinc-300 dark:border-zinc-700
+                ${isMobile
+                        ? 'flex-col items-start gap-4'
+                        : 'flex-row items-center gap-6'
+                    }
+            `}>
 
                     {/* Creation Date Section */}
                     <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
@@ -86,7 +92,9 @@ const InfoBar = () => {
                     </div>
 
                     {/* Backlinks Section */}
-                    <Backlinks backlinks={backlinks} />
+                    <div className={isMobile ? 'w-full' : ''}>
+                        <Backlinks backlinks={backlinks} />
+                    </div>
                 </div>
             )}
         </div>

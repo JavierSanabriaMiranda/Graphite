@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as LinkIcon } from 'lucide-react';
+import { Link as LinkIcon, FileText } from 'lucide-react';
 import {
   useFloating,
   autoUpdate,
@@ -23,7 +23,6 @@ const Backlinks = ({ backlinks }) => {
   const { selectNote } = useNote();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Configuración de Floating-UI
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
@@ -66,7 +65,6 @@ const Backlinks = ({ backlinks }) => {
         <DropdownArrow menuOpen={isOpen} defaultRotateAngle={0} rotateAngle={180} />
       </button>
 
-      {/* Menú Flotante */}
       <FloatingPortal>
         {isOpen && (
           <FloatingFocusManager context={context} modal={false}>
@@ -90,8 +88,8 @@ const Backlinks = ({ backlinks }) => {
                     }}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-left transition-colors cursor-pointer group outline-none"
                   >
-                    <div className="w-5 h-5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <NoteIcon iconChar={link.icon || '📄'} />
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform text-text-primary">
+                      {link.icon ? <NoteIcon iconChar={link.icon || '📄'} /> : <FileText />}
                     </div>
                     <div className="flex flex-col truncate">
                       <span className="text-xs text-zinc-700 dark:text-zinc-200 truncate font-bold">
