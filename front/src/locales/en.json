@@ -15,7 +15,7 @@
         "no_title_placeholder": "New page",
         "saving": "Saving...",
         "saved": "Saved",
-        "untitled_note": "New page",        
+        "untitled_note": "New page",
         "empty_state": {
             "title": "No page selected",
             "description": "There's no page selected. Select one or create a new one"
@@ -91,6 +91,13 @@
             "created_at": "Created at",
             "updated_at": "Last update",
             "backlinks": "Backlinks"
+        },
+        "context_menu": {
+            "copy": "Copy",
+            "cut": "Cut",
+            "paste": "Paste",
+            "add_link_to_note": "Add link to another page",
+            "add_content_block": "Add content block"
         },
         "options_menu": {
             "options_menu": "Options menu",

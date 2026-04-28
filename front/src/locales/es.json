@@ -91,6 +91,13 @@
             "updated_at": "Última actualización",
             "backlinks": "Enlaces entrantes"
         },
+        "context_menu": {
+            "copy": "Copiar",
+            "cut": "Cortar",
+            "paste": "Pegar",
+            "add_link_to_note": "Añadir enlace a otra página",
+            "add_content_block": "Añadir bloque de contenido"
+        },
         "options_menu": {
             "options_menu": "Opciones",
             "export": {

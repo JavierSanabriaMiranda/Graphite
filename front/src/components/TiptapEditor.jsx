@@ -14,6 +14,7 @@ import MobileFormattingSheet from './menu_bar/MobileFormattingSheet';
 import ChangeThemeButton from './util/ChangeThemeButton';
 import ConflictResolver from './views/ConflictResolver';
 import InfoBar from './InfoBar';
+import EditorContextMenu from './context_menu/EditorContextMenu';
 
 import { noteService } from '../services/db/noteService';
 import { useAuth } from './context/AuthContext';
@@ -40,14 +41,14 @@ const TiptapEditor = () => {
   const { dek, isAuthenticated } = useAuth();
   const { defaultFont } = useSettings();
 
-  const { 
-    selectedNote: activeNote, 
-    triggerRefresh: onNoteUpdate, 
-    createRootNote, 
-    createSubnote, 
-    selectNote, 
-    isSyncing, 
-    syncStatus, 
+  const {
+    selectedNote: activeNote,
+    triggerRefresh: onNoteUpdate,
+    createRootNote,
+    createSubnote,
+    selectNote,
+    isSyncing,
+    syncStatus,
     refreshCurrentNote,
     allNotes
   } = useNote();
@@ -59,6 +60,7 @@ const TiptapEditor = () => {
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [isResolvingConflict, setIsResolvingConflict] = useState(false);
   const [emojiPickerRef, setEmojiPickerRef] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);
 
   const saveTimeoutRef = useRef(null);
   const isProgrammaticRef = useRef(false); // Flag to indicate if content change is programmatic (to avoid save loops)
@@ -130,6 +132,14 @@ const TiptapEditor = () => {
     return false;
   };
 
+  const handleContextMenu = (e) => {
+    // If mobile keep native menu
+    if (isMobile) return;
+
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
   const editorConfig = useEditorConfig({
     onUpdate: ({ editor }) => {
       // Clean timeout if the user keeps typing
@@ -168,11 +178,12 @@ const TiptapEditor = () => {
         extensions: editor.extensionManager.extensions.map(ext => {
           if (ext.name === 'noteLink') {
             return ext.configure({
-              suggestion: { items: ({ query }) => 
-                allNotes
-                  .filter(n => n.title?.toLowerCase().includes(query.toLowerCase()))
-                  .slice(0, 10)
-                  .map(n => ({ title: n.title, noteId: n.note_id, icon: n.icon }))
+              suggestion: {
+                items: ({ query }) =>
+                  allNotes
+                    .filter(n => n.title?.toLowerCase().includes(query.toLowerCase()))
+                    .slice(0, 10)
+                    .map(n => ({ title: n.title, noteId: n.note_id, icon: n.icon }))
               }
             });
           }
@@ -521,7 +532,11 @@ const TiptapEditor = () => {
           </div>
 
           {/* Editor body */}
-          <div className="tiptap-container relative">
+          <div
+            className="tiptap-container relative"
+            onContextMenu={handleContextMenu}
+            role="textbox"
+          >
             {/* Skeleton for page loading */}
             {(isPageLoading || (isSyncing && !activeNote.content)) && (
               <div className="absolute inset-0 z-10 bg-main-bg">
@@ -555,8 +570,15 @@ const TiptapEditor = () => {
                 <EditorContent editor={editor} />
               </div>
             )}
-
           </div>
+          {contextMenu && (
+              <EditorContextMenu
+                x={contextMenu.x}
+                y={contextMenu.y}
+                editor={editor}
+                onClose={() => setContextMenu(null)}
+              />
+            )}
         </div>
       </div>
       {emojiPickerRef && (
