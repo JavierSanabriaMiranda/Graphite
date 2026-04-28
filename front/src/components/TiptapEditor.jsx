@@ -194,6 +194,41 @@ const TiptapEditor = () => {
   }, [allNotes, editor]);
 
   /**
+ * Scans the editor content for missing subpages and appends them at the end.
+ */
+  const runReconciliation = useCallback(async (targetEditor, noteId) => {
+    if (!targetEditor || targetEditor.isDestroyed || !noteId) return;
+
+    const subnotes = await noteService.getSubnotes(noteId);
+    if (subnotes.length === 0) return;
+
+    // Map existing blocks in current editor state
+    const existingNoteIds = new Set();
+    targetEditor.state.doc.descendants((node) => {
+      if (node.type.name === 'pageBlock' && node.attrs.noteId) {
+        existingNoteIds.add(node.attrs.noteId);
+      }
+    });
+
+    // Filter subnotes that are not present
+    const missingNotes = subnotes.filter(sub => !existingNoteIds.has(sub.note_id));
+
+    if (missingNotes.length > 0) {
+      // We mark this as programmatic to avoid triggering the 'onUpdate' save timeout
+      isProgrammaticRef.current = true;
+
+      targetEditor.chain()
+        .insertContentAt(targetEditor.state.doc.content.size, missingNotes.map(note => ({
+          type: 'pageBlock',
+          attrs: { noteId: note.note_id }
+        })))
+        .run();
+
+      isProgrammaticRef.current = false;
+    }
+  }, []);
+
+  /**
    * Function to inject content into the editor
    */
   const injectContentToEditor = useCallback((content, callback = null) => {
@@ -254,7 +289,10 @@ const TiptapEditor = () => {
 
       // If there's content (optimistic loading) load it inmediately
       if (activeNote.content) {
-        injectContentToEditor(activeNote.content, () => setIsPageLoading(false));
+        injectContentToEditor(activeNote.content, () => {
+          runReconciliation(editor, activeNote.note_id);
+          setIsPageLoading(false);
+        });
       }
       // If no content and is syncing, we are in loading state, 
       // show skeleton and wait for sync to update the content when it arrives
@@ -273,7 +311,10 @@ const TiptapEditor = () => {
         : JSON.stringify(activeNote.content);
 
       if (saveStatus === 'saved' && currentJSON !== incomingJSON) {
-        injectContentToEditor(activeNote.content);
+        injectContentToEditor(activeNote.content, () => {
+          // Reconcile again to catch any possible missing subpages that could have arrived with the sync
+          runReconciliation(editor, activeNote.note_id);
+        });
       }
       setIsPageLoading(false);
     }
@@ -572,13 +613,13 @@ const TiptapEditor = () => {
             )}
           </div>
           {contextMenu && (
-              <EditorContextMenu
-                x={contextMenu.x}
-                y={contextMenu.y}
-                editor={editor}
-                onClose={() => setContextMenu(null)}
-              />
-            )}
+            <EditorContextMenu
+              x={contextMenu.x}
+              y={contextMenu.y}
+              editor={editor}
+              onClose={() => setContextMenu(null)}
+            />
+          )}
         </div>
       </div>
       {emojiPickerRef && (

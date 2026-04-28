@@ -8,6 +8,8 @@ import { useNote } from '../context/NoteContext';
 import NavContextMenu from '../context_menu/NavContextMenu';
 import DeleteConfirmModal from '../options_menu/DeleteConfirmModal';
 
+import { useToast } from '../context/ToastContext';
+
 /**
  * Component that represents a page with its subnotes in the sidebar
  * 
@@ -18,8 +20,9 @@ import DeleteConfirmModal from '../options_menu/DeleteConfirmModal';
  */
 const NavItem = ({ note: initialNote, level = 0 }) => {
     const { t } = useTranslation();
+    const { showToast } = useToast();
 
-    const { selectedNote, selectNote, refreshTrigger } = useNote();
+    const { selectedNote, selectNote, refreshTrigger, createSubnote, triggerRefresh } = useNote();
 
     const [note, setNote] = useState(initialNote);
 
@@ -62,11 +65,28 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
         }
     }, [isExpanded, note.note_id, subnotes.length, refreshTrigger]);
 
-    // Manejador del click derecho
+    // Right click handler
     const handleContextMenu = (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Evita que se disparen menús de notas padre
+        e.stopPropagation();
         setContextMenu({ x: e.clientX, y: e.clientY });
+    };
+
+    // NavItem.jsx
+    const handleCreateSubpage = async () => {
+        try {
+            // Create note on db with it's parent_id
+            const newSubnote = await createSubnote(note.note_id);
+            if (!newSubnote) return;
+
+            setIsExpanded(true);
+            triggerRefresh();
+            selectNote(newSubnote);
+            showToast(t('sidebar.context_menu.subpage_created'), "success");
+        } catch (error) {
+            showToast(t('sidebar.context_menu.error_creating_subpage'), "error");
+            console.error("Error creating subpage:", error);
+        }
     };
 
     const handleKeyDown = (e) => {
@@ -116,6 +136,7 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
                     y={contextMenu.y}
                     onClose={() => setContextMenu(null)}
                     onDeleteClick={() => setIsDeleteModalOpen(true)}
+                    onCreateSubpageClick={handleCreateSubpage}
                 />
             )}
 

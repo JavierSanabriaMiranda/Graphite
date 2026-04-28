@@ -8,10 +8,10 @@ import {
     useInteractions,
     FloatingPortal,
 } from '@floating-ui/react';
-import { Trash2, ExternalLink } from 'lucide-react';
+import { Trash2, PlusCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const NavContextMenu = ({ x, y, onClose, onDeleteClick }) => {
+const NavContextMenu = ({ x, y, onClose, onDeleteClick, onCreateSubpageClick }) => {
     const { t } = useTranslation();
 
     const { refs, floatingStyles, context } = useFloating({
@@ -41,6 +41,16 @@ const NavContextMenu = ({ x, y, onClose, onDeleteClick }) => {
                 {...getFloatingProps()}
                 className="z-9999 min-w-40 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-100"
             >
+                <button
+                    onClick={() => {
+                        onCreateSubpageClick();
+                        onClose();
+                    }}
+                    className="w-full flex items-center gap-3 px-2.5 py-2 text-xs font-medium rounded-lg text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                >
+                    <PlusCircle size={14} />
+                    {t('sidebar.context_menu.add_subpage')}
+                </button>
                 <button
                     onClick={() => {
                         onDeleteClick();

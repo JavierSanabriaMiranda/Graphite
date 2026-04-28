@@ -186,7 +186,9 @@
         "workspace": "Workspace",
         "context_menu": {
             "delete_page": "Delete page",
-            "add_subpage": "Add subpage"
+            "add_subpage": "Add subpage",
+            "subpage_created": "Subpage created successfully",
+            "error_creating_subpage": "Error while creating subpage"
         }
     },
     "note_link": {

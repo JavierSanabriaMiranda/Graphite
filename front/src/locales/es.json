@@ -185,7 +185,9 @@
         "workspace": "Espacio de Trabajo",
         "context_menu": {
             "delete_page": "Borrar página",
-            "add_subpage": "Añadir subpágina"
+            "add_subpage": "Añadir subpágina",
+            "subpage_created": "Subpágina creada correctamente",
+            "error_creating_subpage": "Error al crear la subpágina"
         }
     },
     "note_link": {
