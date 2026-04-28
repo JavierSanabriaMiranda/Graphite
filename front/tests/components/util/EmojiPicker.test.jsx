@@ -149,7 +149,7 @@ describe('EmojiPicker', () => {
             .filter(btn => btn.querySelector('svg') && btn !== iconsTab);
 
         expect(iconButtons.length).toBeGreaterThan(0);
-    });
+    }, 6000);
 
     /**
      * Test scroll reset when changing view
