@@ -11,6 +11,7 @@ vi.mock('../../../src/services/db/noteService', () => ({
     noteService: {
         create: vi.fn(),
         getByNoteId: vi.fn(),
+        getByWorkspace: vi.fn().mockResolvedValue([]),
     }
 }));
 

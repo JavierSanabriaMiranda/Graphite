@@ -73,6 +73,7 @@ vi.mock('../../src/components/util/EmojiPicker', () => ({ default: ({ children }
 vi.mock('../../src/components/util/NoteIcon', () => ({ default: () => <div data-testid="note-icon" /> }));
 vi.mock('../../src/components/util/ChangeThemeButton', () => ({ default: () => <div data-testid="change-theme" /> }));
 vi.mock('../../src/components/views/ConflictResolver', () => ({ default: () => <div data-testid="conflict-resolver" /> }));
+vi.mock('../../src/components/InfoBar', () => ({ default: () => <div data-testid="info-bar" /> }));
 
 describe('TiptapEditor Component', () => {
     let mockEditor;
@@ -106,6 +107,7 @@ describe('TiptapEditor Component', () => {
             isSyncing: false,
             syncStatus: 'ONLINE',
             refreshCurrentNote: vi.fn(),
+            allNotes: [],
         });
 
         mockEditor = {
@@ -274,6 +276,7 @@ describe('TiptapEditor Component', () => {
             isSyncing: false,
             syncStatus: 'ONLINE',
             refreshCurrentNote: vi.fn(),
+            allNotes: [],
         });
 
         render(<TiptapEditor />);
@@ -315,6 +318,7 @@ describe('TiptapEditor Component', () => {
             isSyncing: false,
             syncStatus: 'CONFLICT', // Set to conflict status
             refreshCurrentNote: vi.fn(),
+            allNotes: [],
         });
 
         render(<TiptapEditor />);
@@ -338,6 +342,7 @@ describe('TiptapEditor Component', () => {
             isSyncing: false,
             syncStatus: 'CONFLICT',
             refreshCurrentNote: mockRefreshCurrentNote,
+            allNotes: [],
         });
 
         render(<TiptapEditor />);
@@ -371,6 +376,7 @@ describe('TiptapEditor Component', () => {
             isSyncing: false,
             syncStatus: 'OFFLINE_EMPTY',
             refreshCurrentNote: vi.fn(),
+            allNotes: [],
         });
 
         render(<TiptapEditor />);
@@ -399,6 +405,7 @@ describe('TiptapEditor Component', () => {
             isSyncing: false,
             syncStatus: 'ONLINE',
             refreshCurrentNote: vi.fn(),
+            allNotes: [],
         });
 
         render(<TiptapEditor />);
