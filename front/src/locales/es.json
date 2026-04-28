@@ -182,7 +182,11 @@
         "pages": "Páginas",
         "new_note": "Nueva página",
         "loading": "Cargando...",
-        "workspace": "Espacio de Trabajo"
+        "workspace": "Espacio de Trabajo",
+        "context_menu": {
+            "delete_page": "Borrar página",
+            "add_subpage": "Añadir subpágina"
+        }
     },
     "note_link": {
         "broken_link": "Nota no encontrada"

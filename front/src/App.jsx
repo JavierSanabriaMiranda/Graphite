@@ -66,29 +66,25 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
         ${isMobile ? 'pb-16' : ''}
       `}>
         <SettingsProvider>
-          <ToastProvider>
-            {activeTab === 'editor' && <TiptapEditor />}
-            {activeTab === 'search' && (isMobile ? (
-              <div className="p-8">Sección de Búsqueda</div>
+          {activeTab === 'editor' && <TiptapEditor />}
+          {activeTab === 'search' && (isMobile ? (
+            <div className="p-8">Sección de Búsqueda</div>
+          ) : (
+            <TiptapEditor />
+          ))}
+          {activeTab === 'browse' && (
+            isMobile ? (
+              <MobileBrowseView />
             ) : (
               <TiptapEditor />
-            ))}
-            {activeTab === 'browse' && (
-              isMobile ? (
-                <MobileBrowseView />
-              ) : (
-                <TiptapEditor />
-              )
-            )}
-          </ToastProvider>
+            )
+          )}
         </SettingsProvider>
       </main>
 
       {/* Global components (Portals) */}
       <SettingsProvider>
-        <ToastProvider>
-          <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
-        </ToastProvider>
+        <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
       </SettingsProvider>
       {isMobile && (
         <BottomNavbar activeTab={activeTab} onTabChange={handleTabChange} />
@@ -147,17 +143,19 @@ const DataWrapper = ({ isMobile }) => {
 
   return (
     <SettingsProvider>
-      <UIProvider>
-        <WorkspaceProvider>
-          <NoteProvider>
-            <AppContent
-              isMobile={isMobile}
-              isSidebarPinned={isSidebarPinned}
-              setIsSidebarPinned={setIsSidebarPinned}
-            />
-          </NoteProvider>
-        </WorkspaceProvider>
-      </UIProvider>
+      <ToastProvider>
+        <UIProvider>
+          <WorkspaceProvider>
+            <NoteProvider>
+              <AppContent
+                isMobile={isMobile}
+                isSidebarPinned={isSidebarPinned}
+                setIsSidebarPinned={setIsSidebarPinned}
+              />
+            </NoteProvider>
+          </WorkspaceProvider>
+        </UIProvider>
+      </ToastProvider>
     </SettingsProvider>
   );
 };

@@ -32,7 +32,7 @@ const NoteLinkComponent = ({ node, extension }) => {
     <NodeViewWrapper as="span" className="inline-block">
       <button
         onClick={handleClick}
-        className="cursor-pointer inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors border-b border-primary/30"
+        className="cursor-pointer inline-flex items-center gap-3 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors border-b border-primary/30"
       >
         <span className="w-4 h-4 flex items-center justify-center shrink-0">
           {linkedNote.icon ? (
@@ -42,7 +42,7 @@ const NoteLinkComponent = ({ node, extension }) => {
           )}
         </span>
         
-        <span className="truncate max-w-50">
+        <span className="text-wrap wrap-break-word">
             {linkedNote.title || 'Untitled Note'}
         </span>
       </button>
