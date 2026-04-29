@@ -11,13 +11,17 @@ import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
 import SettingsModal from './components/configuration_menu/SettingsModal';
+
 import MobileBrowseView from './components/navigation/MobileBrowseView';
+import MobileSearchView from './components/views/MobileSearchView';
+
 import { useAuth, AuthProvider } from './components/context/AuthContext';
 import AuthenticationView from './components/views/AuthenticationView';
 import { useOnlineSync } from './hooks/useOnlineSync';
 import CreateWorkspaceView from './components/views/CreateWorkspaceView';
 import { Loader2 } from 'lucide-react';
 import { SettingsProvider } from './components/context/SettingsContext';
+import SearchOverlay from './components/note_search/SearchOverlay';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
@@ -68,7 +72,7 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
         <SettingsProvider>
           {activeTab === 'editor' && <TiptapEditor />}
           {activeTab === 'search' && (isMobile ? (
-            <div className="p-8">Sección de Búsqueda</div>
+            <MobileSearchView />
           ) : (
             <TiptapEditor />
           ))}
@@ -89,6 +93,7 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
       {isMobile && (
         <BottomNavbar activeTab={activeTab} onTabChange={handleTabChange} />
       )}
+      {!isMobile && <SearchOverlay />}
     </div>
   );
 };

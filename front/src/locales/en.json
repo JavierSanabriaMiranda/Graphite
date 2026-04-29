@@ -189,7 +189,13 @@
             "add_subpage": "Add subpage",
             "subpage_created": "Subpage created successfully",
             "error_creating_subpage": "Error while creating subpage"
-        }
+        },
+        "search": "Search"
+    },
+    "search": {
+        "placeholder": "Search all your pages...",
+        "no_results": "No results found",
+        "title": "Search pages"
     },
     "note_link": {
         "broken_link": "Note not found"

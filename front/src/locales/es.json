@@ -188,7 +188,13 @@
             "add_subpage": "Añadir subpágina",
             "subpage_created": "Subpágina creada correctamente",
             "error_creating_subpage": "Error al crear la subpágina"
-        }
+        },
+        "search": "Buscar"
+    },
+    "search": {
+        "placeholder": "Buscar en todas tus páginas...",
+        "no_results": "No se han encontrado resultados",
+        "title": "Buscar páginas"
     },
     "note_link": {
         "broken_link": "Nota no encontrada"
