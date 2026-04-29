@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import SlashMenuList from '../../../src/components/slash_commands/SlashMenuList';
+import SlashMenuList from '../../../src/components/suggestions/SlashMenuList';
 
 // Mock for scrollIntoView
 window.HTMLElement.prototype.scrollIntoView = vi.fn();

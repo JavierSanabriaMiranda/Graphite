@@ -143,13 +143,13 @@ vi.mock('../../src/components/extensions/BlockMoving', () => ({
     BlockMoving: {},
 }));
 
-vi.mock('../../src/components/slash_commands/Commands', () => ({
+vi.mock('../../src/components/suggestions/Commands', () => ({
     Commands: {
         configure: vi.fn(() => ({})),
     },
 }));
 
-vi.mock('../../src/components/slash_commands/suggestions', () => ({
+vi.mock('../../src/components/suggestions/suggestions', () => ({
     default: vi.fn(() => ({})),
 }));
 

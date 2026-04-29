@@ -36,10 +36,10 @@ import { ToggleTitle } from '../components/advanced_blocks/toggle_block/ToggleTi
 import { ToggleContent } from '../components/advanced_blocks/toggle_block/ToggleContent'
 import { PageBlock } from '../components/advanced_blocks/PageBlockComponent';
 import { BlockMoving } from '../components/extensions/BlockMoving';
-import { Commands } from '../components/slash_commands/Commands';
-import getSuggestionConfig from '../components/slash_commands/suggestions';
-import { NoteLink } from '../components/slash_commands/NoteLinkExtension';
-import { getNoteLinkSuggestionConfig } from '../components/slash_commands/noteLinksSuggestions';
+import { Commands } from '../components/suggestions/Commands';
+import getSuggestionConfig from '../components/suggestions/suggestions';
+import { NoteLink } from '../components/suggestions/NoteLinkExtension';
+import { getNoteLinkSuggestionConfig } from '../components/suggestions/noteLinksSuggestions';
 
 /**
  * Custom hook used to config a Tiptap editor

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import getSuggestionConfig from '../../../src/components/slash_commands/suggestions';
+import getSuggestionConfig from '../../../src/components/suggestions/suggestions';
 
 describe('Slash Commands Suggestions Logic', () => {
     // Extended translation mock to cover various block types

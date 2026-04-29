@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { NoteLink } from '../../../src/components/slash_commands/NoteLinkExtension';
+import { NoteLink } from '../../../src/components/suggestions/NoteLinkExtension';
 
 describe('NoteLink Tiptap Extension', () => {
 

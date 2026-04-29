@@ -1,6 +1,6 @@
 import { ReactRenderer } from '@tiptap/react';
 import { computePosition, flip, shift, offset } from '@floating-ui/dom';
-import SlashMenuList from '../slash_commands/SlashMenuList';
+import SlashMenuList from '../suggestions/SlashMenuList';
 
 const normalizeText = (text) => {
     return text

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getNoteLinkSuggestionConfig } from '../../../src/components/slash_commands/noteLinksSuggestions';
+import { getNoteLinkSuggestionConfig } from '../../../src/components/suggestions/noteLinksSuggestions';
 import { ReactRenderer } from '@tiptap/react';
 import { computePosition } from '@floating-ui/dom';
 
@@ -21,7 +21,7 @@ vi.mock('@floating-ui/dom', () => ({
 }));
 
 // Mock of the component that ReactRenderer would receive
-vi.mock('../slash_commands/SlashMenuList', () => ({
+vi.mock('../suggestions/SlashMenuList', () => ({
     default: () => null,
 }));
 
