@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import AccountSettings from '../../../../src/components/configuration_menu/settings_views/AccountSettings';
+import AccountSettings from '../../../../src/components/settings/settings_views/AccountSettings';
 
 describe('AccountSettings Component', () => {
     const mockT = (key) => key;

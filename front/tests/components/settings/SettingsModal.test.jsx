@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import SettingsModal from '../../../src/components/configuration_menu/SettingsModal';
+import SettingsModal from '../../../src/components/settings/SettingsModal';
 import { useAuth } from '../../../src/components/context/AuthContext';
 import { useIsMobile } from '../../../src/hooks/useIsMobile';
 
@@ -17,7 +17,7 @@ vi.mock('react-i18next', () => ({
 }));
 
 // Mocking Sub-components to isolate the Modal test
-vi.mock('../../../src/components/configuration_menu/SettingsView', () => ({
+vi.mock('../../../src/components/settings/SettingsView', () => ({
     // Mocking SettingsView as a simple container with a close button
     default: ({ onClose, t }) => (
         <div data-testid="settings-view">

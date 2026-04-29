@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import SettingsView from '../../../src/components/configuration_menu/SettingsView';
+import SettingsView from '../../../src/components/settings/SettingsView';
 import { useAuth } from '../../../src/components/context/AuthContext';
 import { noteService } from '../../../src/services/db/noteService';
 import { workspaceService } from '../../../src/services/db/workspaceService';
@@ -25,16 +25,16 @@ vi.mock('../../../src/services/db/workspaceService', () => ({
 }));
 
 // Mocking sub-views to keep the test focused on SettingsView logic
-vi.mock('../../../src/components/configuration_menu/settings_views/GeneralSettings', () => ({
+vi.mock('../../../src/components/settings/settings_views/GeneralSettings', () => ({
     default: () => <div data-testid="general-settings">General View</div>,
 }));
-vi.mock('../../../src/components/configuration_menu/settings_views/WorkspaceSettings', () => ({
+vi.mock('../../../src/components/settings/settings_views/WorkspaceSettings', () => ({
     default: () => <div data-testid="workspace-settings">Workspace View</div>,
 }));
-vi.mock('../../../src/components/configuration_menu/settings_views/AccountSettings', () => ({
+vi.mock('../../../src/components/settings/settings_views/AccountSettings', () => ({
     default: () => <div data-testid="account-settings">Account View</div>,
 }));
-vi.mock('../../../src/components/configuration_menu/settings_views/LogoutModal', () => ({
+vi.mock('../../../src/components/settings/settings_views/LogoutModal', () => ({
     default: ({ isOpen, isUnsynced }) => isOpen ? (
         <div data-testid="logout-modal">
             Logout Modal {isUnsynced ? '(Unsynced Data Detected)' : '(Clean)'}

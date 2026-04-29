@@ -37,7 +37,7 @@ vi.mock('../../../src/components/navigation/WorkspaceSelector', () => ({
     default: () => <div data-testid="workspace-selector">My Workspace</div>,
 }));
 
-vi.mock('../../../src/components/configuration_menu/SettingsModal', () => ({
+vi.mock('../../../src/components/settings/SettingsModal', () => ({
     default: ({ isOpen, onClose }) => isOpen ? (
         <div data-testid="settings-modal">
             <button onClick={onClose}>Close Settings</button>

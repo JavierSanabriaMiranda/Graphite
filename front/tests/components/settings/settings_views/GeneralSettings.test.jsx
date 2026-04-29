@@ -16,16 +16,16 @@ vi.mock('../../../../../src/components/context/ToastContext', () => ({
 }));
 
 
-vi.mock('../../../../src/components/configuration_menu/LanguageSelector', () => ({
+vi.mock('../../../../src/components/settings/LanguageSelector', () => ({
     default: () => <div>Language Selector Component</div>,
 }));
 
-vi.mock('../../../../src/components/configuration_menu/DefaultFontSelector', () => ({
+vi.mock('../../../../src/components/settings/DefaultFontSelector', () => ({
     default: () => <div>Font Selector Component</div>,
 }));
 
 // --- 3. IMPORT DEL COMPONENTE ---
-import GeneralSettings from '../../../../src/components/configuration_menu/settings_views/GeneralSettings';
+import GeneralSettings from '../../../../src/components/settings/settings_views/GeneralSettings';
 
 describe('GeneralSettings Component', () => {
     const mockT = (key) => key;

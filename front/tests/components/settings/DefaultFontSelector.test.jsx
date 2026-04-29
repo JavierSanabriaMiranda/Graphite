@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import DefaultFontSelector from '../../../src/components/configuration_menu/DefaultFontSelector';
+import DefaultFontSelector from '../../../src/components/settings/DefaultFontSelector';
 import { useSettings } from '../../../src/components/context/SettingsContext';
 import { useToast } from '../../../src/components/context/ToastContext';
 

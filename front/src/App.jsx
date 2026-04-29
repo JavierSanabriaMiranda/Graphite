@@ -10,7 +10,7 @@ import { WorkspaceProvider, useWorkspace } from './components/context/WorkspaceC
 import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
-import SettingsModal from './components/configuration_menu/SettingsModal';
+import SettingsModal from './components/settings/SettingsModal';
 
 import MobileBrowseView from './components/navigation/MobileBrowseView';
 import MobileSearchView from './components/views/MobileSearchView';

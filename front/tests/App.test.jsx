@@ -78,7 +78,7 @@ vi.mock('../src/components/views/CreateWorkspaceView', () => ({
     default: () => <div data-testid="create-workspace">CreateWorkspaceView</div>,
 }));
 
-vi.mock('../src/components/configuration_menu/SettingsModal', () => ({
+vi.mock('../src/components/settings/SettingsModal', () => ({
     default: () => <div data-testid="settings-modal">SettingsModal</div>,
 }));
 

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import DeleteWorkspaceModal from '../../../../src/components/configuration_menu/settings_views/DeleteWorkspaceModal';
+import DeleteWorkspaceModal from '../../../../src/components/settings/settings_views/DeleteWorkspaceModal';
 
 // --- 1. MOCKS ---
 

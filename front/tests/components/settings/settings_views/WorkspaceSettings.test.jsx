@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import WorkspaceSettings from '../../../../src/components/configuration_menu/settings_views/WorkspaceSettings';
+import WorkspaceSettings from '../../../../src/components/settings/settings_views/WorkspaceSettings';
 import { useWorkspace } from '../../../../src/components/context/WorkspaceContext';
 import { useToast } from '../../../../src/components/context/ToastContext';
 
