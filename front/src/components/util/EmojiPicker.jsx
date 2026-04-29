@@ -29,6 +29,14 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     const [activeCategory, setActiveCategory] = useState('people');
 
     useEffect(() => {
+        if (!isOpen) {
+            setSearch('');
+            setView('emojis');
+            setActiveCategory('people');
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
         if (externalReference) setIsOpen(true);
     }, [externalReference]);
 
@@ -67,8 +75,14 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     /**
      * Normalizes text to ignore accents
      */
-    const normalizeText = (text) =>
-        text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
+    const normalizeText = (text) => {
+        const str = String(text || "");
+        return str
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    };
 
     // Searching logic
     const filteredItems = useMemo(() => {
@@ -76,11 +90,22 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
         if (!s) return null;
 
         const dataSource = view === 'emojis' ? EMOJI_DATA : ICON_DATA;
-        const translationPrefix = view === 'emojis' ? 'emojis.names' : 'icons.names';
+
+        // Get all the translations for the current view (emojis or icons)
+        const ns = view === 'emojis' ? 'emojis' : 'icons';
+        const allTranslations = t('names', { ns, returnObjects: true });
+
+        const translationsMap = typeof allTranslations === 'object' ? allTranslations : {};
 
         return dataSource.filter(item => {
-            const translatedName = t(`${translationPrefix}.${item.id}`, { defaultValue: '' });
-            return normalizeText(translatedName).includes(s) || item.id.includes(s);
+            // Check Id
+            const matchesId = normalizeText(item.id).includes(s);
+
+            // get translations for the item, if not found use empty string to avoid errors
+            const translationValue = translationsMap[item.id] || "";
+            const matchesTranslation = normalizeText(translationValue).includes(s);
+
+            return matchesId || matchesTranslation;
         }).slice(0, 36);
     }, [search, t, view]);
 

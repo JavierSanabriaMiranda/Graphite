@@ -318,13 +318,6 @@
             "objects": "Objects",
             "symbols": "Symbols",
             "flags": "Flags"
-        },
-        "names": {
-            "grinning_face": "laugh smile happy",
-            "joy": "cry laugh joy haha",
-            "heart_eyes": "love heart",
-            "pizza": "food pizza dinner cheese",
-            "rocket": "rocket space launch"
         }
     },
     "icons": {

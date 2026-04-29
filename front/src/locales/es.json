@@ -317,13 +317,6 @@
             "objects": "Objetos",
             "symbols": "Símbolos",
             "flags": "Banderas"
-        },
-        "names": {
-            "grinning_face": "risa sonrisa feliz",
-            "joy": "llorar risa alegría jaja",
-            "heart_eyes": "amor corazon enamorado",
-            "pizza": "comida pizza cena queso",
-            "rocket": "cohete espacio despegar"
         }
     },
     "icons": {
