@@ -82,6 +82,14 @@ vi.mock('../src/components/settings/SettingsModal', () => ({
     default: () => <div data-testid="settings-modal">SettingsModal</div>,
 }));
 
+vi.mock('../src/components/note_search/SearchOverlay', () => ({
+    default: () => <div data-testid="search-overlay">SearchOverlay</div>,
+}));
+
+vi.mock('../src/components/views/MobileSearchView', () => ({
+    default: () => <div data-testid="mobile-search-view">MobileSearchView - Sección de Búsqueda</div>,
+}));
+
 import { useAuth } from '../src/components/context/AuthContext';
 import { useWorkspace } from '../src/components/context/WorkspaceContext';
 import { useUI } from '../src/components/context/UIContext';

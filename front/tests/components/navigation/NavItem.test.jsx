@@ -30,6 +30,20 @@ vi.mock('../../../src/components/util/NoteIcon', () => ({
     default: ({ iconChar }) => <span data-testid="note-icon">{iconChar}</span>,
 }));
 
+vi.mock('../../../src/components/context/ToastContext', () => ({
+    useToast: () => ({
+        showToast: vi.fn(),
+    }),
+}));
+
+vi.mock('../../../src/components/context_menu/NavContextMenu', () => ({
+    default: () => <div data-testid="nav-context-menu">NavContextMenu</div>,
+}));
+
+vi.mock('../../../src/components/options_menu/DeleteConfirmModal', () => ({
+    default: () => <div data-testid="delete-modal">DeleteConfirmModal</div>,
+}));
+
 describe('NavItem Component', () => {
     const mockNote = {
         note_id: 'note-1',

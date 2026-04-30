@@ -46,6 +46,7 @@ vi.mock('../../src/hooks/useIsMobile', () => ({
 vi.mock('../../src/services/db/noteService', () => ({
     noteService: {
         update: vi.fn(),
+        getSubnotes: vi.fn().mockResolvedValue([]),
     },
 }));
 
