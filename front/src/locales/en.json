@@ -66,7 +66,13 @@
                 "purple": "Purple"
             },
             "highlight_color": "Highlight color",
-            "alignment": "Alignment",
+            "alignment": {
+                "alignment": "Alignment",
+                "left": "Left",
+                "center": "Center",
+                "right": "Right",
+                "justify": "Justified"
+            },
             "bulleted_list": {
                 "bulleted_list": "Bulleted List",
                 "dots": "Dots",

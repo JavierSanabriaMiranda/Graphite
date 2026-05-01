@@ -1,14 +1,9 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TextTypeSelector from '../../../src/components/menu_bar/TextTypeSelector';
-import { useNote } from '../../../src/components/context/NoteContext';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
-}));
-
-vi.mock('../../../src/components/context/NoteContext', () => ({
-    useNote: vi.fn(),
 }));
 
 vi.mock('../../../src/components/util/SearchablePicker', () => ({
@@ -41,20 +36,12 @@ describe('TextTypeSelector Component', () => {
             toggleBlockquote: vi.fn().mockReturnThis(),
             toggleCallout: vi.fn().mockReturnThis(),
             toggleCodeBlock: vi.fn().mockReturnThis(),
-            insertPageBlock: vi.fn().mockReturnThis(),
             run: vi.fn().mockReturnThis(),
         };
 
         mockEditor = {
             chain: vi.fn(() => mockChain),
         };
-
-        // Setup Note Context Mock
-        mockNoteContext = {
-            selectNote: vi.fn(),
-            createSubnote: vi.fn(),
-        };
-        useNote.mockReturnValue(mockNoteContext);
     });
 
     it('should render the correct label based on state', () => {
@@ -101,35 +88,5 @@ describe('TextTypeSelector Component', () => {
         fireEvent.click(screen.getByText('editor.toolbar.block_type.callout'));
 
         expect(mockChain.toggleCallout).toHaveBeenCalled();
-    });
-
-    it('should handle "page" creation and insertion correctly', async () => {
-        const newNote = { note_id: 'new-123', title: 'New Subnote' };
-        mockNoteContext.createSubnote.mockResolvedValue(newNote);
-
-        render(<TextTypeSelector editor={mockEditor} state={{ currentTextType: 'p' }} />);
-
-        // Selecting "page" involves async logic
-        await act(async () => {
-            fireEvent.click(screen.getByText('editor.toolbar.block_type.page'));
-        });
-
-        expect(mockNoteContext.createSubnote).toHaveBeenCalled();
-        expect(mockChain.insertPageBlock).toHaveBeenCalledWith('new-123');
-        expect(mockNoteContext.selectNote).toHaveBeenCalledWith(newNote);
-        expect(mockChain.run).toHaveBeenCalled();
-    });
-
-    it('should not insert page block if createSubnote fails or returns null', async () => {
-        mockNoteContext.createSubnote.mockResolvedValue(null);
-
-        render(<TextTypeSelector editor={mockEditor} state={{ currentTextType: 'p' }} />);
-
-        await act(async () => {
-            fireEvent.click(screen.getByText('editor.toolbar.block_type.page'));
-        });
-
-        expect(mockChain.insertPageBlock).not.toHaveBeenCalled();
-        expect(mockNoteContext.selectNote).not.toHaveBeenCalled();
     });
 });

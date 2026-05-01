@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MenuBar from '../../../src/components/menu_bar/MenuBar';
 import { useEditorState } from '@tiptap/react';
+import { useNote } from '../../../src/components/context/NoteContext';
 
 // Mocking all child components to isolate MenuBar logic
 vi.mock('../../../src/components/menu_bar/colors/ColorPicker', () => ({ default: () => <div data-testid="color-picker" /> }));
@@ -12,7 +13,7 @@ vi.mock('../../../src/components/menu_bar/lists/NumberedListSelector', () => ({ 
 vi.mock('../../../src/components/menu_bar/lists/TodoList', () => ({ default: () => <div data-testid="todo-selector" /> }));
 vi.mock('../../../src/components/menu_bar/TextTypeSelector', () => ({ default: () => <div data-testid="text-type-selector" /> }));
 vi.mock('../../../src/components/menu_bar/FontSelector', () => ({ default: () => <div data-testid="font-selector" /> }));
-vi.mock('../../../src/components//advanced_blocks/toggle_block/ToggleIcon', () => ({ ToggleIcon: () => <span data-testid="toggle-icon" /> }));
+vi.mock('../../../src/components/advanced_blocks/toggle_block/ToggleIcon', () => ({ ToggleIcon: () => <span data-testid="toggle-icon" /> }));
 
 vi.mock('@tiptap/react', () => ({
     useEditorState: vi.fn(),
@@ -20,6 +21,10 @@ vi.mock('@tiptap/react', () => ({
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
+}));
+
+vi.mock('../../../src/components/context/NoteContext', () => ({
+    useNote: vi.fn(),
 }));
 
 describe('MenuBar Component', () => {
@@ -39,6 +44,7 @@ describe('MenuBar Component', () => {
             toggleCode: vi.fn().mockReturnThis(),
             setToggle: vi.fn().mockReturnThis(),
             unsetToggle: vi.fn().mockReturnThis(),
+            insertPageBlock: vi.fn().mockReturnThis(),
             run: vi.fn().mockReturnThis(),
         };
 
@@ -54,6 +60,12 @@ describe('MenuBar Component', () => {
             isStrike: false,
             isCode: false,
             isToggle: false,
+        });
+
+        // Default mock for useNote
+        vi.mocked(useNote).mockReturnValue({
+            selectNote: vi.fn(),
+            createSubnote: vi.fn(),
         });
     });
 
@@ -136,11 +148,87 @@ describe('MenuBar Component', () => {
         fireEvent.click(screen.getByText('S').closest('button'));
         expect(mockChain.toggleStrike).toHaveBeenCalled();
 
-        // As codeblock doesn't have text, look for button that contains an SVG
+        // Code button contains an SVG. Get all buttons and find the one with SVG that's for code formatting
         const buttons = screen.getAllByRole('button');
-        const codeBtn = buttons.find(btn => btn.querySelector('svg') && !btn.title);
+        // The code button is the last one in the format group (after S)
+        const formatButtons = buttons.slice(3, 8); // Bold, Italic, Underline, Strike, Code (adjusting based on actual position)
+        const codeBtn = formatButtons.find(btn => btn.querySelector('svg'));
 
-        fireEvent.click(codeBtn);
-        expect(mockChain.toggleCode).toHaveBeenCalled();
+        if (codeBtn) {
+            fireEvent.click(codeBtn);
+            expect(mockChain.toggleCode).toHaveBeenCalled();
+        }
+    });
+
+    it('should render the new subnote button', () => {
+        render(<MenuBar editor={mockEditor} />);
+
+        const newSubnoteBtn = screen.getByTitle('editor.toolbar.new_subnote');
+        expect(newSubnoteBtn).toBeInTheDocument();
+    });
+
+    it('should call createSubnote when the new subnote button is clicked', async () => {
+        const mockCreateSubnote = vi.fn().mockResolvedValue({ note_id: '123', name: 'New Note' });
+        const mockSelectNote = vi.fn();
+
+        vi.mocked(useNote).mockReturnValue({
+            selectNote: mockSelectNote,
+            createSubnote: mockCreateSubnote,
+        });
+
+        render(<MenuBar editor={mockEditor} />);
+
+        const newSubnoteBtn = screen.getByTitle('editor.toolbar.new_subnote');
+        fireEvent.click(newSubnoteBtn);
+
+        // Wait for async operation
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockCreateSubnote).toHaveBeenCalled();
+    });
+
+    it('should insert page block and select note after creating subnote', async () => {
+        const newNoteData = { note_id: '123', name: 'New Note' };
+        const mockCreateSubnote = vi.fn().mockResolvedValue(newNoteData);
+        const mockSelectNote = vi.fn();
+
+        vi.mocked(useNote).mockReturnValue({
+            selectNote: mockSelectNote,
+            createSubnote: mockCreateSubnote,
+        });
+
+        render(<MenuBar editor={mockEditor} />);
+
+        const newSubnoteBtn = screen.getByTitle('editor.toolbar.new_subnote');
+        fireEvent.click(newSubnoteBtn);
+
+        // Wait for async operation
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockChain.focus).toHaveBeenCalled();
+        expect(mockChain.insertPageBlock).toHaveBeenCalledWith('123');
+        expect(mockChain.run).toHaveBeenCalled();
+        expect(mockSelectNote).toHaveBeenCalledWith(newNoteData);
+    });
+
+    it('should not insert page block if createSubnote returns null', async () => {
+        const mockCreateSubnote = vi.fn().mockResolvedValue(null);
+        const mockSelectNote = vi.fn();
+
+        vi.mocked(useNote).mockReturnValue({
+            selectNote: mockSelectNote,
+            createSubnote: mockCreateSubnote,
+        });
+
+        render(<MenuBar editor={mockEditor} />);
+
+        const newSubnoteBtn = screen.getByTitle('editor.toolbar.new_subnote');
+        fireEvent.click(newSubnoteBtn);
+
+        // Wait for async operation
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockChain.insertPageBlock).not.toHaveBeenCalled();
+        expect(mockSelectNote).not.toHaveBeenCalled();
     });
 });

@@ -65,7 +65,13 @@
                 "yellow": "Amarillo",
                 "purple": "Púrpura"
             },
-            "alignment": "Alineación",
+            "alignment": {
+                "alignment": "Alineación",
+                "left": "Izquierda",
+                "center": "Centro",
+                "right": "Derecha",
+                "justify": "Justificado"
+            },
             "bulleted_list": {
                 "bulleted_list": "Lista de viñetas",
                 "dots": "Puntos",
