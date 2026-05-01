@@ -187,6 +187,28 @@ export const NoteProvider = ({ children }) => {
         }
     }, [workspace, t, triggerRefresh]);
 
+    /**
+     * Updates the isEditable property of a note, 
+     * which controls whether the note can be edited in the UI.
+     */
+    const setNoteEditableMode = useCallback(async (isEditable) => {
+        if (!selectedNote) return;
+
+        const editMode = isEditable ? 1 : 0;
+
+        try {
+            // Update on db
+            await noteService.update(selectedNote.note_id, { is_editable: editMode });
+            const updatedNote = await noteService.getByNoteId(selectedNote.note_id);
+
+            // Update local state to reflect the change immediately in the UI
+            setSelectedNote(updatedNote);
+
+        } catch (error) {
+            console.error("Error while updating note editable mode:", error);
+        }
+    }, [selectedNote, setSelectedNote]);
+
     // Context value object containing the state and the updater functions
     const value = {
         selectedNote,
@@ -200,7 +222,8 @@ export const NoteProvider = ({ children }) => {
         triggerRefresh,
         createRootNote,
         createSubnote,
-        allNotes
+        allNotes,
+        setNoteEditableMode
     };
 
     return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;

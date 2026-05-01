@@ -20,13 +20,19 @@ const Icon = ({ d, className = "w-4 h-4", strokeWidth = 2 }) => (
  * @param {Function} onSelect - Callback function to call when a emoji or icon is selected
  * @param {Component} childer - Children to be wrapped. It can open the EmojiPicker floating menu 
  * @param {Boolean} showIconsMenu - True if the icons menu must be shown, false otherwise
+ * @param {Boolean} disabled - True if the emoji picker should be disabled, false otherwise
  */
-const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReference = null }) => {
+const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReference = null, disabled = false }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [view, setView] = useState('emojis');
     const [activeCategory, setActiveCategory] = useState('people');
+
+    // Avoid opening the menu if there is no reference element to anchor to
+    useEffect(() => {
+        if (externalReference && !disabled) setIsOpen(true);
+    }, [externalReference, disabled]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -54,6 +60,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
         onOpenChange: (open) => {
+            if (disabled) return;
             setIsOpen(open);
             // If close and comming from externalReference,clean parent state
             if (!open && externalReference && externalReference.onClose) externalReference.onClose();
@@ -67,7 +74,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     });
 
     const { getReferenceProps, getFloatingProps } = useInteractions([
-        useClick(context),
+        useClick(context, { enabled: !disabled}),
         useDismiss(context),
         useRole(context),
     ]);
@@ -122,7 +129,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     return (
         <>
             {children && (
-                <div ref={refs.setReference} {...getReferenceProps()} className="cursor-pointer">
+                <div ref={refs.setReference} {...getReferenceProps()} className={disabled ? "" : "cursor-pointer"}>
                     {children}
                 </div>
             )}

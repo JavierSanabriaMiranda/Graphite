@@ -16,6 +16,8 @@
         "saving": "Guardando...",
         "saved": "Guardado",
         "untitled_note": "Nueva página",
+        "lock_note": "Bloquear página",
+        "unlock_note": "Desbloquear página",
         "empty_state": {
             "title": "Ninguna página seleccionada",
             "description": "No hay ninguna página seleccionada. Selecciona una o crea una nueva"

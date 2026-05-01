@@ -322,6 +322,16 @@ const TiptapEditor = () => {
   }, [activeNote?.note_id, activeNote?.content, isSyncing, syncStatus, editor, injectContentToEditor]);
 
   /**
+   * Effect to update editor editability based on
+   * note's is_editable property.
+   */
+  useEffect(() => {
+    if (editor && activeNote) {
+      editor.setEditable(activeNote.is_editable === 1);
+    }
+  }, [activeNote?.is_editable, editor]);
+
+  /**
    * Sync title when note changes
    */
   useEffect(() => {
@@ -530,7 +540,7 @@ const TiptapEditor = () => {
           <div className="group mb-4 ml-7">
             <div className="relative w-fit group/icon-wrapper">
               {/* Page icon */}
-              <EmojiPicker onSelect={handleIconSelect}>
+              <EmojiPicker onSelect={handleIconSelect} disabled={activeNote.is_editable === 0}>
                 <div className="text-7xl mb-4 hover:bg-zinc-200 dark:hover:bg-zinc-800/50 w-24 h-24 mt-4 flex items-center justify-center rounded-xl cursor-pointer transition-colors group/icon">
                   {icon ? (
                     <div className="w-20 h-20 text-text-primary">
@@ -548,7 +558,8 @@ const TiptapEditor = () => {
               {icon && (
                 <button
                   onClick={handleRemoveIcon}
-                  className="absolute -top-2 -right-2 p-1.5 text-text-primary bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 transition-all z-10"
+                  
+                  className={`${activeNote.is_editable === 0 ? 'hidden' : ''} absolute -top-2 -right-2 p-1.5 text-text-primary bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 transition-all z-10`}
                   title={t('editor.remove_icon') || "Quitar icono"}
                 >
                   <Trash2 className="cursor-pointer w-3.5 h-3.5" />
@@ -564,6 +575,7 @@ const TiptapEditor = () => {
               onChange={handleTitleChange}
               onBlur={saveTitle}
               onKeyDown={handleTitleKeyDown}
+              disabled={activeNote.is_editable === 0}
               placeholder={t('editor.no_title_placeholder')}
               className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all resize-none overflow-hidden py-2 leading-tight"
               style={{ fieldSizing: 'content' }}
