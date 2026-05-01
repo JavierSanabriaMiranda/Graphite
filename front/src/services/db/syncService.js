@@ -74,6 +74,7 @@ const syncNotes = async (notes, dek) => {
             iv: iv,
             isFavorite: note.is_favorite === 1,
             isDeleted: note.is_deleted === 1,
+            isEditable: note.is_editable === 1,
             createdAt: formattedCreatedAt,
             updatedAt: formattedUpdatedAt,
             noteVersion: note.note_version
@@ -102,7 +103,7 @@ const syncNotes = async (notes, dek) => {
 
             try {
                 // Get subnotes metadata
-                await ensureRemoteChildrenMetadata(noteId, dek);
+                await ensureRemoteChildrenMetadata(note.note_id, dek);
             } catch (e) {
                 console.warn("Error obtaining remote children metadata:", e);
             }
@@ -175,14 +176,14 @@ const pullRemoteNotesOfAWorkspace = async (remoteNotes, dek, db) => {
         const { title, icon, notePath } = JSON.parse(metaJson);
 
         await db.execute(
-            `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, updated_at, note_version, is_dirty)
-                VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
+            `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, is_editable, updated_at, note_version, is_dirty)
+                VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, 0) 
                 ON CONFLICT(note_id) DO UPDATE SET
                     title = excluded.title, icon = excluded.icon, note_path = excluded.note_path, workspace_id = excluded.workspace_id,
-                    is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
+                    is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, is_editable = excluded.is_editable, 
                     updated_at = excluded.updated_at, note_version = excluded.note_version
                 WHERE NOTES.is_dirty = 0`,
-            [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]
+            [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.isEditable ? 1 : 0, rn.updatedAt, rn.noteVersion]
         );
     }
 
@@ -419,21 +420,22 @@ export const syncService = {
                         await db.execute(
                             `INSERT INTO NOTES (
                                 note_id, workspace_id, parent_id, title, icon, 
-                                note_path, is_favorite, updated_at, note_version, 
+                                note_path, is_favorite, updated_at, note_version, is_editable,
                                 is_deleted, is_dirty
                             )
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0) 
                             ON CONFLICT(note_id) DO UPDATE SET
                                 title = excluded.title,
                                 icon = excluded.icon,
                                 parent_id = excluded.parent_id,
                                 note_version = excluded.note_version,
+                                is_editable = excluded.is_editable,
                                 is_deleted = 0,
                                 is_dirty = 0`,
                             [
                                 child.noteId, child.workspaceId, noteId, title, icon,
                                 notePath, child.isFavorite ? 1 : 0,
-                                child.updatedAt, child.noteVersion
+                                child.updatedAt, child.noteVersion, child.isEditable ? 1 : 0
                             ]
                         );
                     }

@@ -18,6 +18,7 @@
         "untitled_note": "New page",
         "lock_note": "Lock page",
         "unlock_note": "Unlock page",
+        "remove_icon": "Remove icon",
         "empty_state": {
             "title": "No page selected",
             "description": "There's no page selected. Select one or create a new one"

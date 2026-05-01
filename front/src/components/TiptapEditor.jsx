@@ -560,7 +560,7 @@ const TiptapEditor = () => {
                   onClick={handleRemoveIcon}
                   
                   className={`${activeNote.is_editable === 0 ? 'hidden' : ''} absolute -top-2 -right-2 p-1.5 text-text-primary bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 transition-all z-10`}
-                  title={t('editor.remove_icon') || "Quitar icono"}
+                  title={t('editor.remove_icon')}
                 >
                   <Trash2 className="cursor-pointer w-3.5 h-3.5" />
                 </button>

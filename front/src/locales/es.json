@@ -18,6 +18,7 @@
         "untitled_note": "Nueva página",
         "lock_note": "Bloquear página",
         "unlock_note": "Desbloquear página",
+        "remove_icon": "Quitar icono",
         "empty_state": {
             "title": "Ninguna página seleccionada",
             "description": "No hay ninguna página seleccionada. Selecciona una o crea una nueva"
