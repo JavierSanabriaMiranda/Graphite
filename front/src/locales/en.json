@@ -51,6 +51,7 @@
                 "search": "Search font...",
                 "search_not_found": "Font not found"
             },
+            "new_subnote": "New subpage",
             "bold": "Bold",
             "italic": "Italic",
             "underline": "Underline",

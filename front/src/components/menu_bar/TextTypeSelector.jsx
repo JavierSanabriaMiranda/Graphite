@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNote } from '../context/NoteContext';
 import SearchablePicker from '../util/SearchablePicker';
 
 const OPTIONS = [
@@ -27,11 +26,6 @@ const OPTIONS = [
     },
     { id: 'callout', label: 'editor.toolbar.block_type.callout', icon: 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01' },
     { id: 'code', label: 'editor.toolbar.block_type.code_block.code_block', icon: 'M16 18l6-6-6-6M8 6l-6 6 6 6' },
-    {
-        id: 'page',
-        label: 'editor.toolbar.block_type.page',
-        icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M12 18v-6 M9 15h6'
-    },
 ];
 
 // Generic icon that receives a path
@@ -59,7 +53,6 @@ const Icon = ({ d, id, className = "w-4 h-4" }) => (
  */
 const TextTypeSelector = ({ editor, state }) => {
     const { t } = useTranslation();
-    const { selectNote, createSubnote } = useNote();
 
     const pickerItems = useMemo(() => {
         return OPTIONS.map(opt => ({
@@ -81,14 +74,6 @@ const TextTypeSelector = ({ editor, state }) => {
         else if (val === 'quote') chain.toggleBlockquote().run();
         else if (val === 'callout') chain.toggleCallout().run();
         else if (val === 'code') chain.toggleCodeBlock().run();
-        else if (val === 'page') {
-            const newNote = await createSubnote();
-
-            if (newNote) {
-                chain.insertPageBlock(newNote.note_id).run();
-                selectNote(newNote);
-            }
-        }
     };
 
     const currentOption = OPTIONS.find(opt => opt.id === state.currentTextType) || OPTIONS[0];
