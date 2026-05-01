@@ -22,6 +22,7 @@ import CreateWorkspaceView from './components/views/CreateWorkspaceView';
 import { Loader2 } from 'lucide-react';
 import { SettingsProvider } from './components/context/SettingsContext';
 import SearchOverlay from './components/note_search/SearchOverlay';
+import { useSettings } from './components/context/SettingsContext';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
@@ -29,6 +30,7 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
 
   const { isSettingsOpen, closeSettings, activeTab, setActiveTab, openSettings } = useUI();
   const { isCreatingWorkspace, isLoading: wsLoading, workspaces } = useWorkspace();
+  const { setZoomIndex, ZOOM_LEVELS, DEFAULT_ZOOM_INDEX } = useSettings();
 
   const handleTabChange = (tabId) => {
     if (tabId === 'settings') {
@@ -37,6 +39,27 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
       setActiveTab(tabId);
     }
   };
+
+  // Keyboard shortcuts for zooming
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === '+' || e.key === '=') {
+          e.preventDefault();
+          setZoomIndex(prev => Math.min(prev + 1, ZOOM_LEVELS.length - 1));
+        } else if (e.key === '-') {
+          e.preventDefault();
+          setZoomIndex(prev => Math.max(prev - 1, 0));
+        } else if (e.key === '0') {
+          e.preventDefault();
+          setZoomIndex(DEFAULT_ZOOM_INDEX);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   if (wsLoading) {
     return (
