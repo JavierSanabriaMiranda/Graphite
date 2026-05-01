@@ -221,6 +221,15 @@
                 "description": "This font will be applied by default to all notes in the app, except for those texts where you have manually changed the font",
                 "search": "Search font...",
                 "restart_notice": "Font changed successfully. Changes will take effect after restarting the app."
+            },
+            "zoom": {
+                "title": "Interface Zoom",
+                "description": "Adjust the global zoom level of the interface. This will affect the size of text, icons, and other elements in the interface.",
+                "min": "Min",
+                "max": "Max",
+                "reset": "Reset Zoom",
+                "increase": "Increase Zoom",
+                "decrease": "Decrease Zoom"
             }
         },
         "account": {

@@ -220,6 +220,15 @@
                 "description": "Esta fuente se aplicará por defecto en todas las notas de la aplicación menos en aquellos textos en los que hayas modificado la fuente a mano",
                 "search": "Buscar fuente...",
                 "restart_notice": "Fuente cambiada correctamente. Los cambios se aplicarán al reiniciar la aplicación"
+            },
+            "zoom": {
+                "title": "Zoom de la interfaz",
+                "description": "Ajusta el nivel de zoom global de la interfaz. Esto afectará el tamaño de texto, iconos y otros elementos de la interfaz.",
+                "min": "Min",
+                "max": "Máx",
+                "reset": "Restablecer zoom",
+                "increase": "Aumentar zoom",
+                "decrease": "Disminuir zoom"
             }
         },
         "account": {

@@ -40,27 +40,6 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
     }
   };
 
-  // Keyboard shortcuts for zooming
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === '+' || e.key === '=') {
-          e.preventDefault();
-          setZoomIndex(prev => Math.min(prev + 1, ZOOM_LEVELS.length - 1));
-        } else if (e.key === '-') {
-          e.preventDefault();
-          setZoomIndex(prev => Math.max(prev - 1, 0));
-        } else if (e.key === '0') {
-          e.preventDefault();
-          setZoomIndex(DEFAULT_ZOOM_INDEX);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
   if (wsLoading) {
     return (
       <div className="h-screen w-full flex flex-col items-center justify-center bg-main-bg text-primary">

@@ -28,7 +28,7 @@ const LanguageSelector = () => {
                     <span>{currentLanguage.label}</span>
                 </div>
             }
-            placeholder={t('settings.language.search')}
+            placeholder={t('settings.general.language.search')}
             placement="bottom-end"
             width="w-52"
             buttonClassName= "cursor-pointer flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all min-w-35 justify-between shadow-sm"
