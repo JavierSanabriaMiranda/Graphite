@@ -15,8 +15,8 @@ const EditModeButton = ({ isEditable, onToggle }) => {
             className={`
                 group relative p-1.5 rounded-lg transition-all cursor-pointer
                 ${isEditable
-                    ? 'text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-primary'
-                    : 'text-amber-500 bg-amber-500/10 hover:bg-amber-500/20'}
+                    ? 'text-zinc-700 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-primary'
+                    : 'text-primary bg-primary/10 hover:bg-primary/20'}
             `}
             title={isEditable ? t('editor.lock_note') : t('editor.unlock_note')}
         >

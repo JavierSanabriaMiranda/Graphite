@@ -134,12 +134,13 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
                 </div>
             )}
 
-            <FloatingPortal>
-                <div
-                    ref={refs.setFloating}
-                    {...getFloatingProps()}
-                    style={{ ...floatingStyles, visibility: isOpen ? 'visible' : 'hidden' }}
-                    className="z-1000 w-90 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+            {isOpen && (
+                <FloatingPortal>
+                    <div
+                        ref={refs.setFloating}
+                        {...getFloatingProps()}
+                        style={{ ...floatingStyles }}
+                        className="z-1000 w-90 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
                 >
                     {/* Mode selector (Emojis vs Icons) */}
                     {showIconsMenu ? (<div className="flex p-1 bg-zinc-100 dark:bg-zinc-800/50 m-2 rounded-lg">
@@ -205,7 +206,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
                         </div>
                     </div>
                 </div>
-            </FloatingPortal>
+            </FloatingPortal>)}
         </>
     );
 };

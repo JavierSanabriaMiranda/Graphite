@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Moon, Sun } from 'lucide-react';
 
 /**
  * Tool to change the theme of the editor.
@@ -34,9 +35,11 @@ const ChangeThemeButton = () => {
                        transition-all duration-300 cursor-pointer
                        bg-main-bg
                        hover:bg-hover-primary-bg
-                       text-xl"
+                       text-xl
+                       text-primary
+                       dark:text-amber-500"
             title={isDark ? t('editor.toolbar.change_light_theme') : t('editor.toolbar.change_dark_theme')}>
-            {isDark ? '☀️' : '🌙'}
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </button>
     );
 }

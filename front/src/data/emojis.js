@@ -658,107 +658,107 @@ export const EMOJI_DATA = [
   {
     "id": "gift_heart",
     "char": "💝",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "sparkling_heart",
     "char": "💖",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "heartpulse",
     "char": "💗",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "heartbeat",
     "char": "💓",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "revolving_hearts",
     "char": "💞",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "two_hearts",
     "char": "💕",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "heart_decoration",
     "char": "💟",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "heavy_heart_exclamation_mark_ornament",
     "char": "❣️",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "broken_heart",
     "char": "💔",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "heart",
     "char": "❤️",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "pink_heart",
     "char": "🩷",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "orange_heart",
     "char": "🧡",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "yellow_heart",
     "char": "💛",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "green_heart",
     "char": "💚",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "blue_heart",
     "char": "💙",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "light_blue_heart",
     "char": "🩵",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "purple_heart",
     "char": "💜",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "brown_heart",
     "char": "🤎",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "black_heart",
     "char": "🖤",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "grey_heart",
     "char": "🩶",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "white_heart",
     "char": "🤍",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "kiss",
@@ -768,62 +768,42 @@ export const EMOJI_DATA = [
   {
     "id": "100",
     "char": "💯",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "anger",
     "char": "💢",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "boom",
     "char": "💥",
-    "category": "people"
-  },
-  {
-    "id": "dizzy",
-    "char": "💫",
-    "category": "people"
-  },
-  {
-    "id": "sweat_drops",
-    "char": "💦",
-    "category": "people"
-  },
-  {
-    "id": "dash",
-    "char": "💨",
-    "category": "people"
-  },
-  {
-    "id": "hole",
-    "char": "🕳️",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "speech_balloon",
     "char": "💬",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "left_speech_bubble",
     "char": "🗨️",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "right_anger_bubble",
     "char": "🗯️",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "thought_balloon",
     "char": "💭",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "zzz",
     "char": "💤",
-    "category": "people"
+    "category": "symbols"
   },
   {
     "id": "wave",
@@ -2036,6 +2016,11 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
+    "id": "family",
+    "char": "👪",
+    "category": "people"
+  },
+  {
     "id": "speaking_head_in_silhouette",
     "char": "🗣️",
     "category": "people"
@@ -2056,11 +2041,6 @@ export const EMOJI_DATA = [
     "category": "people"
   },
   {
-    "id": "family",
-    "char": "👪",
-    "category": "people"
-  },
-  {
     "id": "footprints",
     "char": "👣",
     "category": "people"
@@ -2069,31 +2049,6 @@ export const EMOJI_DATA = [
     "id": "fingerprint",
     "char": "🫆",
     "category": "people"
-  },
-  {
-    "id": "skin-tone-2",
-    "char": "🏻",
-    "category": "symbols"
-  },
-  {
-    "id": "skin-tone-3",
-    "char": "🏼",
-    "category": "symbols"
-  },
-  {
-    "id": "skin-tone-4",
-    "char": "🏽",
-    "category": "symbols"
-  },
-  {
-    "id": "skin-tone-5",
-    "char": "🏾",
-    "category": "symbols"
-  },
-  {
-    "id": "skin-tone-6",
-    "char": "🏿",
-    "category": "symbols"
   },
   {
     "id": "monkey_face",
@@ -3516,11 +3471,6 @@ export const EMOJI_DATA = [
     "category": "food"
   },
   {
-    "id": "amphora",
-    "char": "🏺",
-    "category": "food"
-  },
-  {
     "id": "earth_africa",
     "char": "🌍",
     "category": "travel"
@@ -4476,6 +4426,11 @@ export const EMOJI_DATA = [
     "category": "travel"
   },
   {
+    "id": "dizzy",
+    "char": "💫",
+    "category": "travel"
+  },
+  {
     "id": "milky_way",
     "char": "🌌",
     "category": "travel"
@@ -4538,6 +4493,11 @@ export const EMOJI_DATA = [
   {
     "id": "wind_blowing_face",
     "char": "🌬️",
+    "category": "travel"
+  },
+  {
+    "id": "dash",
+    "char": "💨",
     "category": "travel"
   },
   {
@@ -4606,8 +4566,18 @@ export const EMOJI_DATA = [
     "category": "travel"
   },
   {
+    "id": "sweat_drops",
+    "char": "💦",
+    "category": "travel"
+  },
+  {
     "id": "ocean",
     "char": "🌊",
+    "category": "travel"
+  },
+  {
+    "id": "hole",
+    "char": "🕳️",
     "category": "travel"
   },
   {
@@ -6323,6 +6293,11 @@ export const EMOJI_DATA = [
   {
     "id": "funeral_urn",
     "char": "⚱️",
+    "category": "objects"
+  },
+    {
+    "id": "amphora",
+    "char": "🏺",
     "category": "objects"
   },
   {
