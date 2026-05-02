@@ -62,6 +62,8 @@ export const SettingsProvider = ({ children }) => {
     }, [updateZoom]);
 
     const value = {
+        defaultFont,
+        updateDefaultFont,
         zoomIndex,
         setZoomIndex,
         updateZoom,
