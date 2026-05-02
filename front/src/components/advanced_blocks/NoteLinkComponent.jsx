@@ -9,12 +9,14 @@ import { t } from 'i18next'
  */
 const NoteLinkComponent = ({ node, extension }) => {
   const { noteId } = node.attrs
-  const { selectNote, allNotes } = useNote()
+  const { selectNote, allNotes, selectedNote } = useNote()
   
   const linkedNote = allNotes.find(n => n.note_id === noteId)
 
   const handleClick = () => {
-    if (linkedNote) selectNote(linkedNote)
+    if (linkedNote && linkedNote.note_id !== selectedNote.note_id) {
+      selectNote(linkedNote)
+    }
   }
 
   if (!linkedNote) {
