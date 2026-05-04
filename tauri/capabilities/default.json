@@ -12,6 +12,20 @@
     "sql:allow-load",
     "sql:allow-execute",
     "sql:allow-select",
-    "sql:allow-close"
+    "sql:allow-close",
+    "core:path:default",
+    "core:event:default",
+    "fs:allow-read",
+    "fs:allow-read-file",
+    "fs:allow-write",
+    "fs:allow-write-file",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "$appData/attachments/**"
+        }
+      ]
+    }
   ]
 }

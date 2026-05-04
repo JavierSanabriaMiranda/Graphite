@@ -24,6 +24,7 @@ import { useToast } from './context/ToastContext';
 import { useIsMobile } from '../hooks/useIsMobile'
 import { useEditorConfig } from '../hooks/useEditorConfig';
 import { useSettings } from './context/SettingsContext';
+import { useAttachment } from './context/AttachmentContext';
 
 import { SyncStatus } from '../util/SyncStatus';
 
@@ -47,11 +48,14 @@ const TiptapEditor = () => {
     createRootNote,
     createSubnote,
     selectNote,
+    selectedNote,
     isSyncing,
     syncStatus,
     refreshCurrentNote,
     allNotes
   } = useNote();
+
+  const { uploadFile } = useAttachment();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -163,7 +167,9 @@ const TiptapEditor = () => {
     createSubnote: async (parentId) => await createSubnoteRef.current(parentId),
     selectNote: (note) => selectNoteRef.current(note),
     handleKeyDownProp: handleKeyDown,
-    defaultFont: defaultFont
+    defaultFont: defaultFont,
+    noteId: selectedNote?.note_id,
+    uploadFile: uploadFile
   });
 
   const editor = useEditor(editorConfig);
@@ -537,7 +543,7 @@ const TiptapEditor = () => {
         <div className={`max-w-5xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
 
           {/* Header */}
-          <div className="group mb-4 ml-7">
+          <div className="group ml-7">
             <div className="relative w-fit group/icon-wrapper">
               {/* Page icon */}
               <EmojiPicker onSelect={handleIconSelect} disabled={activeNote.is_editable === 0}>
@@ -558,7 +564,7 @@ const TiptapEditor = () => {
               {icon && (
                 <button
                   onClick={handleRemoveIcon}
-                  
+
                   className={`${activeNote.is_editable === 0 ? 'hidden' : ''} absolute -top-2 -right-2 p-1.5 text-text-primary bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 transition-all z-10`}
                   title={t('editor.remove_icon')}
                 >

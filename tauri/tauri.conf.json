@@ -19,11 +19,11 @@
       }
     ],
     "security": {
-      "capabilities": ["default"]
+      "csp": "default-src 'self'; img-src 'self' https://asset.localhost; connect-src 'self' https:; font-src 'self'; script-src 'self' 'unsafe-inline'"
     }
   },
   "plugins": {
-    "sql": {} 
+    "sql": {}
   },
   "bundle": {
     "active": true,

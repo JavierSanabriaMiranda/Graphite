@@ -7,6 +7,7 @@ import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
 import { NoteProvider } from './components/context/NoteContext';
 import { WorkspaceProvider, useWorkspace } from './components/context/WorkspaceContext';
+import { AttachmentProvider } from './components/context/AttachmentContext';
 import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
@@ -20,9 +21,8 @@ import AuthenticationView from './components/views/AuthenticationView';
 import { useOnlineSync } from './hooks/useOnlineSync';
 import CreateWorkspaceView from './components/views/CreateWorkspaceView';
 import { Loader2 } from 'lucide-react';
-import { SettingsProvider } from './components/context/SettingsContext';
+import { SettingsProvider, useSettings } from './components/context/SettingsContext';
 import SearchOverlay from './components/note_search/SearchOverlay';
-import { useSettings } from './components/context/SettingsContext';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
@@ -154,11 +154,13 @@ const DataWrapper = ({ isMobile }) => {
         <UIProvider>
           <WorkspaceProvider>
             <NoteProvider>
-              <AppContent
-                isMobile={isMobile}
-                isSidebarPinned={isSidebarPinned}
-                setIsSidebarPinned={setIsSidebarPinned}
-              />
+              <AttachmentProvider>
+                <AppContent
+                  isMobile={isMobile}
+                  isSidebarPinned={isSidebarPinned}
+                  setIsSidebarPinned={setIsSidebarPinned}
+                />
+              </AttachmentProvider>
             </NoteProvider>
           </WorkspaceProvider>
         </UIProvider>

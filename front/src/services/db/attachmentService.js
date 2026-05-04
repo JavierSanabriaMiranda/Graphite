@@ -10,11 +10,9 @@ export const attachmentService = {
      * Registers a new attachment in the database.
      * 
      * @param {Object} data - Metadata of the file (note_id, file_name, mime_type, file_size, local_path, img_width)
-     * @returns {string} attachmentId of the new record
      */
     create: async (data) => {
         const db = await getDB();
-        const attachmentId = crypto.randomUUID();
 
         await db.execute(
             `INSERT INTO ATTACHMENTS (
@@ -22,7 +20,7 @@ export const attachmentService = {
                 file_size, img_width, local_path, is_dirty
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, 1)`,
             [
-                attachmentId,
+                data.attachment_id,
                 data.note_id,
                 data.file_name,
                 data.mime_type,
@@ -31,8 +29,6 @@ export const attachmentService = {
                 data.local_path
             ]
         );
-
-        return attachmentId;
     },
 
     /**

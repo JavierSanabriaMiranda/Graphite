@@ -31,6 +31,7 @@ import { Callout } from '../components/advanced_blocks/Callout';
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import CodeBlockComponent, { CustomCodeBlock } from '../components/advanced_blocks/CodeBlockComponent';
+import { AttachmentExtension } from '../components/advanced_blocks/FileAttachmentNode';
 import { ToggleBlock } from '../components/advanced_blocks/toggle_block/ToggleBlock';
 import { ToggleTitle } from '../components/advanced_blocks/toggle_block/ToggleTitle'
 import { ToggleContent } from '../components/advanced_blocks/toggle_block/ToggleContent'
@@ -52,6 +53,8 @@ export const useEditorConfig = ({
     allNotes,
     selectNote,
     handleKeyDownProp,
+    uploadFile,
+    noteId,
     extraProps = {},
     customClass = '',
     defaultFont = 'Inter',
@@ -172,6 +175,7 @@ export const useEditorConfig = ({
                     },
                 },
             }),
+            AttachmentExtension,
             Placeholder.configure({
                 includeChildren: true,
                 placeholder: ({ node, editor, pos }) => {
@@ -206,6 +210,59 @@ export const useEditorConfig = ({
                 ...extraProps.attributes,
             },
             handleKeyDown: handleKeyDownProp || (() => false),
+            handlePaste: (view, event) => {
+                const items = Array.from(event.clipboardData?.files || []);
+                if (items.length > 0) {
+                    event.preventDefault(); // Avoid the default paste behavior
+
+                    items.forEach(async (file) => {
+                        try {
+                            const metadata = await uploadFile(file, noteId);
+                            // Insert the attachment node at the current cursor position
+                            view.dispatch(view.state.tr.replaceSelectionWith(
+                                view.state.schema.nodes.attachment.create({
+                                    attachmentId: metadata.attachment_id,
+                                    fileName: metadata.file_name,
+                                    mimeType: metadata.mime_type,
+                                    imgWidth: metadata.img_width || 600
+                                })
+                            ));
+                        } catch (err) {
+                            console.error("Error subiendo archivo pegado:", err);
+                        }
+                    });
+                    return true;
+                }
+                return false;
+            },
+            handleDrop: (view, event, slice, moved) => {
+                if (!moved && event.dataTransfer?.files?.length > 0) {
+                    event.preventDefault();
+
+                    // Calculate the drop position in the document
+                    const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+
+                    Array.from(event.dataTransfer.files).forEach(async (file) => {
+                        try {
+                            const metadata = await uploadFile(file, noteId);
+                            const node = view.state.schema.nodes.attachment.create({
+                                attachmentId: metadata.attachment_id,
+                                fileName: metadata.file_name,
+                                mimeType: metadata.mime_type,
+                                imgWidth: metadata.img_width || 600
+                            });
+
+                            // Insert the attachment node at the drop position
+                            const transaction = view.state.tr.insert(coordinates.pos, node);
+                            view.dispatch(transaction);
+                        } catch (err) {
+                            console.error("Error subiendo archivo arrastrado:", err);
+                        }
+                    });
+                    return true;
+                }
+                return false;
+            }
         },
     }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont, allNotes]);
 }
