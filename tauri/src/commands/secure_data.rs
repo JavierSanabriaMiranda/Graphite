@@ -4,7 +4,7 @@ use rand::{Rng, thread_rng};
 use serde::{Serialize, Deserialize};
 use std::fs;
 use std::sync::OnceLock;
-use tauri::{AppHandle, Manager, Runtime};
+use tauri::{Manager};
 
 // Cache for Argon2 to execute just once
 static MASTER_KEY_CACHE: OnceLock<Vec<u8>> = OnceLock::new();

@@ -6,8 +6,6 @@ use tauri::{AppHandle, Manager, Runtime};
 pub enum FileError {
     StoragePathError,
     WriteError,
-    ReadError,
-    DeleteError,
 }
 
 impl From<std::io::Error> for FileError {
