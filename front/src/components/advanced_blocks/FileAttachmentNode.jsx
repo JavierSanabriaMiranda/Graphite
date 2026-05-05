@@ -26,6 +26,14 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
 
     const isImage = mimeType?.startsWith('image/');
 
+    /**
+     * Helper to get a clean extension for display.
+     * It tries to get it from the fileName first, as it's more reliable than the mimeType.
+     */
+    const displayExtension = (fileName || '').includes('.')
+        ? fileName.split('.').pop().toUpperCase()
+        : (mimeType?.split('/')[1] || 'FILE').toUpperCase();
+
     // Load the file URL when the component mounts
     useEffect(() => {
         const loadResource = async () => {
@@ -194,7 +202,7 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                                 </div>
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-sm font-bold text-zinc-700 dark:text-zinc-200 truncate">{fileName}</span>
-                                    <span className="text-[10px] uppercase font-black text-zinc-400 tracking-widest">{mimeType?.split('/')[1]}</span>
+                                    <span className="text-[10px] uppercase font-black text-zinc-400 tracking-widest">{displayExtension}</span>
                                 </div>
                             </div>
 
