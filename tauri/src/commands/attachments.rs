@@ -2,6 +2,9 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager, Runtime};
 use base64::Engine;
+use sha2::{Sha256, Digest};
+use std::fs::File;
+use std::io::{Read};
 
 #[derive(Debug, serde::Serialize)]
 pub enum FileError {
@@ -174,6 +177,42 @@ pub fn get_asset_url(handle: AppHandle, file_path: String) -> Result<String, Str
     
     let data_uri = format!("data:{};base64,{}", mime_type, base64_content);
     Ok(data_uri)
+}
+
+#[tauri::command]
+pub async fn calculate_attachment_checksum(path: String) -> Result<String, String> {
+    let mut file = File::open(&path).map_err(|e| e.to_string())?;
+    let mut hasher = Sha256::new();
+    let mut buffer = [0; 1024];
+
+    loop {
+        let count = file.read(&mut buffer).map_err(|e| e.to_string())?;
+        if count == 0 { break; }
+        hasher.update(&buffer[..count]);
+    }
+
+    Ok(hex::encode(hasher.finalize()))
+}
+
+#[tauri::command]
+pub async fn upload_to_azure(url: String, file_path: String, mime_type: String) -> Result<(), String> {
+    let client = reqwest::Client::new();
+    let file_content = std::fs::read(&file_path).map_err(|e| e.to_string())?;
+
+    let response = client
+        .put(url)
+        .header("x-ms-blob-type", "BlockBlob") // Required from Azure
+        .header("Content-Type", mime_type)
+        .body(file_content)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        Ok(())
+    } else {
+        Err(format!("Upload failed with status: {}", response.status()))
+    }
 }
 
 /// Helper function to determine MIME type from file extension

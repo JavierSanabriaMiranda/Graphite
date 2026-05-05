@@ -205,3 +205,35 @@ export const remoteNoteLinkService = {
         return await response.json();
     }
 };
+
+/**
+ * Service to handle file attachments with the remote server
+ */
+export const remoteAttachmentService = {
+    /**
+     * Checks if a file exists on the server (deduplication) and gets an upload URL if needed.
+     */
+    async checkAttachment(payload) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}attachments/check`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error("Attachment check failed");
+        return await response.json(); // Structure: { attachmentId, needsUpload, uploadUrl }
+    },
+
+    /**
+     * Gets a temporary SAS URL to download the file.
+     */
+    async getDownloadUrl(attachmentId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}attachments/${attachmentId}/download-url`, { headers });
+
+        if (!response.ok) throw new Error("Failed to get download URL");
+        const data = await response.json();
+        return data.url;
+    }
+};

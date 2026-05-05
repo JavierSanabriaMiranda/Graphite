@@ -1,10 +1,11 @@
 import { getDB } from '.';
-import { remoteNoteService, remoteWorkspaceService, remoteNoteLinkService } from '../api';
+import { remoteNoteService, remoteWorkspaceService, remoteNoteLinkService, remoteAttachmentService } from '../api';
 import { encryptData, decryptData } from '../../util/crypto';
 import { formatDateForServer } from '../../util/formatDate';
 import { noteService } from './noteService';
 import { SyncStatus } from '../../util/SyncStatus';
 import { noteLinkService } from './noteLinkService';
+import { invoke } from "@tauri-apps/api/core";
 
 // --- Private helper functions for sync logic ---
 
@@ -123,6 +124,47 @@ const syncNotes = async (notes, dek) => {
     }
 };
 
+/**
+ * Internal helper to sync all dirty attachments of a note or in general.
+ */
+const syncAttachments = async (attachments) => {
+    for (const attachment of attachments) {
+        try {
+            // Calculate checksum on rust
+            const checksum = await invoke('calculate_attachment_checksum', {
+                path: attachment.local_path
+            });
+
+            // Verify if file is already on server
+            const checkRequest = {
+                checksum: checksum,
+                fileName: attachment.file_name,
+                mimeType: attachment.mime_type,
+                fileSize: attachment.file_size,
+                noteId: attachment.note_id
+            };
+
+            const { attachmentId, needsUpload, uploadUrl } = await remoteAttachmentService.checkAttachment(checkRequest);
+
+            // Upload if needed with Rust
+            if (needsUpload && uploadUrl) {
+                await invoke('upload_to_azure', {
+                    url: uploadUrl,
+                    filePath: attachment.local_path,
+                    mimeType: attachment.mime_type
+                });
+            }
+
+            // Mark as clean on DB
+            await syncService.markAsClean('ATTACHMENTS', 'attachment_id', attachment.attachment_id);
+
+        } catch (e) {
+            console.error(`Failed to sync attachment ${attachment.attachment_id}:`, e);
+            // Don't mark as clean, it has to retry upload
+        }
+    }
+};
+
 const ensureRemoteChildrenMetadata = async (parentId, dek, db) => {
     const remoteChildren = await remoteNoteService.getRemoteMetadataByParent(parentId);
 
@@ -236,13 +278,16 @@ export const syncService = {
         if (!dek) return;
 
         try {
-            const { notes, workspaces } = await syncService.getPendingUploads();
+            const { notes, workspaces, attachments } = await syncService.getPendingUploads();
 
             // Sync Workspaces (Dependencies)
             await syncWorkspaces(workspaces, dek);
 
             // Sync Notes
             await syncNotes(notes, dek);
+
+            // Sync attachments
+            await syncAttachments(attachments);
 
             // Final purge of records that are already synced and marked as deleted
             await syncService.purgeSyncedDeletes();
@@ -285,7 +330,12 @@ export const syncService = {
         const db = await getDB();
         const pendingNotes = await db.select("SELECT * FROM NOTES WHERE is_dirty = 1");
         const pendingWorkspaces = await db.select("SELECT * FROM WORKSPACES WHERE is_dirty = 1");
-        return { notes: pendingNotes, workspaces: pendingWorkspaces };
+        const pendingAttachments = await db.select("SELECT * FROM ATTACHMENTS WHERE is_dirty = 1");
+        return { 
+            notes: pendingNotes, 
+            workspaces: pendingWorkspaces, 
+            attachments: pendingAttachments
+        };
     },
 
     /**

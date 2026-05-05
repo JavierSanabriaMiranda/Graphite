@@ -27,7 +27,9 @@ pub fn run() {
             commands::attachments::delete_attachment_file,
             commands::attachments::get_asset_url,
             commands::attachments::download_attachment,
-            commands::attachments::clear_all_attachments
+            commands::attachments::clear_all_attachments,
+            commands::attachments::calculate_attachment_checksum,
+            commands::attachments::upload_to_azure
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
