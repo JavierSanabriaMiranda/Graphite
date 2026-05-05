@@ -226,14 +226,20 @@ export const remoteAttachmentService = {
     },
 
     /**
-     * Gets a temporary SAS URL to download the file.
+     * Gets file metadata and a temporary SAS URL to download the file.
      */
-    async getDownloadUrl(attachmentId) {
+    async getMetadataAndDownloadUrl(attachmentId) {
         const headers = await getAuthHeader();
-        const response = await fetch(`${API_URL}attachments/${attachmentId}/download-url`, { headers });
+        const response = await fetch(`${API_URL}attachments/${attachmentId}`, {
+            method: 'GET',
+            headers: headers
+        });
 
-        if (!response.ok) throw new Error("Failed to get download URL");
-        const data = await response.json();
-        return data.url;
+        if (!response.ok) {
+            if (response.status === 404) return null;
+            throw new Error("Error al obtener información del adjunto");
+        }
+        
+        return await response.json();
     }
 };

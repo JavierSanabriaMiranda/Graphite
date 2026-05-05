@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { invoke } from "@tauri-apps/api/core";
 import { attachmentService } from '../../services/db/attachmentService';
+import { syncService } from '../../services/db/syncService';
 import { useTranslation } from 'react-i18next';
 import { useToast } from './ToastContext';
 
@@ -164,6 +165,19 @@ export const AttachmentProvider = ({ children }) => {
         }
     }, [getFileUrl]);
 
+    const downloadFile = useCallback(async (fileId) => {
+        try {
+            await syncService.downloadAttachment(fileId)
+            // At this moment the file will have its metadata on db
+            const file = await attachmentService.getById(fileId)
+            return await getFileUrl(file.local_path)
+        } catch (error) {
+            console.error("Download error:", error);
+            throw error;
+        }
+
+    }, [getFileUrl]);
+
     /**
      * Helper to get the original width of an image file, used for proper rendering in the frontend.
      */
@@ -276,7 +290,8 @@ export const AttachmentProvider = ({ children }) => {
         deleteAttachment,
         syncNoteAttachments,
         deleteAllAttachmentsForNote,
-        isUploading
+        downloadFile,
+        isUploading,
     };
 
     return (

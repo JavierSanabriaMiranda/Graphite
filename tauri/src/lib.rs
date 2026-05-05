@@ -29,7 +29,9 @@ pub fn run() {
             commands::attachments::download_attachment,
             commands::attachments::clear_all_attachments,
             commands::attachments::calculate_attachment_checksum,
-            commands::attachments::upload_to_azure
+            commands::attachments::upload_to_azure,
+            commands::attachments::download_from_azure,
+            commands::attachments::get_app_attachments_dir
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

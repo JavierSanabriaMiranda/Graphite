@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import { Node, mergeAttributes } from '@tiptap/core';
-import { File, FileText, Loader2, GripVertical, Download } from 'lucide-react';
+import { File, Loader2 } from 'lucide-react';
 import { useAttachment } from '../../context/AttachmentContext';
 import { attachmentService } from '../../../services/db/attachmentService';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { invoke } from "@tauri-apps/api/core";
 import { useToast } from '../../context/ToastContext';
-import ImageLightbox from '../../util/ImageLightbox';
 
 import ImageAttachmentView from './ImageAttachmentView';
 import GenericFileAttachmentView from './GenericFileAttachmentView';
@@ -16,7 +15,7 @@ import GenericFileAttachmentView from './GenericFileAttachmentView';
 const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) => {
     const { t } = useTranslation();
     const { attachmentId, fileName, mimeType, imgWidth } = node.attrs;
-    const { getFileUrl } = useAttachment();
+    const { getFileUrl, downloadFile } = useAttachment();
     const { showToast } = useToast();
     const isMobile = useIsMobile();
 
@@ -49,9 +48,9 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                     const assetUrl = await getFileUrl(metadata.local_path);
                     setUrl(assetUrl);
                 } else {
-                    // TODO: Implement a fallback mechanism to fetch the file from cloud storage
-                    console.warn(`No local_path found for attachment ${attachmentId}`);
-                    setError(true);
+                    setLoading(true);
+                    const assetUrl = await downloadFile(attachmentId);
+                    setUrl(assetUrl);
                 }
             } catch (e) {
                 console.error(`Error loading attachment ${attachmentId}:`, e);

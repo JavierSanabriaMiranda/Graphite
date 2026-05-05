@@ -5,6 +5,7 @@ use base64::Engine;
 use sha2::{Sha256, Digest};
 use std::fs::File;
 use std::io::{Read};
+use std::path::Path;
 
 #[derive(Debug, serde::Serialize)]
 pub enum FileError {
@@ -213,6 +214,40 @@ pub async fn upload_to_azure(url: String, file_path: String, mime_type: String) 
     } else {
         Err(format!("Upload failed with status: {}", response.status()))
     }
+}
+
+#[tauri::command]
+pub async fn download_from_azure(url: String, local_path: String) -> Result<(), String> {
+    let client = reqwest::Client::new();
+    
+    // GET to SAS URL
+    let response = client
+        .get(url)
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+
+    if !response.status().is_success() {
+        return Err(format!("Error on server: {}", response.status()));
+    }
+
+    // Make sure the directory exists
+    if let Some(parent) = Path::new(&local_path).parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+
+    // Write the file
+    let bytes = response.bytes().await.map_err(|e| e.to_string())?;
+    fs::write(&local_path, bytes).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_app_attachments_dir<R: Runtime>(app: AppHandle<R>) -> Result<String, String> {
+    get_attachments_dir(&app)
+        .map(|path| path.to_string_lossy().to_string())
+        .map_err(|e| format!("Error while obtaining attachment file dir: {:?}", e))
 }
 
 /// Helper function to determine MIME type from file extension

@@ -137,14 +137,16 @@ const syncAttachments = async (attachments) => {
 
             // Verify if file is already on server
             const checkRequest = {
+                attachmentId: attachment.attachment_id,
                 checksum: checksum,
                 fileName: attachment.file_name,
                 mimeType: attachment.mime_type,
                 fileSize: attachment.file_size,
-                noteId: attachment.note_id
+                noteId: attachment.note_id,
+                imgWidth: attachment.imgWidth
             };
 
-            const { attachmentId, needsUpload, uploadUrl } = await remoteAttachmentService.checkAttachment(checkRequest);
+            const { needsUpload, uploadUrl } = await remoteAttachmentService.checkAttachment(checkRequest);
 
             // Upload if needed with Rust
             if (needsUpload && uploadUrl) {
@@ -331,11 +333,62 @@ export const syncService = {
         const pendingNotes = await db.select("SELECT * FROM NOTES WHERE is_dirty = 1");
         const pendingWorkspaces = await db.select("SELECT * FROM WORKSPACES WHERE is_dirty = 1");
         const pendingAttachments = await db.select("SELECT * FROM ATTACHMENTS WHERE is_dirty = 1");
-        return { 
-            notes: pendingNotes, 
-            workspaces: pendingWorkspaces, 
+        return {
+            notes: pendingNotes,
+            workspaces: pendingWorkspaces,
             attachments: pendingAttachments
         };
+    },
+
+    // Añadir al objeto syncService dentro de syncService.js
+
+    /**
+     * Downloads a file from remote, stores it on disc with Rust and registers it on db.
+     */
+    downloadAttachment: async (attachmentId) => {
+        try {
+            // Get metadata and download URL
+            const remoteInfo = await remoteAttachmentService.getMetadataAndDownloadUrl(attachmentId);
+            if (!remoteInfo) throw new Error("Attachment not found on remote server");
+
+            // Get the folder to store the file
+            const attachmentsDir = await invoke('get_app_attachments_dir');
+
+            // Build local path
+            const extension = remoteInfo.fileName.split('.').pop();
+            const localPath = `${attachmentsDir}/${attachmentId}.${extension}`;
+
+            // Call rust to download the file from remote
+            await invoke('download_from_azure', {
+                url: remoteInfo.downloadUrl,
+                localPath: localPath
+            });
+
+            // Register on db
+            const db = await getDB();
+            await db.execute(
+                `INSERT INTO ATTACHMENTS (
+                attachment_id, note_id, file_name, mime_type, file_size, local_path, img_width, is_dirty
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+            ON CONFLICT(attachment_id) DO UPDATE SET
+                local_path = excluded.local_path,
+                is_dirty = 0`,
+                [
+                    attachmentId,
+                    remoteInfo.noteId,
+                    remoteInfo.fileName,
+                    remoteInfo.mimeType,
+                    remoteInfo.fileSize,
+                    localPath,
+                    remoteInfo.imgWidth
+                ]
+            );
+
+            return localPath;
+        } catch (error) {
+            console.error(`syncService: Error downloading attachment ${attachmentId}:`, error);
+            throw error;
+        }
     },
 
     /**
