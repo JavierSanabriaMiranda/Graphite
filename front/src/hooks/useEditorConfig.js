@@ -31,7 +31,7 @@ import { Callout } from '../components/advanced_blocks/Callout';
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import CodeBlockComponent, { CustomCodeBlock } from '../components/advanced_blocks/CodeBlockComponent';
-import { AttachmentExtension } from '../components/advanced_blocks/FileAttachmentNode';
+import { AttachmentExtension } from '../components/advanced_blocks/file_attachment/FileAttachmentNode';
 import { ToggleBlock } from '../components/advanced_blocks/toggle_block/ToggleBlock';
 import { ToggleTitle } from '../components/advanced_blocks/toggle_block/ToggleTitle'
 import { ToggleContent } from '../components/advanced_blocks/toggle_block/ToggleContent'

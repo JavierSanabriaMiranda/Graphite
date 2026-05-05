@@ -2,13 +2,16 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import { Node, mergeAttributes } from '@tiptap/core';
 import { File, FileText, Loader2, GripVertical, Download } from 'lucide-react';
-import { useAttachment } from '../context/AttachmentContext';
-import { attachmentService } from '../../services/db/attachmentService';
+import { useAttachment } from '../../context/AttachmentContext';
+import { attachmentService } from '../../../services/db/attachmentService';
 import { useTranslation } from 'react-i18next';
-import { useIsMobile } from '../../hooks/useIsMobile';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 import { invoke } from "@tauri-apps/api/core";
-import { useToast } from '../context/ToastContext';
-import ImageLightbox from '../util/ImageLightbox';
+import { useToast } from '../../context/ToastContext';
+import ImageLightbox from '../../util/ImageLightbox';
+
+import ImageAttachmentView from './ImageAttachmentView';
+import GenericFileAttachmentView from './GenericFileAttachmentView';
 
 const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) => {
     const { t } = useTranslation();
@@ -23,7 +26,7 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
     const [isResizing, setIsResizing] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-    
+
 
     const containerRef = useRef(null);
 
@@ -146,87 +149,21 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
 
             {!loading && !error && (
                 <>
-                    {isImage ? (
-                        <div
-                            ref={containerRef}
-                            role='button'
-                            tabIndex={0}
-                            className="relative inline-block leading-none max-w-full cursor-zoom-in"
-                            style={{ width: imgWidth ? `${imgWidth}px` : 'auto', maxWidth: '100%' }}
-                            onDoubleClick={() => setIsLightboxOpen(true)}
-                        >
-                            <img
-                                src={url}
-                                alt={fileName}
-                                className={`block w-full h-auto transition-opacity ${isResizing ? 'opacity-80' : 'opacity-100'}`}
+                    {!loading && !error && (
+                        isImage ? (
+                            <ImageAttachmentView
+                                url={url} fileName={fileName} imgWidth={imgWidth} isMobile={isMobile}
+                                selected={selected} isDownloading={isDownloading} isResizing={isResizing}
+                                isLightboxOpen={isLightboxOpen} setIsLightboxOpen={setIsLightboxOpen}
+                                handleDownload={handleDownload} startResizing={startResizing}
+                                updateAttributes={updateAttributes}
                             />
-
-                            <ImageLightbox 
-                                url={url} 
-                                fileName={fileName} 
-                                isOpen={isLightboxOpen} 
-                                onClose={() => setIsLightboxOpen(false)} 
+                        ) : (
+                            <GenericFileAttachmentView
+                                fileName={fileName} mimeType={mimeType} displayExtension={displayExtension}
+                                isDownloading={isDownloading} handleDownload={handleDownload} isMobile={isMobile}
                             />
-
-                            {/* Action buttons overlay */}
-                            <div className={`absolute top-2 right-2 flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0'}  group-hover:opacity-100 transition-opacity z-10`}>
-                                <button
-                                    onClick={handleDownload}
-                                    disabled={isDownloading}
-                                    className="cursor-pointer p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-md backdrop-blur-sm shadow-lg disabled:opacity-50"
-                                    title={t('attachment.download')}
-                                >
-                                    {isDownloading ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
-                                </button>
-                            </div>
-
-                            {/* Resize handler (only desktop) */}
-                            <button
-                                onMouseDown={startResizing}
-                                className={`absolute top-0 -right-1 h-full w-3 cursor-ew-resize hover:bg-primary/20 transition-colors hidden md:flex items-center justify-center group/resizer z-20 ${isResizing ? 'bg-primary/10' : ''}`}
-                            >
-                                <div className="hidden group-hover/resizer:block bg-primary p-0.5 rounded text-white shadow-lg">
-                                    <GripVertical size={10} />
-                                </div>
-                            </button>
-
-                            {/* Slider for mobile */}
-                            {selected && isMobile && (
-                                <div className="flex items-center gap-2 bg-white/90 dark:bg-zinc-900/90 p-2 rounded-full absolute -bottom-10 left-1/2 -translate-x-1/2 border border-zinc-200 shadow-xl z-20">
-                                    <input
-                                        type="range" min="100" max="1200"
-                                        value={imgWidth || 600}
-                                        onChange={(e) => updateAttributes({ imgWidth: parseInt(e.target.value) })}
-                                        className="w-24 h-1 accent-primary"
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        /* Render for non-image files */
-                        <div className="flex items-center justify-between p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow-md transition-all group/card">
-                            <div className="flex items-center gap-3 overflow-hidden">
-                                <div className="p-2.5 bg-primary/10 text-primary rounded-lg">
-                                    {mimeType?.includes('pdf') ? <FileText size={20} /> : <File size={20} />}
-                                </div>
-                                <div className="flex flex-col min-w-0">
-                                    <span className="text-sm font-bold text-zinc-700 dark:text-zinc-200 truncate">{fileName}</span>
-                                    <span className="text-[10px] uppercase font-black text-zinc-400 tracking-widest">{displayExtension}</span>
-                                </div>
-                            </div>
-
-                            {/* Action buttons for generic files */}
-                            <div className={`flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0'} group-hover/card:opacity-100 transition-opacity`}>
-                                <button
-                                    onClick={handleDownload}
-                                    disabled={isDownloading}
-                                    className="cursor-pointer p-2 text-zinc-500 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors disabled:opacity-50"
-                                    title={t('attachment.download')}
-                                >
-                                    {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
-                                </button>
-                            </div>
-                        </div>
+                        )
                     )}
                 </>
             )}
