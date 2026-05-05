@@ -210,6 +210,10 @@ export const useEditorConfig = ({
                 ...extraProps.attributes,
             },
             handleKeyDown: handleKeyDownProp || (() => false),
+            handleDragOver: (view, event) => {
+                event.preventDefault();
+                return true;
+            },
             handlePaste: (view, event) => {
                 const items = Array.from(event.clipboardData?.files || []);
                 if (items.length > 0) {
@@ -218,6 +222,7 @@ export const useEditorConfig = ({
                     items.forEach(async (file) => {
                         try {
                             const metadata = await uploadFile(file, noteId);
+                            if (!metadata) return;
                             // Insert the attachment node at the current cursor position
                             view.dispatch(view.state.tr.replaceSelectionWith(
                                 view.state.schema.nodes.attachment.create({
@@ -241,10 +246,12 @@ export const useEditorConfig = ({
 
                     // Calculate the drop position in the document
                     const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                    if (!coordinates) return false;
 
                     Array.from(event.dataTransfer.files).forEach(async (file) => {
                         try {
                             const metadata = await uploadFile(file, noteId);
+                            if (!metadata) return;
                             const node = view.state.schema.nodes.attachment.create({
                                 attachmentId: metadata.attachment_id,
                                 fileName: metadata.file_name,
@@ -264,5 +271,5 @@ export const useEditorConfig = ({
                 return false;
             }
         },
-    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont, allNotes]);
+    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont, allNotes, uploadFile, noteId]);
 }
