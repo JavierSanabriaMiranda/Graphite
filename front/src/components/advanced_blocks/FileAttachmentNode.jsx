@@ -73,7 +73,8 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                 isImage: isImage
             });
 
-            showToast(t('attachment.download_success'), 'success');
+            showToast(t('attachment.download_success'), 'success', t('attachment.download_success_message', { fileName }));
+
         } catch (err) {
             console.error("Download failed:", err);
             showToast(t('attachment.download_failed'), 'error');

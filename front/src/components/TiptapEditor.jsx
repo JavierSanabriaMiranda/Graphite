@@ -416,7 +416,7 @@ const TiptapEditor = () => {
 
       if (result?.error === 'COLLISION') {
         // Feedback to user
-        showToast(t('editor.errors.name_collision'), "error");
+        showToast(t('editor.errors.name_collision_title'), "error", t('editor.errors.name_collision_message'));
 
         // Revert title change
         setTitle(activeNote.title);

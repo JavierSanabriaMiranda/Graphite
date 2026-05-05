@@ -131,7 +131,8 @@
             }
         },
         "errors": {
-            "name_collision": "There's already a page with this title on this location"
+            "name_collision_title": "Page name conflict",
+            "name_collision_message": "There's already a page with this title on this location"
         },
         "slash": {
             "normal_text": {
@@ -209,6 +210,14 @@
     },
     "note_link": {
         "broken_link": "Note not found"
+    },
+    "attachment": {
+        "loading": "Loading file...",
+        "not_available": "File not available",
+        "download": "Download file",
+        "download_success": "File downloaded",
+        "download_success_message": "The file \"{{fileName}}\" has been downloaded successfully",
+        "download_failed": "Error while downloading the file"
     },
     "settings": {
         "title": "Settings",

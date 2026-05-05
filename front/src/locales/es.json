@@ -130,7 +130,8 @@
             }
         },
         "errors": {
-            "name_collision": "Ya hay una página con este nombre en esta ubicación"
+            "name_collision_title": "Nombre de página en conflicto",
+            "name_collision_message": "Ya hay una página con este nombre en esta ubicación"
         },
         "slash": {
             "normal_text": {
@@ -208,6 +209,14 @@
     },
     "note_link": {
         "broken_link": "Nota no encontrada"
+    },
+    "attachment": {
+        "loading": "Cargando archivo...",
+        "not_available": "Archivo no disponible",
+        "download": "Descargar archivo",
+        "download_success": "Archivo descargado",
+        "download_success_message": "El archivo \"{{fileName}}\" se ha descargado correctamente",
+        "download_failed": "Error al descargar el archivo"
     },
     "settings": {
         "title": "Ajustes",
