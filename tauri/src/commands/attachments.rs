@@ -186,6 +186,7 @@ fn get_mime_type(path: &PathBuf) -> String {
         Some("svg") => "image/svg+xml".to_string(),
         Some("pdf") => "application/pdf".to_string(),
         Some("txt") => "text/plain".to_string(),
+        Some("drawio") => "application/vnd.jgraph.drawio".to_string(),
         _ => "application/octet-stream".to_string(),
     }
 }

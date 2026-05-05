@@ -216,7 +216,11 @@
         "download": "Descargar archivo",
         "download_success": "Archivo descargado",
         "download_success_message": "El archivo \"{{fileName}}\" se ha descargado correctamente",
-        "download_failed": "Error al descargar el archivo"
+        "download_failed": "Error al descargar el archivo",
+        "error_too_large": "Archivo demasiado grande",
+        "error_too_large_message": "El archivo \"{{fileName}}\" excede el límite de tamaño permitido de 5MB",
+        "error_invalid_type": "Tipo de archivo no permitido",
+        "error_invalid_type_message": "El archivo \"{{fileName}}\" tiene un tipo no permitido"
     },
     "settings": {
         "title": "Ajustes",

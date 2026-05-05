@@ -1,11 +1,77 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { invoke } from "@tauri-apps/api/core";
 import { attachmentService } from '../../services/db/attachmentService';
+import { useTranslation } from 'react-i18next';
+import { useToast } from './ToastContext';
 
 const AttachmentContext = createContext();
 
 export const AttachmentProvider = ({ children }) => {
+    const { t } = useTranslation();
+    const { showToast } = useToast();
     const [isUploading, setIsUploading] = useState(false);
+
+    // Constants for restrictions
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    const ALLOWED_TYPES = new Set([
+        // --- Images ---
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/svg+xml',
+        'image/x-icon',
+        'image/avif',
+
+        // --- Documents & Text ---
+        'application/pdf',
+        'text/plain',
+        'text/markdown', // .md files
+        'application/rtf', // Rich Text Format
+
+        // Microsoft Word
+        'application/msword', // .doc
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+
+        // Microsoft Excel
+        'application/vnd.ms-excel', // .xls
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+
+        // Microsoft PowerPoint
+        'application/vnd.ms-powerpoint', // .ppt
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+
+        // --- Audio ---
+        'audio/mpeg', // .mp3
+        'audio/wav',  // .wav
+        'audio/ogg',  // .ogg
+        'audio/webm', // .webm audio
+
+        // --- Video ---
+        'video/mp4',  // .mp4
+        'video/webm', // .webm video
+        'video/quicktime', // .mov
+
+        // --- Archives (Typical but use with caution) ---
+        'application/zip',
+        'application/x-zip-compressed',
+
+        // --- Diagramas ---
+        'application/vnd.jgraph.drawio', // Official Draw.io files
+        'application/xml',               // Some draw.io exports use generic XML
+    ]);
+
+    /**
+     * Extension to MIME type mapper for cases where the browser fails to detect it.
+     */
+    const MIME_EXTENSION_MAP = {
+        'drawio': 'application/vnd.jgraph.drawio',
+        'md': 'text/markdown',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'svg': 'image/svg+xml',
+    };
 
     /**
      * Generates a URL for the file to be used in the frontend, given its local path on disk.
@@ -31,6 +97,33 @@ export const AttachmentProvider = ({ children }) => {
      * Process a file (JS File), saves it locally via Rust, and registers metadata in SQLite.
      */
     const uploadFile = useCallback(async (file, noteId) => {
+        // Validate file size
+        if (file.size > MAX_FILE_SIZE) {
+            showToast(
+                t('attachment.error_too_large'),
+                'error',
+                t('attachment.error_too_large_message', { fileName: file.name }),
+            );
+            return null;
+        }
+        const extension = file.name.split('.').pop().toLowerCase();
+
+        /**
+         * Fallback logic: If file.type is empty, we try to infer it from the extension.
+         * This is crucial for formats like .drawio which are often unrecognized by the WebView.
+         */
+        const resolvedMimeType = file.type || MIME_EXTENSION_MAP[extension] || 'application/octet-stream';
+
+        // Validate file type
+        if (!ALLOWED_TYPES.has(resolvedMimeType)) {
+            showToast(
+                t('attachment.error_invalid_type'),
+                'error',
+                t('attachment.error_invalid_type_message', { fileName: file.name })
+            );
+            return null;
+        }
+
         setIsUploading(true);
         try {
             const attachmentId = crypto.randomUUID();
@@ -52,10 +145,10 @@ export const AttachmentProvider = ({ children }) => {
                 attachment_id: attachmentId,
                 note_id: noteId,
                 file_name: file.name,
-                mime_type: file.type,
+                mime_type: resolvedMimeType,
                 file_size: file.size,
                 local_path: localPath,
-                img_width: file.type.startsWith('image/') ? await getImageWidth(file) : null
+                img_width: resolvedMimeType.startsWith('image/') ? await getImageWidth(file) : null
             };
 
             await attachmentService.create(metadata);
