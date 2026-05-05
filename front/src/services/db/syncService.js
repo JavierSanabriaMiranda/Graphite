@@ -143,7 +143,7 @@ const syncAttachmentsUploads = async (attachments) => {
                 mimeType: attachment.mime_type,
                 fileSize: attachment.file_size,
                 noteId: attachment.note_id,
-                imgWidth: attachment.imgWidth
+                imgWidth: attachment.img_width
             };
 
             const { needsUpload, uploadUrl } = await remoteAttachmentService.checkAttachment(checkRequest);

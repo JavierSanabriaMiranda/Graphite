@@ -104,23 +104,33 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
 
         const startX = e.clientX;
         const startWidth = imgWidth || containerRef.current?.offsetWidth || 600;
+        let currentWidth = startWidth;
 
         const onMouseMove = (mouseMoveEvent) => {
-            // Get new width with cursor movement
             const currentX = mouseMoveEvent.clientX;
-            const newWidth = Math.max(300, Math.min(1200, startWidth + (currentX - startX)));
+            // Get new width with cursor movement
+            currentWidth = Math.max(300, Math.min(1200, startWidth + (currentX - startX)));
 
-            updateAttributes({ imgWidth: newWidth });
+            // Update visual
+            updateAttributes({ imgWidth: currentWidth });
         };
 
-        const onMouseUp = () => {
+        const onMouseUp = async () => {
             setIsResizing(false);
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
 
-            // Persist on db at release
-            const finalWidth = containerRef.current?.offsetWidth;
-            attachmentService.update(attachmentId, { img_width: finalWidth });
+            try {
+                // Persistimos usando el valor capturado en el closure
+                // Es vital marcar is_dirty: 1 para que el syncService lo detecte
+                await attachmentService.update(attachmentId, {
+                    img_width: currentWidth
+                });
+
+                console.debug(`Ancho de imagen ${attachmentId} persistido: ${currentWidth}px`);
+            } catch (error) {
+                console.error("Error al guardar el nuevo ancho de la imagen:", error);
+            }
         };
 
         document.addEventListener('mousemove', onMouseMove);
