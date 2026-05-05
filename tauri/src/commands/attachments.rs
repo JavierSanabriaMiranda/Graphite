@@ -74,6 +74,58 @@ pub async fn delete_attachment_file<R: Runtime>(
     Ok(())
 }
 
+/// Copies an attachment from the app's internal storage to the user's system Downloads folder
+#[tauri::command]
+pub async fn download_attachment<R: Runtime>(
+    app: AppHandle<R>,
+    source_path: String,
+    file_name: String,
+) -> Result<(), String> {
+    let source = PathBuf::from(&source_path);
+
+    // Security check: Ensure we are only copying from our allowed directory
+    let attachments_dir = get_attachments_dir(&app).map_err(|e| format!("{:?}", e))?;
+    if !source.starts_with(attachments_dir) {
+        return Err("Unauthorized path".to_string());
+    }
+
+    if !source.exists() {
+        return Err("Source file does not exist".to_string());
+    }
+
+    // Get the user's system Downloads directory
+    let download_dir = app
+        .path()
+        .download_dir()
+        .map_err(|_| "Could not find Downloads directory".to_string())?;
+
+    // Initial destination path
+    let mut destination = download_dir.join(&file_name);
+
+    // Logic to handle duplicate filenames by appending a counter (e.g., "filename (1).ext")
+    if destination.exists() {
+        let path_obj = PathBuf::from(&file_name);
+        let stem = path_obj.file_stem().and_then(|s| s.to_str()).unwrap_or("file");
+        let extension = path_obj.extension().and_then(|s| s.to_str()).unwrap_or("");
+        
+        let mut counter = 1;
+        while destination.exists() {
+            let new_filename = if extension.is_empty() {
+                format!("{} ({})", stem, counter)
+            } else {
+                format!("{} ({}).{}", stem, counter, extension)
+            };
+            destination = download_dir.join(new_filename);
+            counter += 1;
+        }
+    }
+
+    // Copy the file from internal storage to the unique Downloads path
+    fs::copy(&source, &destination).map_err(|e| format!("Failed to copy file: {}", e))?;
+
+    Ok(())
+}
+
 /// Converts a file path to a valid asset URL that can be used in the webview
 /// For files on disk accessible via the asset protocol, we need to properly handle the path
 #[tauri::command]

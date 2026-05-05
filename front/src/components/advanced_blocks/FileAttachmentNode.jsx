@@ -6,17 +6,21 @@ import { useAttachment } from '../context/AttachmentContext';
 import { attachmentService } from '../../services/db/attachmentService';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { invoke } from "@tauri-apps/api/core";
+import { useToast } from '../context/ToastContext';
 
 const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) => {
     const { t } = useTranslation();
     const { attachmentId, fileName, mimeType, imgWidth } = node.attrs;
     const { getFileUrl } = useAttachment();
+    const { showToast } = useToast();
     const isMobile = useIsMobile();
 
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const containerRef = useRef(null);
 
@@ -44,6 +48,39 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
         };
         loadResource();
     }, [attachmentId, getFileUrl]);
+
+    /**
+     * Handles the file download process by invoking a Rust command.
+     * It uses the local path from the database to copy the file to the user's downloads folder.
+     */
+    const handleDownload = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isDownloading) return;
+
+        setIsDownloading(true);
+        try {
+            const metadata = await attachmentService.getById(attachmentId);
+            if (!metadata || !metadata.local_path) {
+                throw new Error("Source path not found");
+            }
+
+            // Invoke Rust command to handle native file copying to Downloads/Gallery
+            await invoke('download_attachment', {
+                sourcePath: metadata.local_path,
+                fileName: fileName,
+                isImage: isImage
+            });
+
+            showToast(t('attachment.download_success'), 'success');
+        } catch (err) {
+            console.error("Download failed:", err);
+            showToast(t('attachment.download_failed'), 'error');
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     // Function to handle image resizing
     const startResizing = useCallback((e) => {
@@ -114,12 +151,14 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                             />
 
                             {/* Action buttons overlay */}
-                            <div className={`absolute top-2 right-2 flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0' }  group-hover:opacity-100 transition-opacity z-10`}>
+                            <div className={`absolute top-2 right-2 flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0'}  group-hover:opacity-100 transition-opacity z-10`}>
                                 <button
-                                    onClick={() => window.open(url)}
-                                    className="p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-md backdrop-blur-sm shadow-lg"
+                                    onClick={handleDownload}
+                                    disabled={isDownloading}
+                                    className="cursor-pointer p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-md backdrop-blur-sm shadow-lg disabled:opacity-50"
+                                    title={t('attachment.download')}
                                 >
-                                    <Download size={14} />
+                                    {isDownloading ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
                                 </button>
                             </div>
 
@@ -156,6 +195,18 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                                     <span className="text-sm font-bold text-zinc-700 dark:text-zinc-200 truncate">{fileName}</span>
                                     <span className="text-[10px] uppercase font-black text-zinc-400 tracking-widest">{mimeType?.split('/')[1]}</span>
                                 </div>
+                            </div>
+
+                            {/* Action buttons for generic files */}
+                            <div className={`flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0'} group-hover/card:opacity-100 transition-opacity`}>
+                                <button
+                                    onClick={handleDownload}
+                                    disabled={isDownloading}
+                                    className="cursor-pointer p-2 text-zinc-500 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors disabled:opacity-50"
+                                    title={t('attachment.download')}
+                                >
+                                    {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
+                                </button>
                             </div>
                         </div>
                     )}
