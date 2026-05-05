@@ -38,14 +38,14 @@ export const AttachmentProvider = ({ children }) => {
             const arrayBuffer = await file.arrayBuffer();
             const bytes = Array.from(new Uint8Array(arrayBuffer));
 
-            // 1. Rust guarda y devuelve la ruta absoluta
+            // Rust command to save the file on disk and return the local path
             const localPath = await invoke('save_attachment', {
                 id: attachmentId,
                 extension: extension,
                 data: bytes
             });
 
-            // 2. Generamos la URL compatible con el WebView
+            // Generate the asset URL for frontend use
             const assetUrl = await getFileUrl(localPath);
 
             const metadata = {
@@ -84,22 +84,80 @@ export const AttachmentProvider = ({ children }) => {
     };
 
     /**
-     * Deletes the attachment from the DB and the disk
+     * Deletes an attachment from both the database and the disk
+     * @param {string} attachmentId - The ID of the attachment to delete
+     * @returns {Promise<boolean>} - True if deletion was successful, false otherwise
      */
     const deleteAttachment = useCallback(async (attachmentId) => {
-        const attachment = await attachmentService.getById(attachmentId);
-        if (attachment) {
-            // Delete file from disk via Rust
-            await invoke('delete_attachment_file', { filePath: attachment.local_path });
-            // Logical delete in SQLite
+        try {
+            // Retrieve attachment metadata from database
+            const attachment = await attachmentService.getById(attachmentId);
+
+            if (!attachment) {
+                console.warn(`Attachment ${attachmentId} not found in database`);
+                return false;
+            }
+
+            // Delete file from disk via Rust command
+            try {
+                await invoke('delete_attachment_file', { filePath: attachment.local_path });
+            } catch (diskError) {
+                console.error(`Failed to delete file from disk: ${attachment.local_path}`, diskError);
+                // Continue with DB deletion even if file deletion fails
+            }
+
+            // Delete metadata from SQLite database
             await attachmentService.delete(attachmentId);
+
+            return true;
+        } catch (error) {
+            console.error(`Error deleting attachment ${attachmentId}:`, error);
+            return false;
         }
     }, []);
+
+
+    const syncNoteAttachments = useCallback(async (noteId, currentContent) => {
+        if (!noteId || !currentContent) return;
+
+        try {
+            // Get all attachment IDs currently referenced in the note's content
+            const currentIdsInNote = new Set();
+            const regex = /"attachmentId":"([a-f0-9-]{36})"/g;
+            let match;
+
+            const contentString = typeof currentContent === 'string'
+                ? currentContent
+                : JSON.stringify(currentContent);
+
+            while ((match = regex.exec(contentString)) !== null) {
+                currentIdsInNote.add(match[1]);
+            }
+
+            // Get all attachments currently stored in the database for this note
+            const dbAttachments = await attachmentService.getByNoteId(noteId);
+
+            // Get the list of attachments that are in the database but not in the current note content (orphans)
+            const orphans = dbAttachments.filter(
+                att => !currentIdsInNote.has(att.attachment_id)
+            );
+
+            if (orphans.length > 0) {
+                // Physical and logical deletion of orphan attachments
+                for (const orphan of orphans) {
+                    await deleteAttachment(orphan.attachment_id);
+                }
+            }
+        } catch (error) {
+            console.error("Error while syncing note attachments:", error);
+        }
+    }, [deleteAttachment]);
 
     const value = {
         uploadFile,
         getFileUrl,
         deleteAttachment,
+        syncNoteAttachments,
         isUploading
     };
 

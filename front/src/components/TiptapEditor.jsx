@@ -55,7 +55,7 @@ const TiptapEditor = () => {
     allNotes
   } = useNote();
 
-  const { uploadFile } = useAttachment();
+  const { uploadFile, deleteAttachment, syncNoteAttachments } = useAttachment();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -169,7 +169,8 @@ const TiptapEditor = () => {
     handleKeyDownProp: handleKeyDown,
     defaultFont: defaultFont,
     noteId: selectedNote?.note_id,
-    uploadFile: uploadFile
+    uploadFile: uploadFile,
+    deleteAttachment: deleteAttachment
   });
 
   const editor = useEditor(editorConfig);
@@ -365,6 +366,7 @@ const TiptapEditor = () => {
         clearTimeout(saveTimeoutRef.current);
         const currentContent = editor?.getJSON();
         if (currentContent) {
+          syncNoteAttachments(noteIdAtEffectTime, currentContent);
           saveContentToDB(currentContent, noteIdAtEffectTime);
         }
       } else {

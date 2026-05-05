@@ -6,11 +6,11 @@ import { useAttachment } from '../context/AttachmentContext';
 import { attachmentService } from '../../services/db/attachmentService';
 import { useTranslation } from 'react-i18next';
 
-const FileAttachmentNode = ({ node, updateAttributes, selected }) => {
+const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) => {
     const { t } = useTranslation();
     const { attachmentId, fileName, mimeType, imgWidth } = node.attrs;
-    const { getFileUrl, deleteAttachment } = useAttachment();
-    
+    const { getFileUrl } = useAttachment();
+
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -50,7 +50,7 @@ const FileAttachmentNode = ({ node, updateAttributes, selected }) => {
 
     return (
         <NodeViewWrapper className={`attachment-node my-4 group relative ${selected ? 'ring-2 ring-primary rounded-lg' : ''}`}>
-            
+
             {loading && (
                 <div className="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700">
                     <Loader2 className="w-5 h-5 animate-spin text-primary" />
@@ -69,34 +69,35 @@ const FileAttachmentNode = ({ node, updateAttributes, selected }) => {
                 <>
                     {isImage ? (
                         <div className="flex flex-col items-start gap-2">
-                            <div className="relative inline-block overflow-hidden rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800">
-                                <img 
-                                    src={url} 
-                                    alt={fileName} 
+                            <div className="relative inline-block overflow-hidden rounded-lg shadow-sm">
+                                <img
+                                    src={url}
+                                    alt={fileName}
                                     style={{ width: imgWidth ? `${imgWidth}px` : '100%', height: 'auto' }}
                                     className="block max-w-full"
                                 />
-                                
+
                                 {/* Overlay of quick actions */}
                                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button 
+                                    <button
                                         onClick={() => window.open(url)}
-                                        className="p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-md backdrop-blur-md"
+                                        className="p-1.5 bg-black/50 hover:bg-black/70 disabled:opacity-50 text-white rounded-md backdrop-blur-md transition-colors"
+                                        title="Download image"
                                     >
                                         <Download size={14} />
                                     </button>
                                 </div>
                             </div>
-                            
+
                             {/* Resize Control */}
                             {selected && (
                                 <div className="flex items-center gap-3 bg-white dark:bg-zinc-900 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-700 shadow-xl mt-2 animate-in fade-in slide-in-from-top-1">
                                     <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">{t('attachment.width')}</span>
-                                    <input 
-                                        type="range" 
-                                        min="100" 
-                                        max="1200" 
-                                        value={imgWidth || 600} 
+                                    <input
+                                        type="range"
+                                        min="100"
+                                        max="1200"
+                                        value={imgWidth || 600}
                                         onChange={handleResize}
                                         className="w-24 h-1 accent-primary cursor-pointer"
                                     />
@@ -116,13 +117,6 @@ const FileAttachmentNode = ({ node, updateAttributes, selected }) => {
                                     <span className="text-[10px] uppercase font-black text-zinc-400 tracking-widest">{mimeType?.split('/')[1]}</span>
                                 </div>
                             </div>
-                            
-                            <button 
-                                onClick={() => window.open(url)}
-                                className="ml-4 p-2 text-zinc-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
-                            >
-                                <Download size={18} />
-                            </button>
                         </div>
                     )}
                 </>
@@ -160,5 +154,42 @@ export const AttachmentExtension = Node.create({
 
     addNodeView() {
         return ReactNodeViewRenderer(FileAttachmentNode);
+    },
+
+    // Add keyboard shortcuts to handle deletion via backspace or delete key
+    addKeyboardShortcuts() {
+        return {
+            Backspace: ({ editor }) => {
+                const { selection } = editor.state;
+
+                // If node is selected but the cursor is right after an attachment, delete that attachment
+                if (selection.node && selection.node.type.name === 'attachment') {
+                    return editor.commands.deleteSelection();
+                }
+
+                // If the cursor is right after an attachment node, delete that attachment
+                if (selection.$anchor.nodeBefore?.type.name === 'attachment') {
+                    return editor.commands.deleteNode('attachment');
+                }
+
+                return false;
+            },
+
+            Delete: ({ editor }) => {
+                const { selection } = editor.state;
+
+                // If node is selected but the cursor is right after an attachment, delete that attachment
+                if (selection.node && selection.node.type.name === 'attachment') {
+                    return editor.commands.deleteSelection();
+                }
+
+                // If the cursor is right before an attachment node, delete that attachment
+                if (selection.$anchor.nodeAfter?.type.name === 'attachment') {
+                    return editor.commands.deleteNode('attachment');
+                }
+
+                return false;
+            },
+        };
     },
 });
