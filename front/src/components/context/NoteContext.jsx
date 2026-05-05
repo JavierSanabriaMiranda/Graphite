@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 import { syncService } from '../../services/db/syncService';
 import { useWorkspace } from './WorkspaceContext';
 import { SyncStatus } from '../../util/SyncStatus';
+import { useAttachment } from './AttachmentContext';
 
 /**
  * Context object to hold the global state of the active note and UI synchronization.
@@ -22,6 +23,7 @@ export const NoteProvider = ({ children }) => {
     const { dek } = useAuth();
     const { t } = useTranslation();
     const { activeWorkspace: workspace } = useWorkspace();
+    const { deleteAllAttachmentsForNote } = useAttachment();
 
     const [allNotes, setAllNotes] = useState([])
     const [selectedNote, setSelectedNote] = useState(null);
@@ -209,6 +211,27 @@ export const NoteProvider = ({ children }) => {
         }
     }, [selectedNote, setSelectedNote]);
 
+    /**
+     * Deletes a note by its ID. If the deleted note is currently selected, it clears the selection.
+     * Also triggers a refresh to update the sidebar and other components that depend on the notes list.
+     * @param {string} noteId - The ID of the note to delete
+     */
+    const deleteNote = useCallback(async (noteId) => {
+        try {
+            await deleteAllAttachmentsForNote(noteId); // Clean up attachments related to the note
+            await noteService.delete(noteId);
+
+            // If deleting current note, clear editor
+            if (selectedNoteRef.current?.note_id === noteId) {
+                setSelectedNote(null);
+            }
+
+            triggerRefresh();
+        } catch (error) {
+            console.error("Error deleting note:", error);
+        }
+    }, [setSelectedNote, triggerRefresh]);
+
     // Context value object containing the state and the updater functions
     const value = {
         selectedNote,
@@ -223,7 +246,8 @@ export const NoteProvider = ({ children }) => {
         createRootNote,
         createSubnote,
         allNotes,
-        setNoteEditableMode
+        setNoteEditableMode,
+        deleteNote
     };
 
     return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;

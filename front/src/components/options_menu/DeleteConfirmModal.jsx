@@ -17,7 +17,7 @@ import {
  */
 const DeleteConfirmModal = ({ isOpen, onClose, noteToDelete, onConfirm }) => {
     const { t } = useTranslation();
-    const { selectedNote, selectNote, triggerRefresh } = useNote();
+    const { selectedNote, selectNote, triggerRefresh, deleteNote } = useNote();
     const { showToast } = useToast();
 
     const { refs, context } = useFloating({
@@ -44,19 +44,13 @@ const DeleteConfirmModal = ({ isOpen, onClose, noteToDelete, onConfirm }) => {
         if (!selectedNote) return;
 
         try {
-            await noteService.delete(targetNote.note_id);
+            await deleteNote(targetNote.note_id);
 
             showToast(t('editor.options_menu.delete.success'), "success");
-
-            // If deleting current note, clear editor
-            if (selectedNote?.note_id === targetNote.note_id) {
-                selectNote(null);
-            }
 
             // If there's callback, execute it
             if (onConfirm) onConfirm();
 
-            triggerRefresh();
             onClose();
         } catch (error) {
             console.error("Error deleting note:", error);

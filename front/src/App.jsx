@@ -153,15 +153,15 @@ const DataWrapper = ({ isMobile }) => {
       <ToastProvider>
         <UIProvider>
           <WorkspaceProvider>
-            <NoteProvider>
-              <AttachmentProvider>
+            <AttachmentProvider>
+              <NoteProvider>
                 <AppContent
                   isMobile={isMobile}
                   isSidebarPinned={isSidebarPinned}
                   setIsSidebarPinned={setIsSidebarPinned}
                 />
-              </AttachmentProvider>
-            </NoteProvider>
+              </NoteProvider>
+            </AttachmentProvider>
           </WorkspaceProvider>
         </UIProvider>
       </ToastProvider>

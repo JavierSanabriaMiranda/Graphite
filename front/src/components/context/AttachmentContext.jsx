@@ -117,6 +117,12 @@ export const AttachmentProvider = ({ children }) => {
     }, []);
 
 
+    /**
+     * Syncs the attachments of a note by comparing the current content with the attachments stored in the database.
+      * Deletes any attachments that are no longer referenced in the note content.
+      * @param {string} noteId - The ID of the note to sync attachments for
+      * @param {string|Object} currentContent - The current content of the note (can be a string or a JSON object)
+     */
     const syncNoteAttachments = useCallback(async (noteId, currentContent) => {
         if (!noteId || !currentContent) return;
 
@@ -153,11 +159,27 @@ export const AttachmentProvider = ({ children }) => {
         }
     }, [deleteAttachment]);
 
+    /**
+     * Deletes all attachments associated with a note. 
+     * This is typically called when a note is deleted to clean up any orphaned files and database entries.
+     */
+    const deleteAllAttachmentsForNote = useCallback(async (noteId) => {
+        try {
+            const attachments = await attachmentService.getByNoteId(noteId);
+            for (const att of attachments) {
+                await deleteAttachment(att.attachment_id);
+            }
+        } catch (error) {
+            console.error(`Error deleting all attachments for note ${noteId}:`, error);
+        }
+    }, [deleteAttachment]);
+
     const value = {
         uploadFile,
         getFileUrl,
         deleteAttachment,
         syncNoteAttachments,
+        deleteAllAttachmentsForNote,
         isUploading
     };
 
