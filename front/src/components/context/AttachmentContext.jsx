@@ -41,6 +41,9 @@ export const AttachmentProvider = ({ children }) => {
         'application/vnd.ms-powerpoint', // .ppt
         'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
 
+        // HTML
+        'text/html',
+
         // --- Audio ---
         'audio/mpeg', // .mp3
         'audio/wav',  // .wav
@@ -56,7 +59,7 @@ export const AttachmentProvider = ({ children }) => {
         'application/zip',
         'application/x-zip-compressed',
 
-        // --- Diagramas ---
+        // --- Diagrams ---
         'application/vnd.jgraph.drawio', // Official Draw.io files
         'application/xml',               // Some draw.io exports use generic XML
     ]);

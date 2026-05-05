@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import { Node, mergeAttributes } from '@tiptap/core';
-import { File, FileText, ImageIcon, Loader2, GripVertical, Download } from 'lucide-react';
+import { File, FileText, Loader2, GripVertical, Download } from 'lucide-react';
 import { useAttachment } from '../context/AttachmentContext';
 import { attachmentService } from '../../services/db/attachmentService';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { invoke } from "@tauri-apps/api/core";
 import { useToast } from '../context/ToastContext';
+import ImageLightbox from '../util/ImageLightbox';
 
 const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) => {
     const { t } = useTranslation();
@@ -21,6 +22,8 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
     const [error, setError] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+    
 
     const containerRef = useRef(null);
 
@@ -124,7 +127,7 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
 
     return (
         <NodeViewWrapper
-            className={`attachment-node relative group leading-none max-w-full ${selected ? 'ring-2 ring-primary rounded-lg' : ''}`}
+            className={`attachment-node relative group leading-none max-w-full select-none outline-none ${selected ? 'ring-2 ring-primary rounded-lg' : ''}`}
             style={{ display: isImage ? 'inline-block' : 'block' }}
         >
             {loading && (
@@ -146,17 +149,23 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                     {isImage ? (
                         <div
                             ref={containerRef}
-                            className="relative inline-block leading-none max-w-full"
-                            style={{
-                                width: imgWidth ? `${imgWidth}px` : 'auto',
-                                maxWidth: '100%'
-                            }}
+                            role='button'
+                            tabIndex={0}
+                            className="relative inline-block leading-none max-w-full cursor-zoom-in"
+                            style={{ width: imgWidth ? `${imgWidth}px` : 'auto', maxWidth: '100%' }}
+                            onDoubleClick={() => setIsLightboxOpen(true)}
                         >
                             <img
                                 src={url}
                                 alt={fileName}
                                 className={`block w-full h-auto transition-opacity ${isResizing ? 'opacity-80' : 'opacity-100'}`}
-                                style={{ width: '100%' }}
+                            />
+
+                            <ImageLightbox 
+                                url={url} 
+                                fileName={fileName} 
+                                isOpen={isLightboxOpen} 
+                                onClose={() => setIsLightboxOpen(false)} 
                             />
 
                             {/* Action buttons overlay */}
