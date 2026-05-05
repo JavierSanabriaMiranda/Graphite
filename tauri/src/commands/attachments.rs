@@ -74,6 +74,23 @@ pub async fn delete_attachment_file<R: Runtime>(
     Ok(())
 }
 
+/// Deletes the entire attachments directory and all its contents.
+/// Typically called during logout or a factory reset to clear local data.
+#[tauri::command]
+pub async fn clear_all_attachments<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
+    // We get the path manually to avoid the automatic creation logic of get_attachments_dir
+    let mut path = app.path().app_data_dir().map_err(|_| "Could not find AppData directory".to_string())?;
+    path.push("attachments");
+
+    // If the directory exists, we delete it and everything inside
+    if path.exists() {
+        fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
+        println!("Cleanup: Attachments directory successfully cleared.");
+    }
+    
+    Ok(())
+}
+
 /// Copies an attachment from the app's internal storage to the user's system Downloads folder
 #[tauri::command]
 pub async fn download_attachment<R: Runtime>(

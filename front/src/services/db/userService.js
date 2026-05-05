@@ -78,6 +78,7 @@ export const userService = {
         // Vital for ON DELETE CASCADE
         await db.execute("PRAGMA foreign_keys = ON;");
         await db.execute("DELETE FROM NOTE_LINKS")
+        await db.execute("DELETE FROM ATTACHMENTS")
         await db.execute("DELETE FROM NOTES")
         await db.execute("DELETE FROM WORKSPACES")
         await db.execute("DELETE FROM USERS");
