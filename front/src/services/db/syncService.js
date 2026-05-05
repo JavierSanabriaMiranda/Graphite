@@ -127,7 +127,7 @@ const syncNotes = async (notes, dek) => {
 /**
  * Internal helper to sync all dirty attachments of a note or in general.
  */
-const syncAttachments = async (attachments) => {
+const syncAttachmentsUploads = async (attachments) => {
     for (const attachment of attachments) {
         try {
             // Calculate checksum on rust
@@ -163,6 +163,20 @@ const syncAttachments = async (attachments) => {
         } catch (e) {
             console.error(`Failed to sync attachment ${attachment.attachment_id}:`, e);
             // Don't mark as clean, it has to retry upload
+        }
+    }
+};
+
+/**
+ * Inform the remote server about the attached files to delete
+ */
+const syncAttachmentDeletes = async (attachments) => {
+    for (const attachment of attachments) {
+        try {
+            await remoteAttachmentService.deleteRemoteAttachment(attachment.attachment_id);
+            await syncService.markAsClean('ATTACHMENTS', 'attachment_id', attachment.attachment_id);
+        } catch (e) {
+            console.error(`Failed to sync deletion for attachment ${attachment.attachment_id}:`, e);
         }
     }
 };
@@ -289,7 +303,11 @@ export const syncService = {
             await syncNotes(notes, dek);
 
             // Sync attachments
-            await syncAttachments(attachments);
+            const toDelete = attachments.filter(a => a.is_deleted === 1);
+            const toUpload = attachments.filter(a => a.is_deleted === 0);
+
+            await syncAttachmentDeletes(toDelete)
+            await syncAttachmentsUploads(toUpload);
 
             // Final purge of records that are already synced and marked as deleted
             await syncService.purgeSyncedDeletes();
@@ -307,6 +325,7 @@ export const syncService = {
     purgeSyncedDeletes: async () => {
         const db = await getDB();
         try {
+            // Notes
             await db.execute(`
                 DELETE FROM NOTES 
                 WHERE is_deleted = 1 
@@ -319,7 +338,26 @@ export const syncService = {
                     SELECT note_id FROM NOTES WHERE conflict_content IS NOT NULL
                 )
             `);
+            // Workspaces
             await db.execute("DELETE FROM WORKSPACES WHERE is_deleted = 1 AND is_dirty = 0");
+
+            // Attached files
+            const syncedDeletes = await db.select(
+                "SELECT * FROM ATTACHMENTS WHERE is_deleted = 1 AND is_dirty = 0"
+            );
+
+            for (const att of syncedDeletes) {
+                // Try to remove from disc
+                if (att.local_path) {
+                    try {
+                        await invoke('delete_attachment_file', { filePath: att.local_path });
+                    } catch (err) {
+                        console.warn(`Could not delete file from disk during purge: ${att.local_path}`, err);
+                    }
+                }
+                // Delete from db
+                await db.execute("DELETE FROM ATTACHMENTS WHERE attachment_id = ?", [att.attachment_id]);
+            }
         } catch (error) {
             console.error("Error while database purge:", error);
         }

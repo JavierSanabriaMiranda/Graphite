@@ -239,7 +239,18 @@ export const remoteAttachmentService = {
             if (response.status === 404) return null;
             throw new Error("Error al obtener información del adjunto");
         }
-        
+
         return await response.json();
+    },
+
+    /**
+     * Deletes the file inserted as param on remote storage
+     */
+    async deleteRemoteAttachment(attachmentId) {
+        const headers = await getAuthHeader();
+        await fetch(`${API_URL}attachments/${attachmentId}`, {
+            method: 'DELETE',
+            headers: headers
+        });
     }
 };
