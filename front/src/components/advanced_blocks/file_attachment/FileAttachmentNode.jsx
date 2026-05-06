@@ -11,6 +11,7 @@ import { useToast } from '../../context/ToastContext';
 
 import ImageAttachmentView from './ImageAttachmentView';
 import GenericFileAttachmentView from './GenericFileAttachmentView';
+import AudioAttachmentView from './AudioAttachmentView';
 
 const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) => {
     const { t } = useTranslation();
@@ -30,6 +31,7 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
     const containerRef = useRef(null);
 
     const isImage = mimeType?.startsWith('image/');
+    const isAudio = mimeType?.startsWith('audio/');
 
     /**
      * Helper to get a clean extension for display.
@@ -159,20 +161,30 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
             {!loading && !error && (
                 <>
                     {!loading && !error && (
-                        isImage ? (
-                            <ImageAttachmentView
-                                url={url} fileName={fileName} imgWidth={imgWidth} isMobile={isMobile}
-                                selected={selected} isDownloading={isDownloading} isResizing={isResizing}
-                                isLightboxOpen={isLightboxOpen} setIsLightboxOpen={setIsLightboxOpen}
-                                handleDownload={handleDownload} startResizing={startResizing}
-                                updateAttributes={updateAttributes}
-                            />
-                        ) : (
-                            <GenericFileAttachmentView
-                                fileName={fileName} mimeType={mimeType} displayExtension={displayExtension}
-                                isDownloading={isDownloading} handleDownload={handleDownload} isMobile={isMobile}
-                            />
-                        )
+                        <div className="my-2">
+                            {isImage ? (
+                                <ImageAttachmentView
+                                    url={url} fileName={fileName} imgWidth={imgWidth} isMobile={isMobile}
+                                    selected={selected} isDownloading={isDownloading} isResizing={isResizing}
+                                    isLightboxOpen={isLightboxOpen} setIsLightboxOpen={setIsLightboxOpen}
+                                    handleDownload={handleDownload} startResizing={startResizing}
+                                    updateAttributes={updateAttributes}
+                                />
+                            ) : isAudio ? (
+                                <AudioAttachmentView
+                                    url={url}
+                                    fileName={fileName}
+                                    isDownloading={isDownloading}
+                                    handleDownload={handleDownload}
+                                    displayExtension={displayExtension}
+                                />
+                            ) : (
+                                <GenericFileAttachmentView
+                                    fileName={fileName} mimeType={mimeType} displayExtension={displayExtension}
+                                    isDownloading={isDownloading} handleDownload={handleDownload} isMobile={isMobile}
+                                />
+                            )}
+                        </div>
                     )}
                 </>
             )}
