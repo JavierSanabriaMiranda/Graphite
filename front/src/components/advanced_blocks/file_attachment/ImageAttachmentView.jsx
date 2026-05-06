@@ -2,6 +2,10 @@ import React, { useRef } from 'react';
 import { Download, Loader2, GripVertical } from 'lucide-react';
 import ImageLightbox from '../../util/ImageLightbox';
 
+/**
+ * Component that represents an attached image.
+ * The image can be resized and zoomed when double clicked. The file can also be downloaded
+ */
 const ImageAttachmentView = ({ 
     url, fileName, imgWidth, isMobile, selected, 
     isDownloading, isResizing, isLightboxOpen, 
@@ -14,7 +18,7 @@ const ImageAttachmentView = ({
             ref={containerRef}
             role='button'
             tabIndex={0}
-            className="relative inline-block leading-none max-w-full cursor-zoom-in select-none outline-none"
+            className="relative inline-block leading-none max-w-full cursor-pointer select-none outline-none"
             style={{ width: imgWidth ? `${imgWidth}px` : 'auto', maxWidth: '100%' }}
             onDoubleClick={() => setIsLightboxOpen(true)}
         >

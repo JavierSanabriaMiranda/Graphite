@@ -2,6 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Download, Music, Loader2 } from 'lucide-react';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 
+/**
+ * Component that represents an attached audio file that can be played.
+ * This audio can also be downloaded
+ */
 const AudioAttachmentView = ({ url, fileName, isDownloading, handleDownload, displayExtension }) => {
     const isMobile = useIsMobile()
 

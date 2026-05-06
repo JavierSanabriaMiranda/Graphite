@@ -92,10 +92,8 @@ const ImageLightbox = ({ url, fileName, isOpen, onClose }) => {
                                 'cursor-zoom-in rounded-lg shadow-2xl'}
                             w-full h-full flex items-center justify-center`}
                         style={{
-                            // Transicionamos las restricciones físicas
                             maxWidth: isZoomed ? '100vw' : '90vw',
                             maxHeight: isZoomed ? '100vh' : '85vh',
-                            // Ayuda al navegador a preparar la GPU para la animación
                             willChange: 'max-width, max-height, transform'
                         }}
                         onClick={handleImageClick}

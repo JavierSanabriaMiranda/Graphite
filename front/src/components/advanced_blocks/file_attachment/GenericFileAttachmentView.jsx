@@ -12,6 +12,10 @@ import {
     Loader2
 } from 'lucide-react';
 
+/**
+ * Component that represents a generic attached file with an icon based on file extension
+ * It allows to download the file
+ */
 const GenericFileAttachmentView = ({
     fileName, mimeType, displayExtension, isDownloading, handleDownload, isMobile
 }) => {

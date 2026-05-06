@@ -1,6 +1,10 @@
 import React, { useRef } from 'react';
 import { Video, Download, Loader2, GripVertical } from 'lucide-react';
 
+/**
+ * Component that represents an attached video file that can be played.
+ * The video can be resized and downloaded
+ */
 const VideoAttachmentView = ({
     url, fileName, imgWidth, isMobile, selected,
     isDownloading, isResizing, handleDownload,
