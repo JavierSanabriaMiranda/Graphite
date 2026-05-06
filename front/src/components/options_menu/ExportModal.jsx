@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FloatingPortal } from '@floating-ui/react';
 import { useToast } from '../context/ToastContext';
+import { exportNoteToHtml } from '../util/exportNoteToHtml';
+import { useNote } from '../context/NoteContext';
 
 /**
  * Modal component that allows the user to export the content of the editor in different formats (JSON or HTML).
@@ -16,28 +18,33 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
 
   const [selectedFormat, setSelectedFormat] = useState('json');
   const { showToast } = useToast();
+  const { selectedNote } = useNote()
 
   if (!isOpen) return null;
 
   /**
-   * Function to download the editor content in the selected format. 
-   * It creates a blob with the content and triggers a download. 
-   * (supported by browsers, review with tauri if it works correctly there)
+   * Main entry point for the export modal download button.
+   * Orchestrates JSON or HTML export based on user selection.
    */
-  const downloadFile = () => {
-    const content = selectedFormat === 'json'
-      ? JSON.stringify(editor.getJSON(), null, 2)
-      : editor.getHTML();
+  const downloadFile = async () => {
+    try {
+      const filename = selectedNote.title;
 
-    const blob = new Blob([content], { type: selectedFormat === 'json' ? 'application/json' : 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `documento.${selectedFormat}`;
-    link.click();
-    URL.revokeObjectURL(url);
-    showToast(t('editor.options_menu.export.export_success'), "success");
-    onClose(); // Close modal after download
+      if (selectedFormat === 'html') {
+        // Use the advanced HTML engine
+        await exportNoteToHtml(editor, filename);
+      } else {
+        // Standard JSON export for Tiptap structure
+        const content = JSON.stringify(editor.getJSON(), null, 2);
+        saveAsFile(content, `${filename}.json`, 'application/json');
+      }
+
+      showToast(t('editor.options_menu.export.export_success'), "success");
+      onClose();
+    } catch (error) {
+      console.error("Export process failed:", error);
+      showToast(t('editor.options_menu.export.export_failed'), "error");
+    }
   };
 
   return (

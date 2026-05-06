@@ -6,6 +6,7 @@ use sha2::{Sha256, Digest};
 use std::fs::File;
 use std::io::{Read};
 use std::path::Path;
+use base64::{Engine as _, engine::general_purpose};
 
 #[derive(Debug, serde::Serialize)]
 pub enum FileError {
@@ -248,6 +249,18 @@ pub async fn get_app_attachments_dir<R: Runtime>(app: AppHandle<R>) -> Result<St
     get_attachments_dir(&app)
         .map(|path| path.to_string_lossy().to_string())
         .map_err(|e| format!("Error while obtaining attachment file dir: {:?}", e))
+}
+
+#[tauri::command]
+pub async fn get_file_base64(path: String) -> Result<String, String> {
+    // Try to read bytes from file on disc
+    let file_bytes = fs::read(&path)
+        .map_err(|e| format!("Couln't read file on {}: {}", path, e))?;
+
+    // Turn bytes into a base64 string
+    let base64_string = general_purpose::STANDARD.encode(file_bytes);
+
+    Ok(base64_string)
 }
 
 /// Helper function to determine MIME type from file extension
