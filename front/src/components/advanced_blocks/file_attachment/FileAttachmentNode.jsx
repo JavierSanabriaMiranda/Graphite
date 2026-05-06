@@ -232,7 +232,96 @@ export const AttachmentExtension = Node.create({
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'attachment' })];
+        const { mimeType, fileName, imgWidth, attachmentId } = HTMLAttributes;
+
+        const containerClasses = "export-attachment my-6 block leading-none max-w-full";
+        const cardClasses = "flex flex-col gap-3 p-4 bg-zinc-50 rounded-2xl border border-zinc-200 shadow-sm";
+
+        // Determine type
+        const isImage = mimeType?.startsWith('image/');
+        const isAudio = mimeType?.startsWith('audio/');
+        const isVideo = mimeType?.startsWith('video/');
+
+        const displayExtension = (fileName || '').includes('.')
+            ? fileName.split('.').pop().toUpperCase()
+            : (mimeType?.split('/')[1] || 'FILE').toUpperCase();
+
+        /**
+        * Audio Icon SVG Spec (Lucide style)
+        * Defined as a Tiptap DOMOutputSpec to ensure portability.
+        */
+        const getAudioIcon = () => [
+            'svg',
+            {
+                xmlns: "http://www.w3.org/2000/svg",
+                width: "20", height: "20",
+                viewBox: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
+                "stroke-width": "2",
+                "stroke-linecap": "round",
+                "stroke-linejoin": "round",
+                class: "lucide lucide-music"
+            },
+            ['path', { d: "M9 18V5l12-2v13" }],
+            ['circle', { cx: "6", cy: "18", r: "3" }],
+            ['circle', { cx: "18", cy: "16", r: "3" }]
+        ];
+
+        /**
+         * Video Icon SVG Spec (Lucide style)
+         */
+        const getVideoIcon = () => [
+            'svg',
+            {
+                xmlns: "http://www.w3.org/2000/svg",
+                width: "20", height: "20",
+                viewBox: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
+                "stroke-width": "2",
+                "stroke-linecap": "round",
+                "stroke-linejoin": "round",
+                class: "lucide lucide-video"
+            },
+            ['path', { d: "m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.934a.5.5 0 0 0-.777-.416L16 11" }],
+            ['rect', { width: "14", height: "12", x: "2", y: "6", rx: "2" }]
+        ];
+
+        // Return structure
+        return [
+            'div',
+            mergeAttributes(HTMLAttributes, {
+                'data-type': 'attachment',
+                'class': containerClasses,
+                'data-attachment-id': attachmentId
+            }),
+            isImage ? [
+                'div', { style: `width: ${imgWidth}px; max-width: 100%;` },
+                ['img', { src: "", class: "rounded-xl shadow-md w-full h-auto m-0" }]
+            ] : [
+                'div', {
+                    class: cardClasses,
+                    style: isVideo ? `width: ${imgWidth}px; max-width: 100%` : 'max-width: 480px'
+                },
+                // Header (Icon + Info)
+                ['div', { class: "flex items-center gap-3" },
+                    ['div', { class: `w-10 h-10 rounded-xl flex items-center justify-center ${isAudio ? 'bg-indigo-100 text-indigo-600' : 'bg-amber-100 text-amber-600'}` },
+                        isAudio ? getAudioIcon() : getVideoIcon()
+                    ],
+                    ['div', { class: "flex-1" },
+                        ['p', { class: "text-sm font-bold text-zinc-900 m-0" }, fileName],
+                        ['p', { class: "text-[10px] text-zinc-500 uppercase font-black m-0 mt-1" }, displayExtension]
+                    ]
+                ],
+                // Media
+                isAudio
+                    ? ['audio', { src: "", controls: "true", class: "w-full h-9 mt-1" }]
+                    : ['div', { class: "aspect-video bg-black rounded-xl overflow-hidden mt-1" },
+                        ['video', { src: "", controls: "true", class: "w-full h-full object-contain" }]
+                    ]
+            ]
+        ];
     },
 
     addNodeView() {

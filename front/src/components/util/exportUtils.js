@@ -95,8 +95,8 @@ export const generateFullHtmlString = async (editor, title, theme = 'light') => 
           <div class="export-container">
               <header style="margin-bottom: 4rem;">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid ${isDark ? '#27272a' : '#f4f4f5'}; padding-bottom: 1rem;">
-                      <span style="font-size: 0.75rem; font-weight: 800; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.1em;">Graphite Archive</span>
-                      <span style="font-size: 0.75rem; font-weight: 500; color: #a1a1aa;">${new Date().toLocaleDateString()}</span>
+                      <span style="font-size: 0.75rem; font-weight: 800; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.1em;">From Graphite</span>
+                      <span style="font-size: 0.75rem; font-weight: 500; color: #a1a1aa;">${title}</span>
                   </div>
                   <h1 class="document-title">${title}</h1>
                   <div style="width: 200px; background: #4f46e5; height: 6px; border-radius: 99px; margin-top: 2rem;"></div>

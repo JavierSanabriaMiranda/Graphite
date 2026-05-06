@@ -7,6 +7,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_sql::Builder::default().build())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             #[cfg(desktop)]
             {
@@ -32,7 +33,8 @@ pub fn run() {
             commands::attachments::upload_to_azure,
             commands::attachments::download_from_azure,
             commands::attachments::get_app_attachments_dir,
-            commands::attachments::get_file_base64
+            commands::attachments::get_file_base64,
+            commands::export::export_pdf_silently
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
