@@ -1,7 +1,6 @@
 use headless_chrome::{Browser, LaunchOptions};
 use std::fs;
 use std::env;
-use std::path::PathBuf;
 
 #[tauri::command]
 pub async fn export_pdf_silently(html: String, path: String) -> Result<(), String> {

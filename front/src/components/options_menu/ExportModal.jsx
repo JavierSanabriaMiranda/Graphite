@@ -114,14 +114,14 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
               <div className="flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl gap-1">
                 <button
                   onClick={() => setExportTheme('light')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all ${exportTheme === 'light' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'text-zinc-500'
+                  className={`cursor-pointer flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all ${exportTheme === 'light' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'text-zinc-500'
                     }`}
                 >
                   <Sun size={16} /> {t('editor.options_menu.export.theme_light')}
                 </button>
                 <button
                   onClick={() => setExportTheme('dark')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all ${exportTheme === 'dark' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'text-zinc-500'
+                  className={`cursor-pointer flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all ${exportTheme === 'dark' ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'text-zinc-500'
                     }`}
                 >
                   <Moon size={16} /> {t('editor.options_menu.export.theme_dark')}
