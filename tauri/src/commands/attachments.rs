@@ -6,7 +6,7 @@ use sha2::{Sha256, Digest};
 use std::fs::File;
 use std::io::{Read};
 use std::path::Path;
-use base64::{Engine as _, engine::general_purpose};
+use base64::engine::general_purpose;
 
 #[derive(Debug, serde::Serialize)]
 pub enum FileError {
