@@ -21,7 +21,7 @@ const ImageAttachmentView = ({
             <img
                 src={url}
                 alt={fileName}
-                className={`block w-full h-auto transition-opacity ${isResizing ? 'opacity-80' : 'opacity-100'}`}
+                className={`block w-full h-auto transition-opacity rounded-lg mt-0 mb-0 ${isResizing ? 'opacity-80' : 'opacity-100'}`}
             />
 
             <ImageLightbox 

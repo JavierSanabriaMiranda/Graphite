@@ -143,8 +143,8 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
 
     return (
         <NodeViewWrapper
-            className={`attachment-node relative group leading-none max-w-full select-none outline-none ${selected ? 'ring-2 ring-primary rounded-lg' : ''}`}
-            style={{ display: isImage ? 'inline-block' : 'block' }}
+            className={`my-2 attachment-node relative group leading-none max-w-full select-none outline-none ${selected ? 'ring-2 ring-primary rounded-lg' : ''}`}
+            style={{ display: isImage || isVideo ? 'inline-block' : 'block' }}
         >
             {loading && (
                 <div className="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700">
@@ -163,7 +163,7 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
             {!loading && !error && (
                 <>
                     {!loading && !error && (
-                        <div className="my-2">
+                        <div>
                             {isImage ? (
                                 <ImageAttachmentView
                                     url={url} fileName={fileName} imgWidth={imgWidth} isMobile={isMobile}
@@ -182,8 +182,17 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                                 />
                             ) : isVideo ? (
                                 <VideoAttachmentView
-                                    url={url} fileName={fileName} displayExtension={displayExtension}
-                                    isDownloading={isDownloading} handleDownload={handleDownload}
+                                    url={url}
+                                    fileName={fileName}
+                                    imgWidth={imgWidth} // Usamos el mismo atributo de ancho
+                                    isMobile={isMobile}
+                                    selected={selected}
+                                    isDownloading={isDownloading}
+                                    isResizing={isResizing}
+                                    handleDownload={handleDownload}
+                                    startResizing={startResizing} // La misma función de las imágenes
+                                    updateAttributes={updateAttributes}
+                                    displayExtension={displayExtension}
                                 />
                             ) : (
                                 <GenericFileAttachmentView

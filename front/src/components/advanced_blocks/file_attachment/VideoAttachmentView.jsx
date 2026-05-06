@@ -1,12 +1,24 @@
-import React from 'react';
-import { Video, Download, Loader2 } from 'lucide-react';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+import React, { useRef } from 'react';
+import { Video, Download, Loader2, GripVertical } from 'lucide-react';
 
-const VideoAttachmentView = ({ url, fileName, isDownloading, handleDownload, displayExtension }) => {
-    const isMobile = useIsMobile()
+const VideoAttachmentView = ({
+    url, fileName, imgWidth, isMobile, selected,
+    isDownloading, isResizing, handleDownload,
+    startResizing, updateAttributes, displayExtension
+}) => {
+
+    const containerRef = useRef(null);
 
     return (
-        <div className="flex flex-col gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm w-full group/card">
+        <div
+            ref={containerRef}
+            className="relative flex flex-col gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm group/card transition-shadow mr-0"
+            style={{ 
+                width: imgWidth ? `${imgWidth}px` : '100%', 
+                maxWidth: '100%',
+                transition: isResizing ? 'none' : 'width 0.2s ease, box-shadow 0.2s ease'
+            }}
+        >
             {/* Header: Info and download */}
             <div className="flex items-center gap-3 px-1">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
@@ -43,6 +55,28 @@ const VideoAttachmentView = ({ url, fileName, isDownloading, handleDownload, dis
                     preload="metadata"
                 />
             </div>
+
+            {/* Resize handler (Desktop) */}
+            <button
+                onMouseDown={(e) => startResizing(e)}
+                className={`absolute top-0 -right-1 h-full w-3 cursor-ew-resize hover:bg-primary/20 transition-colors hidden md:flex items-center justify-center group/resizer z-20 ${isResizing ? 'bg-primary/10' : ''}`}
+            >
+                <div className="hidden group-hover/resizer:block bg-primary p-0.5 rounded text-white shadow-lg">
+                    <GripVertical size={10} />
+                </div>
+            </button>
+
+            {/* Slider for mobile */}
+            {selected && isMobile && (
+                <div className="flex items-center gap-2 bg-white/90 dark:bg-zinc-900/90 p-2 rounded-full absolute -bottom-12 left-1/2 -translate-x-1/2 border border-zinc-200 dark:border-zinc-700 shadow-xl z-30">
+                    <input
+                        type="range" min="300" max="1200"
+                        value={imgWidth || 600}
+                        onChange={(e) => updateAttributes({ imgWidth: parseInt(e.target.value) })}
+                        className="w-24 h-1 accent-primary"
+                    />
+                </div>
+            )}
         </div>
     );
 };
