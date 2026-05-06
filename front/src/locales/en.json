@@ -117,7 +117,11 @@
                 "modal_instructions": "Select the desired format:",
                 "modal_cancel": "Cancel",
                 "modal_export": "Export now",
-                "export_success": "Document exported successfully!"
+                "export_success": "Document exported successfully!",
+                "preparing_pdf": "Preparing pdf...",
+                "select_theme": "Select theme for export",
+                "theme_light": "Light",
+                "theme_dark": "Dark"
             },
             "import": "Import",
             "import_success": "Document imported successfully!",

@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FloatingPortal } from '@floating-ui/react';
 import { useToast } from '../context/ToastContext';
-import { exportNoteToHtml } from '../util/exportNoteToHtml';
-import { exportNoteToPdf } from '../util/exportNoteToPdf';
+import { exportNoteToHtml } from './export/exportNoteToHtml';
+import { exportNoteToPdf } from './export/exportNoteToPdf';
 import { useNote } from '../context/NoteContext';
-import { Monitor, Sun, Moon, FileJson, Globe, FileText } from 'lucide-react';
+import { Sun, Moon, FileJson, Globe, FileText } from 'lucide-react';
 
 /**
  * Utility to save JSON files (standard browser/tauri download)
@@ -47,7 +47,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
 
       if (selectedFormat === 'pdf') {
         showToast(t('editor.options_menu.export.preparing_pdf'), "info");
-        await exportNoteToPdf(editor, filename, exportTheme);
+        await exportNoteToPdf(editor, filename, 'light');
       }
       else if (selectedFormat === 'html') {
         await exportNoteToHtml(editor, filename, exportTheme);
@@ -98,7 +98,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
           </div>
 
           {/* Theme Selector (Only for HTML and PDF) */}
-          {(selectedFormat === 'html' || selectedFormat === 'pdf') && (
+          {(selectedFormat === 'html') && (
             <div className="mb-8 animate-in fade-in slide-in-from-top-2 duration-300">
               <label className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-3 block">
                 {t('editor.options_menu.export.select_theme')}

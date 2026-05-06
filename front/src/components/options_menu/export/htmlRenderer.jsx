@@ -1,8 +1,8 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import VideoAttachmentView from '../../components/advanced_blocks/file_attachment/VideoAttachmentView';
-import AudioAttachmentView from '../../components/advanced_blocks/file_attachment/AudioAttachmentView';
-import ImageAttachmentView from '../../components/advanced_blocks/file_attachment/ImageAttachmentView';
+import VideoAttachmentView from '../../advanced_blocks/file_attachment/VideoAttachmentView';
+import AudioAttachmentView from '../../advanced_blocks/file_attachment/AudioAttachmentView';
+import ImageAttachmentView from '../../advanced_blocks/file_attachment/ImageAttachmentView';
 
 /**
  * Maps Tiptap JSON nodes to actual React components.

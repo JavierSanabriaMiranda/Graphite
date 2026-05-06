@@ -1,6 +1,6 @@
-import { attachmentService } from '../../services/db/attachmentService';
+import { attachmentService } from '../../../services/db/attachmentService';
 import { invoke } from '@tauri-apps/api/core';
-import { convertJsonToHtml } from '../../services/export/htmlRenderer';
+import { convertJsonToHtml } from './htmlRenderer';
 
 /**
  * Utility to trigger a file download in the browser/Tauri.
