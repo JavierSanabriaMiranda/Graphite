@@ -19,12 +19,12 @@ export const saveAsFile = (content, fileName, contentType) => {
  * Generates the full HTML document string with all resources embedded as Base64.
  * This is the single source of truth for the export design.
  */
-export const generateFullHtmlString = async (editor, title, theme = 'light') => {
+export const generateFullHtmlString = async (editor, title, theme = 'light', exportFormat = 'html') => {
     if (!editor) return '';
 
     // Generate HTML from React Components
     const json = editor.getJSON();
-    const rawHtml = convertJsonToHtml(json);
+    const rawHtml = convertJsonToHtml(json, exportFormat);
 
     const parser = new DOMParser();
     const virtualDoc = parser.parseFromString(rawHtml, 'text/html');
@@ -74,10 +74,10 @@ export const generateFullHtmlString = async (editor, title, theme = 'light') => 
       @media print {
           @page { size: A4; margin: 20mm; }
           body { background: white !important; color: black !important; padding: 0 !important; }
+          .no-print { display: none; !important }
           .export-container { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          .export-node { page-break-inside: avoid; }
-          .no-print { display: none; }
+          .export-node { page-break-inside: avoid; break-inside: avoid; }
       }
     `;
 

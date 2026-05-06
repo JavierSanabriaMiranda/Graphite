@@ -20,6 +20,13 @@ const saveAsFile = (content, fileName, contentType) => {
   URL.revokeObjectURL(url);
 };
 
+const normalizeText = (text) => {
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replaceAll(/[\u0300-\u036f]/g, "");
+};
+
 /**
  * Modal component that allows the user to export the content of the editor in different formats (JSON or HTML).
  * 
@@ -44,6 +51,7 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
   const downloadFile = async () => {
     try {
       const filename = selectedNote?.title || 'Graphite_Document';
+
 
       if (selectedFormat === 'pdf') {
         showToast(t('editor.options_menu.export.preparing_pdf'), "info");

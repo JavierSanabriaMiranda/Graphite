@@ -8,7 +8,7 @@ import ImageAttachmentView from '../../advanced_blocks/file_attachment/ImageAtta
  * Maps Tiptap JSON nodes to actual React components.
  * This ensures that the export uses the EXACT same styling as the editor.
  */
-const renderNodeToJSX = (node, index) => {
+const renderNodeToJSX = (node, index, exportFormat) => {
     // Handle Text nodes
     if (node.type === 'text') {
         return node.text;
@@ -20,6 +20,10 @@ const renderNodeToJSX = (node, index) => {
         const isVideo = attrs.mimeType?.startsWith('video/');
         const isAudio = attrs.mimeType?.startsWith('audio/');
         const isImage = attrs.mimeType?.startsWith('image/');
+
+        if (exportFormat === 'pdf' && (isVideo || isAudio)) {
+            return null; 
+        }
 
         // We pass "isExporting={true}" so the component can hide interactive 
         // elements like resize handles or download buttons if needed.
@@ -55,7 +59,7 @@ const renderNodeToJSX = (node, index) => {
     }
 
     // Handle Standard HTML tags (Recursive)
-    const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i)) : null;
+    const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
 
     switch (node.type) {
         case 'paragraph': return <p key={index}>{children}</p>;
@@ -76,8 +80,8 @@ const renderNodeToJSX = (node, index) => {
 /**
  * Main function to convert Tiptap JSON to a static HTML string using React.
  */
-export const convertJsonToHtml = (json) => {
-    const jsxContent = json.content.map((node, i) => renderNodeToJSX(node, i));
+export const convertJsonToHtml = (json, exportFormat) => {
+    const jsxContent = json.content.map((node, i) => renderNodeToJSX(node, i, exportFormat));
     // renderToStaticMarkup transforms JSX into a plain HTML string
     return renderToStaticMarkup(<>{jsxContent}</>);
 };

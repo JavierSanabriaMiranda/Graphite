@@ -28,7 +28,7 @@ export const exportNoteToPdf = async (editor, title, theme) => {
         if (!filePath) return false;
 
         // STEP 2: Generate the self-contained HTML string
-        const htmlContent = await generateFullHtmlString(editor, title, theme);
+        const htmlContent = await generateFullHtmlString(editor, title, theme, 'pdf');
 
         // STEP 3: Call our Rust "Nuclear" command
         // We send the HTML and the chosen path
