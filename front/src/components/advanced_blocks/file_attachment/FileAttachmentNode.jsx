@@ -10,8 +10,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { useToast } from '../../context/ToastContext';
 
 import ImageAttachmentView from './ImageAttachmentView';
-import GenericFileAttachmentView from './GenericFileAttachmentView';
 import AudioAttachmentView from './AudioAttachmentView';
+import VideoAttachmentView from './VideoAttachmentView';
+import GenericFileAttachmentView from './GenericFileAttachmentView';
 
 const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) => {
     const { t } = useTranslation();
@@ -32,6 +33,7 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
 
     const isImage = mimeType?.startsWith('image/');
     const isAudio = mimeType?.startsWith('audio/');
+    const isVideo = mimeType?.startsWith('video/');
 
     /**
      * Helper to get a clean extension for display.
@@ -177,6 +179,11 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
                                     isDownloading={isDownloading}
                                     handleDownload={handleDownload}
                                     displayExtension={displayExtension}
+                                />
+                            ) : isVideo ? (
+                                <VideoAttachmentView
+                                    url={url} fileName={fileName} displayExtension={displayExtension}
+                                    isDownloading={isDownloading} handleDownload={handleDownload}
                                 />
                             ) : (
                                 <GenericFileAttachmentView

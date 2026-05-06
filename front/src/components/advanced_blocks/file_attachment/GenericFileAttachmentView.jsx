@@ -83,7 +83,7 @@ const GenericFileAttachmentView = ({
     const config = getFileConfig();
 
     return (
-        <div className="flex items-center justify-between p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow-md transition-all group/card select-none outline-none">
+        <div className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow-md transition-all group/card select-none outline-none">
             <div className="flex items-center gap-3 overflow-hidden">
                 <div className={`p-3 rounded-lg shrink-0 flex items-center justify-center ${config.bgClass} ${config.colorClass}`}>
                     {config.icon}
@@ -98,7 +98,7 @@ const GenericFileAttachmentView = ({
                 <button
                     onClick={handleDownload}
                     disabled={isDownloading}
-                    className="cursor-pointer p-2 text-zinc-500 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors disabled:opacity-50"
+                    className="cursor-pointer p-2 text-zinc-500 dark:text-zinc-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors disabled:opacity-50"
                 >
                     {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
                 </button>

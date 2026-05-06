@@ -264,6 +264,11 @@ fn get_mime_type(path: &PathBuf) -> String {
         Some("wav") => "audio/wav".to_string(),
         Some("ogg") => "audio/ogg".to_string(),
         Some("m4a") => "audio/mp4".to_string(),
+        Some("mp4") => "video/mp4".to_string(),
+        Some("webm") => "video/webm".to_string(),
+        Some("mov") => "video/quicktime".to_string(),
+        Some("avi") => "video/x-msvideo".to_string(),
+        Some("mkv") => "video/x-matroska".to_string(),
         Some("drawio") => "application/vnd.jgraph.drawio".to_string(),
         _ => "application/octet-stream".to_string(),
     }

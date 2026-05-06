@@ -1,19 +1,19 @@
-import React, { useRef, useState } from 'react';
-import { Download, Music, Loader2 } from 'lucide-react';
+import React from 'react';
+import { Video, Download, Loader2 } from 'lucide-react';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 
-const AudioAttachmentView = ({ url, fileName, isDownloading, handleDownload, displayExtension }) => {
+const VideoAttachmentView = ({ url, fileName, isDownloading, handleDownload, displayExtension }) => {
     const isMobile = useIsMobile()
 
     return (
-        <div className="flex flex-col gap-2 p-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700 w-full max-w group/card">
-            <div className="flex items-center gap-3">
-                {/* Header: Info and download */}
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                    <Music className="w-5 h-5" />
+        <div className="flex flex-col gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm w-full group/card">
+            {/* Header: Info and download */}
+            <div className="flex items-center gap-3 px-1">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
+                    <Video className="w-5 h-5" />
                 </div>
 
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate leading-tight mt-0.5 mb-0.5">
                         {fileName}
                     </p>
@@ -32,17 +32,19 @@ const AudioAttachmentView = ({ url, fileName, isDownloading, handleDownload, dis
                     </button>
                 </div>
             </div>
-            {/* Audio container */}
-            <div className="mt-1">
-                <audio
+
+            {/* Video container */}
+            <div className="relative rounded-xl overflow-hidden bg-black aspect-video shadow-inner">
+                <video
                     src={url}
-                    className="cursor-pointer w-full h-8"
+                    className="w-full h-full object-contain mt-0 mb-0"
                     controls
                     controlsList="nodownload"
+                    preload="metadata"
                 />
             </div>
         </div>
     );
 };
 
-export default AudioAttachmentView;
+export default VideoAttachmentView;
