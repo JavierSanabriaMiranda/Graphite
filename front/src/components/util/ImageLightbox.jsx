@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, ZoomIn, ZoomOut } from 'lucide-react';
-import { 
-  useFloating, 
-  useDismiss, 
-  useInteractions, 
-  FloatingPortal, 
-  FloatingOverlay 
+import {
+    useFloating,
+    useDismiss,
+    useInteractions,
+    FloatingPortal,
+    FloatingOverlay
 } from '@floating-ui/react';
 
 /**
@@ -56,10 +56,10 @@ const ImageLightbox = ({ url, fileName, isOpen, onClose }) => {
 
     return (
         <FloatingPortal>
-            <FloatingOverlay 
-                lockScroll 
-                style={{ 
-                    background: 'rgba(0, 0, 0, 0.95)', 
+            <FloatingOverlay
+                lockScroll
+                style={{
+                    background: 'rgba(0, 0, 0, 0.95)',
                     backdropFilter: 'blur(12px)',
                     display: 'flex',
                     alignItems: 'center',
@@ -67,8 +67,8 @@ const ImageLightbox = ({ url, fileName, isOpen, onClose }) => {
                 }}
                 className="z-20000 p-4 animate-in fade-in duration-200"
             >
-                <div 
-                    ref={refs.setFloating} 
+                <div
+                    ref={refs.setFloating}
                     {...getFloatingProps()}
                     className="relative w-full h-full flex items-center justify-center outline-none"
                     onClick={onClose}
@@ -77,7 +77,7 @@ const ImageLightbox = ({ url, fileName, isOpen, onClose }) => {
                 >
                     {/* Close Button */}
                     {!isZoomed && (
-                        <button 
+                        <button
                             onClick={(e) => { e.stopPropagation(); onClose(); }}
                             className="cursor-pointer absolute top-8 right-8 p-2 text-white/50 hover:text-white transition-colors z-30"
                         >
@@ -85,20 +85,25 @@ const ImageLightbox = ({ url, fileName, isOpen, onClose }) => {
                         </button>
                     )}
 
-                    <button 
-                        className={`relative transition-all duration-500 ease-out overflow-hidden rounded-lg shadow-2xl ${
-                            isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
-                        }`}
+                    <button
+                        className={`relative transition-all duration-500 ease-in-out overflow-hidden 
+                            ${isZoomed ? 
+                                'cursor-zoom-out rounded-none shadow-none' : 
+                                'cursor-zoom-in rounded-lg shadow-2xl'}
+                            w-full h-full flex items-center justify-center`}
                         style={{
-                            maxWidth: '90vw',
-                            maxHeight: '85vh',
+                            // Transicionamos las restricciones físicas
+                            maxWidth: isZoomed ? '100vw' : '90vw',
+                            maxHeight: isZoomed ? '100vh' : '85vh',
+                            // Ayuda al navegador a preparar la GPU para la animación
+                            willChange: 'max-width, max-height, transform'
                         }}
                         onClick={handleImageClick}
                     >
                         <img
                             src={url}
                             alt={fileName}
-                            className="block w-full h-auto transition-transform duration-500 ease-out"
+                            className="block w-2/3 h-auto transition-transform duration-500 ease-out"
                             style={{
                                 transform: isZoomed ? 'scale(2.5)' : 'scale(1)',
                                 transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`
