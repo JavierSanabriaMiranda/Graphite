@@ -96,7 +96,40 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
         pre code {
             background: transparent !important;
             padding: 0 !important;
-        } 
+        }
+
+        /* Ordered Lists */
+        .ProseMirror ol {
+            list-style-type: none !important;
+            counter-reset: list-counter;
+            padding: 0;
+        }
+
+        .ProseMirror ol li {
+            counter-increment: list-counter;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .ProseMirror ol li::before {
+            font-weight: 500;
+            min-width: 1.5rem;
+            text-align: right;
+            flex-shrink: 0;
+            color: ${isDark ? 'white' : 'black'};
+        }
+
+
+        /* Styles for Ordered Lists */
+        .ProseMirror ol[data-list-style="default"] li::before { content: counter(list-counter) "."; }
+        .ProseMirror ol[data-list-style="alpha"] li::before { content: counter(list-counter, lower-alpha) "."; }
+        .ProseMirror ol[data-list-style="roman"] li::before { content: counter(list-counter, lower-roman) "."; }
+
+        .ProseMirror ol[data-list-style="mix"] li::before { content: counter(list-counter) "."; }
+        .ProseMirror ol[data-list-style="mix"] ol li::before { content: counter(list-counter, lower-alpha) "."; }
+        .ProseMirror ol[data-list-style="mix"] ol ol li::before { content: counter(list-counter, lower-roman) "."; }
       
         @media print {
             @page { size: A4; margin: 20mm; }
@@ -111,7 +144,7 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
                 white-space: pre-wrap !important;
                 word-break: break-word !important;
                 overflow-wrap: anywhere !important;
-            }
+            }    
         }
     `;
 

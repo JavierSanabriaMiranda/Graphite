@@ -212,8 +212,6 @@ const renderNodeToJSX = (node, index, exportFormat) => {
     const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
 
     switch (node.type) {
-        case 'paragraph':
-            return <p key={index} className={`mb-4 leading-relaxed ${textAlignClass}`}>{children}</p>;
         case 'heading': {
             const Tag = `h${node.attrs.level}`;
             const levels = {
@@ -227,10 +225,27 @@ const renderNodeToJSX = (node, index, exportFormat) => {
             return <ul key={index} className="list-disc ml-6 mb-4 space-y-2">{children}</ul>;
 
         case 'orderedList':
-            return <ol key={index} className="list-decimal ml-6 mb-4 space-y-2">{children}</ol>;
+            return (
+                <ol 
+                    key={index} 
+                    data-list-style={node.attrs?.listStyle || 'default'} 
+                    className="ml-4 mb-4"
+                >
+                    {children}
+                </ol>
+            );
 
         case 'listItem':
-            return <li key={index} className="pl-1">{children}</li>;
+            return (
+                <li key={index} className="export-node">
+                    <div className="flex-1 min-w-0">
+                        {children}
+                    </div>
+                </li>
+            );
+
+        case 'paragraph':
+            return <p key={index} className="mb-4 leading-relaxed">{children}</p>;
 
         case 'blockquote':
             return <blockquote key={index} className="border-l-4 border-primary-500 pl-4 italic my-4 text-zinc-600 dark:text-zinc-400">{children}</blockquote>;
