@@ -88,6 +88,7 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
             line-height: 1.5;
         }
 
+        /* Make code blocks can have horizontal scroll on HTML */
         pre {
             overflow-x: auto;
         }
@@ -95,7 +96,7 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
         pre code {
             background: transparent !important;
             padding: 0 !important;
-        }
+        } 
       
         @media print {
             @page { size: A4; margin: 20mm; }

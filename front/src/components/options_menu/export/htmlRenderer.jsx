@@ -167,6 +167,47 @@ const renderNodeToJSX = (node, index, exportFormat) => {
         );
     }
 
+    // To-do list
+    if (node.type === 'taskList') {
+        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
+        return <ul key={index} className="list-none p-0 m-0 mb-4 space-y-2">{children}</ul>;
+    }
+
+    // task item of a to-do list
+    if (node.type === 'taskItem') {
+        const isChecked = node.attrs?.checked;
+        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
+
+        return (
+            <li key={index} className="flex items-start gap-0 mb-1.5 export-node">
+                <div className="flex shrink-0 items-center justify-center relative">
+                    <div
+                        className={`
+                            w-[1.15rem] h-[1.15rem] mt-[0.4rem] mr-3 rounded-[3px] border-2 transition-all duration-200
+                            ${isChecked
+                                ? 'bg-primary border-primary'
+                                : 'bg-transparent border-[#37352f] dark:border-white'}
+                        `}
+                        style={{
+                            backgroundColor: isChecked ? '#4f46e5' : 'transparent',
+                            borderColor: isChecked ? '#4f46e5' : undefined
+                        }}
+                    >
+                        {/* Check symbol */}
+                        {isChecked && (
+                            <div className="absolute left-[7.5px] top-[6.5px] w-1.5 h-2.5 border-white border-b-[2.5px] border-r-[2.5px] rotate-45 transform" />
+                        )}
+                    </div>
+                </div>
+
+                {/* Text content */}
+                <div className={`flex-1 min-w-0 ${isChecked ? 'text-gray-400 dark:text-zinc-500 line-through decoration-[1.5px]' : ''}`}>
+                    {children}
+                </div>
+            </li>
+        );
+    }
+
     // Handle Standard HTML tags (Recursive)
     const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
 
