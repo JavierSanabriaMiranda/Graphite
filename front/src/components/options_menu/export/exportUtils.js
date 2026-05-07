@@ -71,6 +71,10 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
       }
     `;
 
+    const highlightTheme = isDark
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/stackoverflow-light.min.css';
+
     const globalExportStyles = `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 
@@ -197,7 +201,7 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://cdn.tailwindcss.com"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+            <link rel="stylesheet" href="${highlightTheme}">
             <script>${tailwindConfig}</script>
             <style>${globalExportStyles}
                 pre code {
