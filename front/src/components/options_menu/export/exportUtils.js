@@ -130,6 +130,21 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
         .ProseMirror ol[data-list-style="mix"] li::before { content: counter(list-counter) "."; }
         .ProseMirror ol[data-list-style="mix"] ol li::before { content: counter(list-counter, lower-alpha) "."; }
         .ProseMirror ol[data-list-style="mix"] ol ol li::before { content: counter(list-counter, lower-roman) "."; }
+
+        /* Toggle styles */
+        .toggle-export {
+            display: block;
+            width: 100%;
+        }
+
+        .toggle-export [data-type="toggle-content"] p,
+        .ml-\[1\.4rem\] p {
+            margin-bottom: 0.75rem;
+        }
+
+        .toggle-export div:last-child p:last-child {
+            margin-bottom: 0;
+        }
       
         @media print {
             @page { size: A4; margin: 20mm; }

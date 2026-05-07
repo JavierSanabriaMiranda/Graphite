@@ -212,6 +212,46 @@ const renderNodeToJSX = (node, index, exportFormat) => {
     const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
 
     switch (node.type) {
+        // Toggle main container
+        case 'toggleBlock':
+            return (
+                <div key={index} className="toggle-export my-4 export-node">
+                    {children}
+                </div>
+            );
+
+        // Toggle title
+        case 'toggleTitle':
+            return (
+                <div key={index} className="flex items-center gap-2 mb-1">
+                    {/* Static icon */}
+                    <div className="text-zinc-400 shrink-0">
+                        <svg
+                            width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                            className="transform rotate-0"
+                        >
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    {/* Title text */}
+                    <div className="font-semibold text-[17px] text-zinc-800 dark:text-zinc-100">
+                        {children}
+                    </div>
+                </div>
+            );
+
+        // Toggle content (always shown for exportation)
+        case 'toggleContent':
+            return (
+                <div
+                    key={index}
+                    className="ml-[1.4rem] pl-4 border-l-2 border-zinc-200 dark:border-zinc-800"
+                >
+                    {children}
+                </div>
+            );
+
         case 'heading': {
             const Tag = `h${node.attrs.level}`;
             const levels = {
@@ -226,9 +266,9 @@ const renderNodeToJSX = (node, index, exportFormat) => {
 
         case 'orderedList':
             return (
-                <ol 
-                    key={index} 
-                    data-list-style={node.attrs?.listStyle || 'default'} 
+                <ol
+                    key={index}
+                    data-list-style={node.attrs?.listStyle || 'default'}
                     className="ml-4 mb-4"
                 >
                     {children}
