@@ -22,6 +22,23 @@ export const saveAsFile = (content, fileName, contentType) => {
 export const generateFullHtmlString = async (editor, title, theme = 'light', exportFormat = 'html') => {
     if (!editor) return '';
 
+    // Inject emoji font (Twemoji)
+    let twemojiFontFace = "";
+    try {
+        const fontBase64 = await invoke('get_app_resource_base64', { name: 'Twemoji.Mozilla.ttf' });
+        twemojiFontFace = `
+            @font-face {
+                font-family: 'TwemojiLocal';
+                src: url(data:font/ttf;base64,${fontBase64}) format('truetype');
+                font-weight: normal;
+                font-style: normal;
+                font-display: swap;
+            }
+        `;
+    } catch (e) {
+        console.error("Couldn't load Twemoji for exportation:", e);
+    }
+
     // Generate HTML from React Components
     const json = editor.getJSON();
     const rawHtml = convertJsonToHtml(json, exportFormat);
@@ -57,21 +74,31 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
     const globalExportStyles = `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 
+        ${twemojiFontFace}
+
         :root {
-            --font-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            --font-emoji: "Apple Color Emoji", "TwemojiLocal", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
         }
 
         body { 
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Inter', var(--font-emoji), sans-serif;
             background: ${isDark ? '#101822' : '#f6f7f8'}; 
             padding: 3rem 2rem; 
             color: ${isDark ? '#d4d4d8' : '#374151'}; 
         }
+
+        /* Force emojis to use correct font */
+        span[style*="font-family: var(--font-emoji)"], 
+        .emoji {
+            font-family: var(--font-emoji) !important;
+        }
+
         .export-container { 
             max-width: 1000px; margin: 0 auto; background: ${isDark ? '#18181b' : '#ffffff'}; 
             padding: 5rem; border-radius: 2rem; 
             ${!isDark ? 'box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);' : 'border: 1px solid #27272a;'}
         }
+
         .document-title { font-size: 4rem; line-height: 1.1; font-weight: 900; margin-bottom: 1.5rem; color: ${isDark ? '#ffffff' : '#09090b'}; }
         .ProseMirror h1 { color: ${isDark ? '#f4f4f5' : '#18181b'}; }
         .ProseMirror p { color: ${isDark ? '#a1a1aa' : '#3f3f46'}; line-height: 1.8; }

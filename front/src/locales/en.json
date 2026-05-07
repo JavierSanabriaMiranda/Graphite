@@ -118,6 +118,7 @@
                 "modal_cancel": "Cancel",
                 "modal_export": "Export now",
                 "export_success": "Document exported successfully!",
+                "export_failed": "There was a failure during export",
                 "preparing_pdf": "Preparing pdf...",
                 "select_theme": "Select theme for export",
                 "theme_light": "Light",
