@@ -56,6 +56,9 @@ const renderNodeToJSX = (node, index, exportFormat) => {
         return <React.Fragment key={index}>{applyMarks(node.text, node.marks)}</React.Fragment>;
     }
 
+    // Alignment
+    const textAlignClass = node.attrs?.textAlign ? `text-${node.attrs.textAlign}` : '';
+
     // Callout
     if (node.type === 'callout') {
         const emojiValue = node.attrs.emoji || '💡';
@@ -89,8 +92,36 @@ const renderNodeToJSX = (node, index, exportFormat) => {
         );
     }
 
-    // Alignment
-    const textAlignClass = node.attrs?.textAlign ? `text-${node.attrs.textAlign}` : '';
+    // Code block
+    if (node.type === 'codeBlock') {
+        const lang = node.attrs?.language;
+        // Obtenemos el texto plano de dentro del bloque de código
+        const codeText = node.content?.map(n => n.text).join('') || '';
+
+        return (
+            <div key={index} className="relative my-8 export-node group">
+                {/* Language label */}
+                {lang && (
+                    <div className="absolute top-3 right-4 z-10 px-2 py-1 rounded bg-zinc-300 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300 text-[10px] font-bold uppercase tracking-wider select-none">
+                        {lang}
+                    </div>
+                )}
+
+                {/* Code container */}
+                <pre className={`
+                    rounded-xl p-8 font-mono text-sm leading-relaxed border
+                    bg-[#f1f1f2] border-[#e6e6e8] text-zinc-800
+                    dark:bg-[#1e1e1e] dark:border-[#27272a] dark:text-zinc-200
+                    overflow-x-auto relative
+                    ${lang ? `language-${lang}` : ''}
+                `}>
+                    <code className={lang ? `language-${lang}` : ''}>
+                        {codeText}
+                    </code>
+                </pre>
+            </div>
+        );
+    }
 
     // Handle Custom Attachment Nodes
     if (node.type === 'attachment') {

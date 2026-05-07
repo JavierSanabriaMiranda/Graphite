@@ -68,7 +68,7 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
             color: ${isDark ? '#d4d4d8' : '#374151'}; 
         }
         .export-container { 
-            max-width: 850px; margin: 0 auto; background: ${isDark ? '#18181b' : '#ffffff'}; 
+            max-width: 1000px; margin: 0 auto; background: ${isDark ? '#18181b' : '#ffffff'}; 
             padding: 5rem; border-radius: 2rem; 
             ${!isDark ? 'box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);' : 'border: 1px solid #27272a;'}
         }
@@ -87,6 +87,15 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
             margin-bottom: 0.5rem;
             line-height: 1.5;
         }
+
+        pre {
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: transparent !important;
+            padding: 0 !important;
+        }
       
         @media print {
             @page { size: A4; margin: 20mm; }
@@ -95,30 +104,59 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
             .export-container { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .export-node { page-break-inside: avoid; break-inside: avoid; }
+
+            pre {
+                /* Force break line on code for pdf */
+                white-space: pre-wrap !important;
+                word-break: break-word !important;
+                overflow-wrap: anywhere !important;
+            }
         }
     `;
 
     return `
-      <!DOCTYPE html>
-      <html lang="en" class="${theme}">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <script src="https://cdn.tailwindcss.com"></script>
-          <script>${tailwindConfig}</script>
-          <style>${globalExportStyles}</style>
-      </head>
-      <body class="${isDark ? 'dark' : ''}">
-          <div class="export-container">
-              <header style="margin-bottom: 4rem;">
-                  <h1 class="document-title">${title}</h1>
-                  <div style="width: 200px; background: #4f46e5; height: 6px; border-radius: 99px; margin-top: 2rem;"></div>
-              </header>
-              <article class="ProseMirror">
-                  ${virtualDoc.body.innerHTML}
-              </article>
-          </div>
-      </body>
-      </html>
+        <!DOCTYPE html>
+        <html lang="en" class="${theme}">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdn.tailwindcss.com"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+            <script>${tailwindConfig}</script>
+            <style>${globalExportStyles}
+                pre code {
+                    background: transparent !important;
+                    padding: 0 !important;
+                    font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace !important;
+                }
+            </style>
+        </head>
+        <body class="${isDark ? 'dark' : ''}">
+            <div class="export-container">
+                <header style="margin-bottom: 4rem;">
+                    <h1 class="document-title">${title}</h1>
+                    <div style="width: 200px; background: #4f46e5; height: 6px; border-radius: 99px; margin-top: 2rem;"></div>
+                </header>
+                <article class="ProseMirror">
+                    ${virtualDoc.body.innerHTML}
+                </article>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+            <script>
+                // Initialize highlighting for code blocks
+                hljs.highlightAll();
+                
+                // If it's PDF
+                if (window.onload) { 
+                    const originalOnLoad = window.onload;
+                    window.onload = () => {
+                        originalOnLoad();
+                        // Wait for highlight before print
+                        setTimeout(() => { if(window.print) { /* auto-print logic */ } }, 500);
+                    }
+                }
+            </script>
+        </body>
+        </html>
     `;
 };
