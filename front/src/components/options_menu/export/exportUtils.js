@@ -55,35 +55,47 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
     `;
 
     const globalExportStyles = `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 
-      :root {
-        --font-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-      }
+        :root {
+            --font-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
 
-      body { 
-        font-family: 'Inter', sans-serif; 
-        background: ${isDark ? '#101822' : '#f6f7f8'}; 
-        padding: 3rem 2rem; 
-        color: ${isDark ? '#d4d4d8' : '#374151'}; 
-      }
-      .export-container { 
-          max-width: 850px; margin: 0 auto; background: ${isDark ? '#18181b' : '#ffffff'}; 
-          padding: 5rem; border-radius: 2rem; 
-          ${!isDark ? 'box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);' : 'border: 1px solid #27272a;'}
-      }
-      .document-title { font-size: 4rem; line-height: 1.1; font-weight: 900; margin-bottom: 1.5rem; color: ${isDark ? '#ffffff' : '#09090b'}; }
-      .ProseMirror h1 { color: ${isDark ? '#f4f4f5' : '#18181b'}; }
-      .ProseMirror p { color: ${isDark ? '#a1a1aa' : '#3f3f46'}; line-height: 1.8; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: ${isDark ? '#101822' : '#f6f7f8'}; 
+            padding: 3rem 2rem; 
+            color: ${isDark ? '#d4d4d8' : '#374151'}; 
+        }
+        .export-container { 
+            max-width: 850px; margin: 0 auto; background: ${isDark ? '#18181b' : '#ffffff'}; 
+            padding: 5rem; border-radius: 2rem; 
+            ${!isDark ? 'box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);' : 'border: 1px solid #27272a;'}
+        }
+        .document-title { font-size: 4rem; line-height: 1.1; font-weight: 900; margin-bottom: 1.5rem; color: ${isDark ? '#ffffff' : '#09090b'}; }
+        .ProseMirror h1 { color: ${isDark ? '#f4f4f5' : '#18181b'}; }
+        .ProseMirror p { color: ${isDark ? '#a1a1aa' : '#3f3f46'}; line-height: 1.8; }
+        
+        /* For paragraphs inside callout */
+        .export-node .flex-1 p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Make sure callout content is not too big */
+        .prose-compact p {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
       
-      @media print {
-          @page { size: A4; margin: 20mm; }
-          body { background: white !important; color: black !important; padding: 0 !important; }
-          .no-print { display: none; !important }
-          .export-container { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          .export-node { page-break-inside: avoid; break-inside: avoid; }
-      }
+        @media print {
+            @page { size: A4; margin: 20mm; }
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .no-print { display: none; !important }
+            .export-container { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .export-node { page-break-inside: avoid; break-inside: avoid; }
+        }
     `;
 
     return `

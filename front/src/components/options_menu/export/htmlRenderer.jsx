@@ -56,6 +56,39 @@ const renderNodeToJSX = (node, index, exportFormat) => {
         return <React.Fragment key={index}>{applyMarks(node.text, node.marks)}</React.Fragment>;
     }
 
+    // Callout
+    if (node.type === 'callout') {
+        const emojiValue = node.attrs.emoji || '💡';
+        // Is an svg or an emoji
+        const isSvg = emojiValue.length > 10 || emojiValue.includes('M');
+
+        // Process children
+        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
+
+        return (
+            <div
+                key={index}
+                className="flex gap-3 p-4 my-4 rounded-xl bg-gray-200/50 dark:bg-zinc-800/50 border border-gray-300 dark:border-zinc-700 items-start export-node"
+            >
+                {/* Emoji container */}
+                <div className="text-2xl mt-1 select-none shrink-0 text-zinc-800 dark:text-zinc-100">
+                    {isSvg ? (
+                        <svg className="w-6 h-6 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d={emojiValue} />
+                        </svg>
+                    ) : (
+                        <span style={{ fontFamily: 'var(--font-emoji)' }}>{emojiValue}</span>
+                    )}
+                </div>
+
+                {/* Content container */}
+                <div className="flex-1 min-w-0 prose-compact">
+                    {children}
+                </div>
+            </div>
+        );
+    }
+
     // Alignment
     const textAlignClass = node.attrs?.textAlign ? `text-${node.attrs.textAlign}` : '';
 
