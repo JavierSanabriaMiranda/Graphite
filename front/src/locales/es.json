@@ -54,6 +54,7 @@
                 "search_not_found": "Fuente no encontrada"
             },
             "new_subnote": "Nueva subpágina",
+            "attach_file": "Adjuntar archivo",
             "bold": "Negrita",
             "italic": "Cursiva",
             "underline": "Subrayado",
@@ -216,6 +217,7 @@
         "broken_link": "Nota no encontrada"
     },
     "attachment": {
+        "attachment_zone_description": "Pulsa en aquí o arrastra un archivo para adjuntarlo",
         "loading": "Cargando archivo...",
         "not_available": "Archivo no disponible",
         "download": "Descargar archivo",

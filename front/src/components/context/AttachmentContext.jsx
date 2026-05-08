@@ -69,12 +69,53 @@ export const AttachmentProvider = ({ children }) => {
      * Extension to MIME type mapper for cases where the browser fails to detect it.
      */
     const MIME_EXTENSION_MAP = {
+        // --- Diagrams ---
         'drawio': 'application/vnd.jgraph.drawio',
+        'xml': 'application/xml',
+
+        // --- Documents & Text ---
         'md': 'text/markdown',
+        'txt': 'text/plain',
+        'rtf': 'application/rtf',
+        'pdf': 'application/pdf',
+        'html': 'text/html',
+        'htm': 'text/html',
+
+        // Microsoft Word
+        'doc': 'application/msword',
         'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+
+        // Microsoft Excel
+        'xls': 'application/vnd.ms-excel',
         'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+        // Microsoft PowerPoint
+        'ppt': 'application/vnd.ms-powerpoint',
         'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+
+        // --- Images ---
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'webp': 'image/webp',
         'svg': 'image/svg+xml',
+        'ico': 'image/x-icon',
+        'avif': 'image/avif',
+
+        // --- Audio ---
+        'mp3': 'audio/mpeg',
+        'wav': 'audio/wav',
+        'ogg': 'audio/ogg',
+        'webm': 'audio/webm',
+
+        // --- Video ---
+        'mp4': 'video/mp4',
+        'mov': 'video/quicktime',
+        'webmv': 'video/webm',
+
+        // --- Archives ---
+        'zip': 'application/zip',
     };
 
     /**

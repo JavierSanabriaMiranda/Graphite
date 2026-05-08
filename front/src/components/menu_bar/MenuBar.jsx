@@ -11,7 +11,9 @@ import TextTypeSelector from './TextTypeSelector';
 import FontSelector from './FontSelector';
 import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
 import { useNote } from '../context/NoteContext';
-import { FilePlusCorner } from 'lucide-react';
+import { FilePlusCorner, Paperclip } from 'lucide-react';
+import { open } from '@tauri-apps/plugin-dialog';
+import { useAttachmentUpload } from '../../hooks/useAttachmentUpload';
 
 /**
  * Top menu component that allows the user to edit the written text with the given tools
@@ -21,6 +23,7 @@ import { FilePlusCorner } from 'lucide-react';
 const MenuBar = ({ editor }) => {
   const { t } = useTranslation();
   const { selectNote, createSubnote } = useNote();
+  const { uploadAttachment } = useAttachmentUpload(editor);
 
   const state = useEditorState({
     editor,
@@ -40,10 +43,15 @@ const MenuBar = ({ editor }) => {
     const chain = editor.chain().focus();
     const newNote = await createSubnote();
 
-            if (newNote) {
-              chain.insertPageBlock(newNote.note_id).run();
-              selectNote(newNote);
-            }
+    if (newNote) {
+      chain.insertPageBlock(newNote.note_id).run();
+      selectNote(newNote);
+    }
+  };
+
+  const triggerUpload = async () => {
+    const selected = await open({ multiple: false });
+    if (selected) uploadAttachment(selected);
   };
 
   if (!editor) return null;
@@ -52,6 +60,14 @@ const MenuBar = ({ editor }) => {
     <div className="flex items-center justify-center gap-2 p-2 bg-main-bg border-b border-gray-300 dark:border-zinc-700 shrink-0">
       {/* All tools centered */}
       <div className="flex flex-wrap items-center justify-center gap-2">
+
+        <button
+          onClick={() => editor.chain().focus().setAttachmentUpload().run()}
+          className={getBtnClass(false)}
+          title={t('editor.toolbar.attach_file')}
+        >
+          <Paperclip className="w-5 h-5"/>
+        </button>
 
         <div className="flex items-center gap-2 flex-nowrap">
           <button type="button" onClick={createNewSubnote} className={getBtnClass(false)} title={t('editor.toolbar.new_subnote')}>

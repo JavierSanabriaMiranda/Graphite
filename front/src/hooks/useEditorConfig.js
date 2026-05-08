@@ -41,6 +41,7 @@ import { Commands } from '../components/suggestions/Commands';
 import getSuggestionConfig from '../components/suggestions/suggestions';
 import { NoteLink } from '../components/suggestions/NoteLinkExtension';
 import { getNoteLinkSuggestionConfig } from '../components/suggestions/noteLinksSuggestions';
+import { AttachmentUploadNode } from '../components/advanced_blocks/file_attachment/AttachmentZone';
 
 /**
  * Custom hook used to config a Tiptap editor
@@ -176,6 +177,7 @@ export const useEditorConfig = ({
                 },
             }),
             AttachmentExtension,
+            AttachmentUploadNode,
             Placeholder.configure({
                 includeChildren: true,
                 placeholder: ({ node, editor, pos }) => {

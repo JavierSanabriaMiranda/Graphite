@@ -55,6 +55,7 @@
                 "search_not_found": "Font not found"
             },
             "new_subnote": "New subpage",
+            "attach_file": "Attach file",
             "bold": "Bold",
             "italic": "Italic",
             "underline": "Underline",
@@ -217,6 +218,7 @@
         "broken_link": "Note not found"
     },
     "attachment": {
+        "attachment_zone_description": "Click here or drop a file to attach it",
         "loading": "Loading file...",
         "not_available": "File not available",
         "download": "Download file",
