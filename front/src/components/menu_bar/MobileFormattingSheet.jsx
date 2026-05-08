@@ -3,7 +3,7 @@ import { useEditorState } from '@tiptap/react';
 import { useTranslation } from 'react-i18next';
 import {
     TriangleAlert, Bold, Italic, Underline, List, CheckSquare, Quote,
-    FileText, Strikethrough, Code, CodeXml, Heading1, Heading2, Heading3, ListOrderedIcon
+    FileText, Strikethrough, Code, CodeXml, Heading1, Heading2, Heading3, ListOrderedIcon, Paperclip
 } from 'lucide-react';
 import { menuBarStateSelector } from '../util/menuBarStateSelector';
 import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
@@ -146,6 +146,10 @@ const MobileFormattingSheet = ({ editor }) => {
                             }
                         })} className={gridItemClass(false)}>
                             <FileText className="w-4 h-4" /> {t('editor.slash.page.title')}
+                        </button>
+                        {/* Attach file */}
+                        <button onClick={() => handleGridItemClick(() => editor.chain().focus().setAttachmentUpload().run())} className={gridItemClass(false)}>
+                            <Paperclip className="w-4 h-4" /> {t('editor.slash.attached_file.title')}
                         </button>
 
                         {/* Lists */}

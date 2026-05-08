@@ -222,7 +222,7 @@
     },
     "attachment": {
         "attachment_zone_title": "Insertar archivo adjunto",
-        "attachment_zone_description": "Pulsa en aquí o arrastra un archivo para adjuntarlo",
+        "attachment_zone_description": "Pulsa aquí o arrastra un archivo para adjuntarlo",
         "loading": "Cargando archivo...",
         "not_available": "Archivo no disponible",
         "download": "Descargar archivo",
