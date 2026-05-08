@@ -1,6 +1,6 @@
 import { ReactRenderer } from '@tiptap/react';
 import { computePosition, flip, shift, offset } from '@floating-ui/dom';
-import { Quote, Heading1, Heading2, Heading3, FileText, Code, Smile } from 'lucide-react';
+import { Quote, Heading1, Heading2, Heading3, FileText, Code, Smile, Paperclip } from 'lucide-react';
 import { ToggleIcon } from '../advanced_blocks/toggle_block/ToggleIcon';
 import { TodoIcon } from '../menu_bar/lists/TodoList';
 import { NumberedListIcon } from '../menu_bar/lists/NumberedListSelector';
@@ -64,6 +64,14 @@ const getSuggestionConfig = (t, createSubnote, selectNote, onEmojiCommand) => ({
               selectNote(newNote);
             }
           }
+        },
+      },
+      {
+        title: t('editor.slash.attached_file.title'),
+        searchTerms: t('editor.slash.attached_file.search').split(','),
+        icon: Paperclip,
+        command: async ({ editor, range }) => {
+          editor.chain().focus().deleteRange(range).setAttachmentUpload().run();
         },
       },
       {

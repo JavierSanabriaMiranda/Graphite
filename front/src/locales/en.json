@@ -149,6 +149,10 @@
                 "title": "Page",
                 "search": "page,subpage,note,link"
             },
+            "attached_file": {
+                "title": "Attached file",
+                "search": "file,attached,image,video,audio"
+            },
             "h1": {
                 "title": "Heading 1",
                 "search": "h1,heading,header,title,big"
@@ -218,6 +222,7 @@
         "broken_link": "Note not found"
     },
     "attachment": {
+        "attachment_zone_title": "Inserts attached file",
         "attachment_zone_description": "Click here or drop a file to attach it",
         "loading": "Loading file...",
         "not_available": "File not available",

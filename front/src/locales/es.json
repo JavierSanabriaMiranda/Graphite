@@ -148,6 +148,10 @@
                 "title": "Página",
                 "search": "página,pagina,subpagina,subpágina,nota"
             },
+            "attached_file": {
+                "title": "Archivo adjunto",
+                "search": "archivo,adjunto,imagen,video,audio"
+            },
             "h1": {
                 "title": "Título 1",
                 "search": "h1,titulo,título,encabezado"
@@ -217,6 +221,7 @@
         "broken_link": "Nota no encontrada"
     },
     "attachment": {
+        "attachment_zone_title": "Insertar archivo adjunto",
         "attachment_zone_description": "Pulsa en aquí o arrastra un archivo para adjuntarlo",
         "loading": "Cargando archivo...",
         "not_available": "Archivo no disponible",
