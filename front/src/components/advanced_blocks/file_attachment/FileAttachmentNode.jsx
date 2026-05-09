@@ -86,8 +86,7 @@ const FileAttachmentNode = ({ node, deleteNode, selected, updateAttributes }) =>
             // Invoke Rust command to handle native file copying to Downloads/Gallery
             await invoke('download_attachment', {
                 sourcePath: metadata.local_path,
-                fileName: fileName,
-                isImage: isImage
+                fileName: fileName
             });
 
             showToast(t('attachment.download_success'), 'success', t('attachment.download_success_message', { fileName }));

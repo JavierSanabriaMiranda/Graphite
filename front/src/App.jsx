@@ -72,19 +72,11 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
         ${isMobile ? 'pb-16' : ''}
       `}>
         <SettingsProvider>
-          {activeTab === 'editor' && <TiptapEditor />}
-          {activeTab === 'search' && (isMobile ? (
-            <MobileSearchView />
-          ) : (
+          <div style={{ display: activeTab === 'editor' ? 'block' : 'none' }}>
             <TiptapEditor />
-          ))}
-          {activeTab === 'browse' && (
-            isMobile ? (
-              <MobileBrowseView />
-            ) : (
-              <TiptapEditor />
-            )
-          )}
+          </div>
+          {activeTab === 'search' && isMobile && <MobileSearchView />}
+          {activeTab === 'browse' && isMobile && <MobileBrowseView />}
         </SettingsProvider>
       </main>
 
