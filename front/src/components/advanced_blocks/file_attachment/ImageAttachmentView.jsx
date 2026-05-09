@@ -6,10 +6,10 @@ import ImageLightbox from '../../util/ImageLightbox';
  * Component that represents an attached image.
  * The image can be resized and zoomed when double clicked. The file can also be downloaded
  */
-const ImageAttachmentView = ({ 
-    url, fileName, imgWidth, isMobile, selected, 
-    isDownloading, isResizing, isLightboxOpen, 
-    setIsLightboxOpen, handleDownload, startResizing, updateAttributes 
+const ImageAttachmentView = ({
+    url, fileName, imgWidth, isMobile, selected,
+    isDownloading, isResizing, isLightboxOpen,
+    setIsLightboxOpen, handleDownload, startResizing, updateAttributes
 }) => {
     const containerRef = useRef(null);
 
@@ -28,23 +28,25 @@ const ImageAttachmentView = ({
                 className={`block w-full h-auto transition-opacity rounded-lg mt-0 mb-0 ${isResizing ? 'opacity-80' : 'opacity-100'}`}
             />
 
-            <ImageLightbox 
-                url={url} 
-                fileName={fileName} 
-                isOpen={isLightboxOpen} 
-                onClose={() => setIsLightboxOpen(false)} 
+            <ImageLightbox
+                url={url}
+                fileName={fileName}
+                isOpen={isLightboxOpen}
+                onClose={() => setIsLightboxOpen(false)}
             />
 
             {/* Action buttons overlay */}
-            <div className={`absolute top-2 right-2 flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 transition-opacity z-10`}>
-                <button
-                    onClick={handleDownload}
-                    disabled={isDownloading}
-                    className="cursor-pointer p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-md backdrop-blur-sm shadow-lg disabled:opacity-50"
-                >
-                    {isDownloading ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
-                </button>
-            </div>
+            {!isMobile &&
+                <div className={`absolute top-2 right-2 flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 transition-opacity z-10`}>
+                    <button
+                        onClick={handleDownload}
+                        disabled={isDownloading}
+                        className="cursor-pointer p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-md backdrop-blur-sm shadow-lg disabled:opacity-50"
+                    >
+                        {isDownloading ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
+                    </button>
+                </div>
+            }
 
             {/* Resize handler */}
             <button

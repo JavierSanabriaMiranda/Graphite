@@ -98,15 +98,17 @@ const GenericFileAttachmentView = ({
                 </div>
             </div>
 
-            <div className={`flex gap-1 ${isMobile ? 'opacity-100' : 'opacity-0'} group-hover/card:opacity-100 transition-opacity`}>
-                <button
-                    onClick={handleDownload}
-                    disabled={isDownloading}
-                    className="cursor-pointer p-2 text-zinc-500 dark:text-zinc-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors disabled:opacity-50"
-                >
-                    {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
-                </button>
-            </div>
+            {!isMobile &&
+                <div className={`flex gap-1 'opacity-0' group-hover/card:opacity-100 transition-opacity`}>
+                    <button
+                        onClick={handleDownload}
+                        disabled={isDownloading}
+                        className="cursor-pointer p-2 text-zinc-500 dark:text-zinc-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                        {isDownloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
+                    </button>
+                </div>
+            }
         </div>
     );
 };
