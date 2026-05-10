@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import VideoAttachmentView from '../../advanced_blocks/file_attachment/VideoAttachmentView';
 import AudioAttachmentView from '../../advanced_blocks/file_attachment/AudioAttachmentView';
 import ImageAttachmentView from '../../advanced_blocks/file_attachment/ImageAttachmentView';
+import { t } from 'i18next'
 
 /**
  * Helper to apply Tiptap marks (bold, italic, color, font, etc.) to a text node.
@@ -50,7 +51,7 @@ const applyMarks = (text, marks) => {
  * Maps Tiptap JSON nodes to actual React components.
  * This ensures that the export uses the EXACT same styling as the editor.
  */
-const renderNodeToJSX = (node, index, exportFormat) => {
+const renderNodeToJSX = (node, index, exportFormat, allNotes) => {
     // Handle Text nodes
     if (node.type === 'text') {
         return <React.Fragment key={index}>{applyMarks(node.text, node.marks)}</React.Fragment>;
@@ -66,7 +67,7 @@ const renderNodeToJSX = (node, index, exportFormat) => {
         const isSvg = emojiValue.length > 10 || emojiValue.includes('M');
 
         // Process children
-        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
+        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat, allNotes)) : null;
 
         return (
             <div
@@ -169,14 +170,14 @@ const renderNodeToJSX = (node, index, exportFormat) => {
 
     // To-do list
     if (node.type === 'taskList') {
-        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
+        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat, allNotes)) : null;
         return <ul key={index} className="list-none p-0 m-0 mb-4 space-y-2">{children}</ul>;
     }
 
     // task item of a to-do list
     if (node.type === 'taskItem') {
         const isChecked = node.attrs?.checked;
-        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
+        const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat, allNotes)) : null;
 
         return (
             <li key={index} className="flex items-start gap-0 mb-1.5 export-node">
@@ -208,8 +209,34 @@ const renderNodeToJSX = (node, index, exportFormat) => {
         );
     }
 
+    if (node.type === 'noteLink') {
+        const { noteId } = node.attrs;
+        // Assuming allNotes is available in the scope of this function
+        const linkedNote = allNotes?.find(n => n.note_id === noteId);
+
+        // If the note is not found, we show the "Broken Link" text
+        const linkText = linkedNote ? (linkedNote.title || 'Untitled Note') : t('note_link.broken_link');
+        const iconChar = linkedNote?.icon;
+
+        return (
+            <span
+                key={index}
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium border-b border-primary/30 mx-0.5"
+            >
+                {/* Render Icon if it exists */}
+                {iconChar && (
+                    <span className="mr-1" style={{ fontFamily: 'var(--font-emoji)' }}>
+                        {iconChar}
+                    </span>
+                )}
+                {/* Render Title */}
+                {linkText}
+            </span>
+        );
+    }
+
     // Handle Standard HTML tags (Recursive)
-    const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat)) : null;
+    const children = node.content ? node.content.map((child, i) => renderNodeToJSX(child, i, exportFormat, allNotes)) : null;
 
     switch (node.type) {
         // Toggle main container
@@ -298,8 +325,8 @@ const renderNodeToJSX = (node, index, exportFormat) => {
 /**
  * Main function to convert Tiptap JSON to a static HTML string using React.
  */
-export const convertJsonToHtml = (json, exportFormat) => {
-    const jsxContent = json.content.map((node, i) => renderNodeToJSX(node, i, exportFormat));
+export const convertJsonToHtml = (json, exportFormat, allNotes) => {
+    const jsxContent = json.content.map((node, i) => renderNodeToJSX(node, i, exportFormat, allNotes));
     // renderToStaticMarkup transforms JSX into a plain HTML string
     return renderToStaticMarkup(<>{jsxContent}</>);
 };

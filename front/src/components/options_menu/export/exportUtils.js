@@ -19,7 +19,7 @@ export const saveAsFile = (content, fileName, contentType) => {
  * Generates the full HTML document string with all resources embedded as Base64.
  * This is the single source of truth for the export design.
  */
-export const generateFullHtmlString = async (editor, title, theme = 'light', exportFormat = 'html') => {
+export const generateFullHtmlString = async (editor, title, theme = 'light', exportFormat = 'html', allNotes) => {
     if (!editor) return '';
 
     // Inject emoji font (Twemoji)
@@ -41,7 +41,7 @@ export const generateFullHtmlString = async (editor, title, theme = 'light', exp
 
     // Generate HTML from React Components
     const json = editor.getJSON();
-    const rawHtml = convertJsonToHtml(json, exportFormat);
+    const rawHtml = convertJsonToHtml(json, exportFormat, allNotes);
 
     const parser = new DOMParser();
     const virtualDoc = parser.parseFromString(rawHtml, 'text/html');

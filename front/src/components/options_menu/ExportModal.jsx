@@ -37,7 +37,7 @@ const normalizeText = (text) => {
 const ExportModal = ({ isOpen, onClose, editor }) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
-  const { selectedNote } = useNote()
+  const { selectedNote, allNotes } = useNote()
 
   // State for the selected format and theme
   const [selectedFormat, setSelectedFormat] = useState('json');
@@ -55,10 +55,10 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
 
       if (selectedFormat === 'pdf') {
         showToast(t('editor.options_menu.export.preparing_pdf'), "info");
-        await exportNoteToPdf(editor, filename, 'light');
+        await exportNoteToPdf(editor, filename, 'light', allNotes);
       }
       else if (selectedFormat === 'html') {
-        await exportNoteToHtml(editor, filename, exportTheme);
+        await exportNoteToHtml(editor, filename, exportTheme, allNotes);
       }
       else {
         // JSON Export

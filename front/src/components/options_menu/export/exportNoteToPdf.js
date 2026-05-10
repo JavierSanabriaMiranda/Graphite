@@ -11,7 +11,7 @@ import { generateFullHtmlString } from './exportUtils';
  * @param {string} title - Note title.
  * @param {string} theme - 'light' or 'dark'.
  */
-export const exportNoteToPdf = async (editor, title, theme) => {
+export const exportNoteToPdf = async (editor, title, theme, allNotes) => {
     try {
         // STEP 1: Open the native Save File dialog
         // This is much better UX than the print dialog
@@ -28,7 +28,7 @@ export const exportNoteToPdf = async (editor, title, theme) => {
         if (!filePath) return false;
 
         // STEP 2: Generate the self-contained HTML string
-        const htmlContent = await generateFullHtmlString(editor, title, theme, 'pdf');
+        const htmlContent = await generateFullHtmlString(editor, title, theme, 'pdf', allNotes);
 
         // STEP 3: Call our Rust "Nuclear" command
         // We send the HTML and the chosen path
