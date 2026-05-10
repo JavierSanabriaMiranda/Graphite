@@ -1,7 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ExportModal from '../../../src/components/options_menu/ExportModal';
 import { useToast } from '../../../src/components/context/ToastContext';
+import { useNote } from '../../../src/components/context/NoteContext';
+import { exportNoteToHtml } from '../../../src/components/options_menu/export/exportNoteToHtml';
+import { exportNoteToPdf } from '../../../src/components/options_menu/export/exportNoteToPdf';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
@@ -11,9 +14,22 @@ vi.mock('../../../src/components/context/ToastContext', () => ({
     useToast: vi.fn(),
 }));
 
+vi.mock('../../../src/components/context/NoteContext', () => ({
+    useNote: vi.fn(),
+}));
+
+// Mock external export functions
+vi.mock('../../../src/components/options_menu/export/exportNoteToHtml', () => ({
+    exportNoteToHtml: vi.fn(),
+}));
+
+vi.mock('../../../src/components/options_menu/export/exportNoteToPdf', () => ({
+    exportNoteToPdf: vi.fn(),
+}));
+
 vi.mock('@floating-ui/react', async () => {
     const actual = await vi.importActual('@floating-ui/react');
-    return { ...actual, FloatingPortal: ({ children }) => <div>{children}</div> };
+    return { ...actual, FloatingPortal: ({ children }) => <div data-testid="portal">{children}</div> };
 });
 
 global.URL.createObjectURL = vi.fn(() => 'blob:url-de-prueba');
@@ -29,11 +45,18 @@ describe('ExportModal Component', () => {
 
         mockOnClose = vi.fn();
         mockShowToast = vi.fn();
+
         vi.mocked(useToast).mockReturnValue({ showToast: mockShowToast });
+
+        // Mocking NoteContext required values
+        vi.mocked(useNote).mockReturnValue({
+            selectedNote: { title: 'Test Note' },
+            allNotes: []
+        });
 
         mockEditor = {
             getJSON: vi.fn().mockReturnValue({ type: 'doc', content: [] }),
-            getHTML: vi.fn().mockReturnValue('<p>Hola Mundo</p>'),
+            getHTML: vi.fn().mockReturnValue('<p>Hello World</p>'),
         };
     });
 
@@ -85,20 +108,31 @@ describe('ExportModal Component', () => {
         linkClickSpy.mockRestore();
     });
 
-    it('should export as HTML when selected', () => {
+    it('should export as HTML when selected', async () => {
         render(<ExportModal isOpen={true} onClose={mockOnClose} editor={mockEditor} />);
 
-        // Select HTML
-        fireEvent.click(screen.getByRole('button', { name: /HTML/i }));
+        // 1. Seleccionar el formato HTML
+        const htmlButton = screen.getByRole('button', { name: /HTML/i });
+        fireEvent.click(htmlButton);
 
-        const linkClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { });
+        // 2. Hacer clic en el botón de exportar
+        const exportButton = screen.getByText('editor.options_menu.export.modal_export');
 
-        fireEvent.click(screen.getByText('editor.options_menu.export.modal_export'));
+        await act(async () => {
+            fireEvent.click(exportButton);
+        });
 
-        expect(mockEditor.getHTML).toHaveBeenCalled();
-        expect(mockShowToast).toHaveBeenCalledWith(expect.any(String), 'success');
+        // 3. VERIFICACIÓN CORRECTA:
+        // No verificamos el editor, sino que el HELPER ha sido llamado
+        expect(exportNoteToHtml).toHaveBeenCalledWith(
+            mockEditor,
+            'Test Note',
+            'light', // Tema por defecto en el estado inicial
+            []       // allNotes del mock
+        );
 
-        linkClickSpy.mockRestore();
+        expect(mockShowToast).toHaveBeenCalledWith('editor.options_menu.export.export_success', 'success');
+        expect(mockOnClose).toHaveBeenCalled();
     });
 
     it('should call onClose when Cancel button is clicked', () => {

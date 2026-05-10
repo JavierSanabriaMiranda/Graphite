@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MenuBar from '../../../src/components/menu_bar/MenuBar';
 import { useEditorState } from '@tiptap/react';
 import { useNote } from '../../../src/components/context/NoteContext';
+import { useAttachmentUpload } from '../../../src/hooks/useAttachmentUpload';
 
 // Mocking all child components to isolate MenuBar logic
 vi.mock('../../../src/components/menu_bar/colors/ColorPicker', () => ({ default: () => <div data-testid="color-picker" /> }));
@@ -14,6 +15,15 @@ vi.mock('../../../src/components/menu_bar/lists/TodoList', () => ({ default: () 
 vi.mock('../../../src/components/menu_bar/TextTypeSelector', () => ({ default: () => <div data-testid="text-type-selector" /> }));
 vi.mock('../../../src/components/menu_bar/FontSelector', () => ({ default: () => <div data-testid="font-selector" /> }));
 vi.mock('../../../src/components/advanced_blocks/toggle_block/ToggleIcon', () => ({ ToggleIcon: () => <span data-testid="toggle-icon" /> }));
+
+vi.mock('@tauri-apps/plugin-dialog', () => ({
+    open: vi.fn(),
+}));
+
+// Mock the new attachment hook
+vi.mock('../../../src/hooks/useAttachmentUpload', () => ({
+    useAttachmentUpload: vi.fn(),
+}));
 
 vi.mock('@tiptap/react', () => ({
     useEditorState: vi.fn(),
@@ -34,7 +44,7 @@ describe('MenuBar Component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Mocking Tiptap's command chain
+        // Tiptap command chain mock
         mockChain = {
             focus: vi.fn().mockReturnThis(),
             toggleBold: vi.fn().mockReturnThis(),
@@ -52,7 +62,7 @@ describe('MenuBar Component', () => {
             chain: vi.fn(() => mockChain),
         };
 
-        // Default state returned by the selector
+        // Default editor state
         useEditorState.mockReturnValue({
             isBold: false,
             isItalic: false,
@@ -62,10 +72,15 @@ describe('MenuBar Component', () => {
             isToggle: false,
         });
 
-        // Default mock for useNote
+        // Default NoteContext mock
         vi.mocked(useNote).mockReturnValue({
             selectNote: vi.fn(),
             createSubnote: vi.fn(),
+        });
+
+        // Default attachment hook mock
+        vi.mocked(useAttachmentUpload).mockReturnValue({
+            uploadAttachment: vi.fn(),
         });
     });
 

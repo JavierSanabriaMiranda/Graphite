@@ -98,7 +98,7 @@ describe('EmojiPicker', () => {
     /**
      * Test selection flow for Emojis
      */
-    it('should call onSelect and close when an emoji is clicked', () => {
+    it('should call onSelect and close when an emoji is clicked', async () => {
         renderPicker();
         fireEvent.click(screen.getByText('Open Picker'));
 
@@ -107,9 +107,9 @@ describe('EmojiPicker', () => {
 
         expect(mockOnSelect).toHaveBeenCalledWith('😀');
         
-        // Picker container should have visibility: hidden after selection
-        const pickerContainer = screen.getByPlaceholderText('emojis.search').closest('.z-1000');
-        expect(pickerContainer).toHaveStyle({ visibility: 'hidden' });
+        await waitFor(() => {
+            expect(screen.queryByPlaceholderText('emojis.search')).not.toBeInTheDocument();
+        });
     });
 
     /**

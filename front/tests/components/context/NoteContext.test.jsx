@@ -5,6 +5,9 @@ import { noteService } from '../../../src/services/db/noteService';
 import { useAuth } from '../../../src/components/context/AuthContext';
 import { useWorkspace } from '../../../src/components/context/WorkspaceContext';
 import { syncService } from '../../../src/services/db/syncService';
+import { useAttachment } from '../../../src/components/context/AttachmentContext';
+import { SyncStatus } from '../../../src/util/SyncStatus';
+
 
 // Mock all dependencies
 vi.mock('../../../src/services/db/noteService', () => ({
@@ -27,6 +30,10 @@ vi.mock('../../../src/components/context/AuthContext', () => ({
 
 vi.mock('../../../src/components/context/WorkspaceContext', () => ({
     useWorkspace: vi.fn(),
+}));
+
+vi.mock('../../../src/components/context/AttachmentContext', () => ({
+    useAttachment: vi.fn(),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -69,6 +76,7 @@ describe('NoteProvider', () => {
         // Default mock implementations
         useAuth.mockReturnValue({ dek: mockDek });
         useWorkspace.mockReturnValue({ activeWorkspace: mockWorkspace });
+        useAttachment.mockReturnValue({ deleteAllAttachmentsForNote: vi.fn() });
         syncService.getNoteWithSync.mockResolvedValue({ 
             note: { note_id: '123', title: 'Test Sync', content: 'Synced Content' },
             status: 'ONLINE'

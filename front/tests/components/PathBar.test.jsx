@@ -9,6 +9,10 @@ vi.mock('react-i18next', () => ({
     useTranslation: () => ({ t: (key) => key }),
 }));
 
+vi.mock('../../src/components/EditModeButton', () => ({
+    default: () => <button>EditModeBtn</button>
+}));
+
 vi.mock('../../src/components/context/NoteContext', () => ({
     useNote: vi.fn(),
 }));
@@ -270,13 +274,16 @@ describe('PathBar Component', () => {
         it('should not show parent button if note is at root level on mobile', async () => {
             const rootNote = {
                 note_id: 'root1',
+                workspace_id: 'ws1', // Added workspace_id to avoid potential issues
                 note_path: '/OnlyRoot',
+                is_editable: true
             };
             noteService.getByNoteId.mockResolvedValue(rootNote);
             useNote.mockReturnValue({
                 selectedNote: rootNote,
                 selectNote: vi.fn(),
-                refreshTrigger: 0
+                refreshTrigger: 0,
+                setNoteEditableMode: vi.fn() // Mock the missing function
             });
 
             await act(async () => {
@@ -285,11 +292,11 @@ describe('PathBar Component', () => {
 
             expect(await screen.findByText('OnlyRoot')).toBeInTheDocument();
 
-            // En móvil, si solo hay una parte, no se renderiza el bloque del parentName
-            // Filtramos botones que no sean los de utilidades
             const buttons = screen.getAllByRole('button');
             const breadcrumbButtons = buttons.filter(btn =>
-                btn.textContent !== 'ThemeBtn' && btn.textContent !== 'Options'
+                btn.textContent !== 'ThemeBtn' &&
+                btn.textContent !== 'Options' &&
+                btn.textContent !== 'EditModeBtn' // Filter out the edit mode button
             );
 
             expect(breadcrumbButtons).toHaveLength(0);

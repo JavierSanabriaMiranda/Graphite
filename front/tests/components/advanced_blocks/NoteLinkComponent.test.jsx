@@ -37,6 +37,7 @@ describe('NoteLinkComponent', () => {
     useNote.mockReturnValue({
       allNotes: mockNotes,
       selectNote: mockSelectNote,
+      selectedNote: { note_id: 'other' }
     });
 
     const node = { attrs: { noteId: '1' } };
@@ -53,6 +54,7 @@ describe('NoteLinkComponent', () => {
     useNote.mockReturnValue({
       allNotes: mockNotes,
       selectNote: mockSelectNote,
+      selectedNote: { note_id: 'other' }
     });
 
     const node = { attrs: { noteId: '1' } };
@@ -69,6 +71,7 @@ describe('NoteLinkComponent', () => {
     useNote.mockReturnValue({
       allNotes: mockNotes,
       selectNote: mockSelectNote,
+      selectedNote: { note_id: 'other' }
     });
 
     const node = { attrs: { noteId: '2' } };
@@ -86,6 +89,7 @@ describe('NoteLinkComponent', () => {
     useNote.mockReturnValue({
       allNotes: mockNotes,
       selectNote: mockSelectNote,
+      selectedNote: { note_id: 'other' }
     });
 
     const node = { attrs: { noteId: '999' } }; // Non-existent ID

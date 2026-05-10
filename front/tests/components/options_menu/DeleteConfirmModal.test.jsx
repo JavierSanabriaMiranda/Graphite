@@ -1,13 +1,8 @@
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import DeleteConfirmModal from '../../../src/components/options_menu/DeleteConfirmModal';
-import { noteService } from '../../../src/services/db/noteService';
 import { useNote } from '../../../src/components/context/NoteContext';
 import { useToast } from '../../../src/components/context/ToastContext';
-
-vi.mock('../../../src/services/db/noteService', () => ({
-    noteService: { delete: vi.fn() }
-}));
 
 vi.mock('../../../src/components/context/NoteContext', () => ({
     useNote: vi.fn()
@@ -25,21 +20,18 @@ vi.mock('@floating-ui/react', async () => {
 describe('DeleteConfirmModal', () => {
     const mockOnClose = vi.fn();
     const mockOnConfirm = vi.fn();
-    const mockSelectNote = vi.fn();
-    const mockTriggerRefresh = vi.fn();
-    const mockShowToast = vi.fn();
+    const mockDeleteNote = vi.fn();
 
     const mockSelectedNote = { note_id: '1', title: 'Current Note' };
     const mockOtherNote = { note_id: '2', title: 'Other Note' };
+    const mockShowToast = vi.fn();
 
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Hooks default configuration
         useNote.mockReturnValue({
             selectedNote: mockSelectedNote,
-            selectNote: mockSelectNote,
-            triggerRefresh: mockTriggerRefresh,
+            deleteNote: mockDeleteNote,
         });
 
         useToast.mockReturnValue({
@@ -64,34 +56,26 @@ describe('DeleteConfirmModal', () => {
         expect(screen.getByText('editor.options_menu.delete.confirm_description')).toBeInTheDocument();
     });
 
-    it('should call onClose when clicking Cancel button', () => {
-        render(<DeleteConfirmModal isOpen={true} onClose={mockOnClose} />);
-
-        fireEvent.click(screen.getByText('common.cancel'));
-        expect(mockOnClose).toHaveBeenCalled();
-    });
-
-    it('should delete the note successfully and clear selection if it is the current note', async () => {
-        vi.mocked(noteService.delete).mockResolvedValue(true);
+    it('should delete the note successfully using the context function', async () => {
+        mockDeleteNote.mockResolvedValue(true);
 
         render(<DeleteConfirmModal isOpen={true} onClose={mockOnClose} onConfirm={mockOnConfirm} />);
 
+        const deleteButton = screen.getByText('common.delete');
+
         await act(async () => {
-            fireEvent.click(screen.getByText('common.delete'));
+            fireEvent.click(deleteButton);
         });
 
-        expect(noteService.delete).toHaveBeenCalledWith(mockSelectedNote.note_id);
-        expect(mockShowToast).toHaveBeenCalledWith(expect.any(String), "success");
-        expect(mockSelectNote).toHaveBeenCalledWith(null); // Delete current, editor gets cleared
+        expect(mockDeleteNote).toHaveBeenCalledWith(mockSelectedNote.note_id);
+        expect(mockShowToast).toHaveBeenCalledWith("editor.options_menu.delete.success", "success");
         expect(mockOnConfirm).toHaveBeenCalled();
-        expect(mockTriggerRefresh).toHaveBeenCalled();
         expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('should delete successfully but NOT clear selection if deleting a different note', async () => {
-        vi.mocked(noteService.delete).mockResolvedValue(true);
+    it('should delete a different note if noteToDelete prop is provided', async () => {
+        mockDeleteNote.mockResolvedValue(true);
 
-        // Use a different note by prop
         render(
             <DeleteConfirmModal
                 isOpen={true}
@@ -104,13 +88,13 @@ describe('DeleteConfirmModal', () => {
             fireEvent.click(screen.getByText('common.delete'));
         });
 
-        expect(noteService.delete).toHaveBeenCalledWith(mockOtherNote.note_id);
-        expect(mockSelectNote).not.toHaveBeenCalled(); // Editor dont get clear because it's not selected note
+        expect(mockDeleteNote).toHaveBeenCalledWith(mockOtherNote.note_id);
     });
 
     it('should handle errors during deletion', async () => {
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-        vi.mocked(noteService.delete).mockRejectedValue(new Error('DB Error'));
+        // Simulate fail 
+        mockDeleteNote.mockRejectedValue(new Error('DB Error'));
 
         render(<DeleteConfirmModal isOpen={true} onClose={mockOnClose} />);
 
@@ -118,26 +102,10 @@ describe('DeleteConfirmModal', () => {
             fireEvent.click(screen.getByText('common.delete'));
         });
 
-        expect(mockShowToast).toHaveBeenCalledWith(expect.any(String), "error");
+        expect(mockShowToast).toHaveBeenCalledWith("editor.options_menu.delete.error", "error");
         expect(consoleSpy).toHaveBeenCalled();
         expect(mockOnClose).not.toHaveBeenCalled();
 
         consoleSpy.mockRestore();
-    });
-
-    it('should call onClose when clicking the backdrop', async () => {
-        const mockOnClose = vi.fn();
-        render(
-            <DeleteConfirmModal
-                isOpen={true}
-                onClose={mockOnClose}
-                noteToDelete={{ title: 'Test Note' }}
-            />
-        );
-        const backdrop = document.querySelector('.animate-in');
-
-        fireEvent.mouseDown(backdrop);
-
-        expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 });

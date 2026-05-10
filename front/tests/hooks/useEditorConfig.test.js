@@ -15,6 +15,15 @@ vi.mock('i18next', () => ({
 // Mock Tiptap components and extensions
 vi.mock('@tiptap/react', () => ({
     ReactNodeViewRenderer: vi.fn((component) => component),
+    Node: {
+        create: vi.fn(() => ({
+            configure: vi.fn(() => ({})),
+            extend: vi.fn(function() {
+                return this;
+            }),
+        })),
+    },
+    NodeViewWrapper: {},
 }));
 
 vi.mock('@tiptap/starter-kit', () => ({

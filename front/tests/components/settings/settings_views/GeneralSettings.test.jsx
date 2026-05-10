@@ -24,6 +24,10 @@ vi.mock('../../../../src/components/settings/DefaultFontSelector', () => ({
     default: () => <div>Font Selector Component</div>,
 }));
 
+vi.mock('../../../../src/components/settings/InterfaceZoomSelector', () => ({
+    default: () => <div data-testid="zoom-selector">Zoom Selector Component</div>,
+}));
+
 // --- 3. IMPORT DEL COMPONENTE ---
 import GeneralSettings from '../../../../src/components/settings/settings_views/GeneralSettings';
 

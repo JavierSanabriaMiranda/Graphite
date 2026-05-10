@@ -157,15 +157,23 @@ describe('syncService Suite', () => {
 
         it('should call purgeSyncedDeletes after syncing', async () => {
             const dek = new Uint8Array(32);
+
+            // Spying on the internal function of the service
+            const purgeSpy = vi.spyOn(syncService, 'purgeSyncedDeletes').mockResolvedValue();
+
+            // Ensure getPendingUploads returns empty arrays to avoid complex sub-calls
             vi.spyOn(syncService, 'getPendingUploads').mockResolvedValue({
                 notes: [],
-                workspaces: []
+                workspaces: [],
+                attachments: []
             });
 
             await syncService.syncPendingData(dek);
 
-            expect(mockDb.execute).toHaveBeenCalled();
-            vi.restoreAllMocks();
+            // Verify that the orchestrator reached the final step
+            expect(purgeSpy).toHaveBeenCalled();
+
+            purgeSpy.mockRestore();
         });
     });
 
