@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import VideoAttachmentView from '../../advanced_blocks/file_attachment/VideoAttachmentView';
 import AudioAttachmentView from '../../advanced_blocks/file_attachment/AudioAttachmentView';
 import ImageAttachmentView from '../../advanced_blocks/file_attachment/ImageAttachmentView';
+import GenericFileAttachmentView from '../../advanced_blocks/file_attachment/GenericFileAttachmentView';
 import { t } from 'i18next'
 
 /**
@@ -131,6 +132,10 @@ const renderNodeToJSX = (node, index, exportFormat, allNotes) => {
         const isAudio = attrs.mimeType?.startsWith('audio/');
         const isImage = attrs.mimeType?.startsWith('image/');
 
+        const displayExtension = (attrs.fileName || '').includes('.')
+            ? attrs.fileName.split('.').pop().toUpperCase()
+            : (attrs.mimeType?.split('/')[1] || 'FILE').toUpperCase();
+
         if (exportFormat === 'pdf' && (isVideo || isAudio)) {
             return null;
         }
@@ -162,6 +167,16 @@ const renderNodeToJSX = (node, index, exportFormat, allNotes) => {
                 <ImageAttachmentView
                     {...attrs}
                     url={`attachment://${attrs.attachmentId}`}
+                    isExporting={true}
+                />
+            </div>
+        );
+
+        return (
+            <div key={index} className="export-node">
+                <GenericFileAttachmentView
+                    {...attrs}
+                    displayExtension={displayExtension}
                     isExporting={true}
                 />
             </div>
