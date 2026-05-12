@@ -483,3 +483,120 @@ describe('NoteProvider - Deletion and Refresh Logic', () => {
         expect(noteService.getByNoteId).not.toHaveBeenCalled();
     });
 });
+
+describe('NoteProvider - Edit Mode Logic', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        useAuth.mockReturnValue({ dek: mockDek });
+        useWorkspace.mockReturnValue({ activeWorkspace: mockWorkspace });
+
+        // Mock necessary services
+        noteService.update = vi.fn().mockResolvedValue(true);
+        noteService.getByNoteId = vi.fn();
+    });
+
+    /**
+     * Test setNoteEditableMode: Should update DB and local state
+     */
+    it('should update the is_editable property in DB and refresh local state', async () => {
+        const noteId = '123';
+        const initialNote = { note_id: noteId, title: 'Test', is_editable: 0 };
+        const updatedNote = { note_id: noteId, title: 'Test', is_editable: 1 };
+
+        noteService.getByNoteId.mockResolvedValue(updatedNote);
+        // Mock sync service to allow the initial selection
+        syncService.getNoteWithSync.mockResolvedValue({ note: initialNote, status: 'ONLINE' });
+
+        const { result } = renderHook(() => useNote(), {
+            wrapper: ({ children }) => <NoteProvider>{children}</NoteProvider>
+        });
+
+        // Select the note first so selectedNote is not null
+        await act(async () => {
+            await result.current.selectNote(initialNote);
+        });
+
+        // Trigger editable mode change
+        await act(async () => {
+            await result.current.setNoteEditableMode(true);
+        });
+
+        // Verify DB calls: 1 for is_editable=1
+        expect(noteService.update).toHaveBeenCalledWith(noteId, { is_editable: 1 });
+        expect(noteService.getByNoteId).toHaveBeenCalledWith(noteId);
+
+        // Verify local state reflects the update returned by getByNoteId
+        expect(result.current.selectedNote.is_editable).toBe(1);
+    });
+
+    /**
+     * Test setNoteEditableMode (False): Should update to 0
+     */
+    it('should set is_editable to 0 in DB when passing false', async () => {
+        const noteId = '123';
+        const initialNote = { note_id: noteId, title: 'Test', is_editable: 1 };
+        const updatedNote = { note_id: noteId, title: 'Test', is_editable: 0 };
+
+        noteService.getByNoteId.mockResolvedValue(updatedNote);
+        syncService.getNoteWithSync.mockResolvedValue({ note: initialNote, status: 'ONLINE' });
+
+        const { result } = renderHook(() => useNote(), {
+            wrapper: ({ children }) => <NoteProvider>{children}</NoteProvider>
+        });
+
+        await act(async () => {
+            await result.current.selectNote(initialNote);
+        });
+
+        await act(async () => {
+            await result.current.setNoteEditableMode(false);
+        });
+
+        expect(noteService.update).toHaveBeenCalledWith(noteId, { is_editable: 0 });
+    });
+
+    /**
+     * Test setNoteEditableMode (No Note): Should do nothing if no note is selected
+     */
+    it('should do nothing if setNoteEditableMode is called without a selected note', async () => {
+        const { result } = renderHook(() => useNote(), {
+            wrapper: ({ children }) => <NoteProvider>{children}</NoteProvider>
+        });
+
+        await act(async () => {
+            await result.current.setNoteEditableMode(true);
+        });
+
+        expect(noteService.update).not.toHaveBeenCalled();
+    });
+
+    /**
+     * Test Error Handling
+     */
+    it('should log an error if the database update fails', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+        const initialNote = { note_id: '123', title: 'Test' };
+
+        noteService.update.mockRejectedValue(new Error('Update failed'));
+        syncService.getNoteWithSync.mockResolvedValue({ note: initialNote, status: 'ONLINE' });
+
+        const { result } = renderHook(() => useNote(), {
+            wrapper: ({ children }) => <NoteProvider>{children}</NoteProvider>
+        });
+
+        await act(async () => {
+            await result.current.selectNote(initialNote);
+        });
+
+        await act(async () => {
+            await result.current.setNoteEditableMode(true);
+        });
+
+        expect(consoleSpy).toHaveBeenCalledWith(
+            expect.stringContaining("Error while updating note editable mode:"),
+            expect.any(Error)
+        );
+
+        consoleSpy.mockRestore();
+    });
+});
