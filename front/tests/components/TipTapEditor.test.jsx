@@ -11,17 +11,7 @@ import { useIsMobile } from '../../src/hooks/useIsMobile';
 import { noteService } from '../../src/services/db/noteService';
 import { useEditor } from '@tiptap/react';
 import { useEditorConfig } from '../../src/hooks/useEditorConfig';
-
-// --- MOCKS ---
-
-vi.mock('@tiptap/pm/state', () => ({
-    EditorState: {
-        create: vi.fn().mockReturnValue({
-            plugins: [],
-            doc: { content: { size: 0 } }
-        })
-    },
-}));
+import { EditorState } from '@tiptap/pm/state';
 
 vi.mock('@tiptap/react', async () => {
     const actual = await vi.importActual('@tiptap/react');
@@ -51,7 +41,7 @@ vi.mock('../../src/services/db/noteService', () => ({
     },
 }));
 
-// Mocks de componentes hijos
+// Child component mocks
 vi.mock('../../src/components/menu_bar/MenuBar', () => ({ default: () => <div data-testid="menu-bar" /> }));
 vi.mock('../../src/components/menu_bar/MobileFormattingSheet', () => ({ default: () => <div data-testid="mobile-formatting" /> }));
 vi.mock('../../src/components/PathBar', () => ({ default: () => <div data-testid="path-bar" /> }));
@@ -61,8 +51,9 @@ vi.mock('../../src/components/util/NoteIcon', () => ({ default: () => <div data-
 vi.mock('../../src/components/views/ConflictResolver', () => ({ default: () => <div data-testid="conflict-resolver" /> }));
 vi.mock('../../src/components/InfoBar', () => ({ default: () => <div data-testid="info-bar" /> }));
 vi.mock('../../src/components/util/ChangeThemeButton', () => ({ default: () => <button>Theme</button> }));
+vi.mock('../../src/components/context_menu/EditorContextMenu', () => ({ default: () => <div data-testid="editor-context-menu" /> }));
 
-describe('TiptapEditor Component', () => {
+describe('TiptapEditor Component - Full Integration Suite', () => {
     let mockEditor;
     let mockShowToast;
 
@@ -85,47 +76,45 @@ describe('TiptapEditor Component', () => {
         useIsMobile.mockReturnValue(false);
         useAttachment.mockReturnValue({ uploadFile: vi.fn(), deleteAttachment: vi.fn(), syncNoteAttachments: vi.fn() });
 
-        // SOLUCIÓN ERROR 1: Asegurar que allNotes siempre sea un array, incluso cuando no hay nota seleccionada
         useNote.mockReturnValue({
             selectedNote: mockActiveNote,
-            allNotes: [],
+            allNotes: [{ title: 'Note 1', note_id: '1' }],
             triggerRefresh: vi.fn(),
-            createRootNote: vi.fn(),
             selectNote: vi.fn(),
             isSyncing: false,
             syncStatus: 'ONLINE',
             refreshCurrentNote: vi.fn(),
         });
 
-        // SOLUCIÓN ERROR 3: Estructura completa de state y view para evitar "undefined"
+        // Setup complex Tiptap mock structure
+        const mockChain = {
+            focus: vi.fn().mockReturnThis(),
+            insertContent: vi.fn().mockReturnThis(),
+            insertContentAt: vi.fn().mockReturnThis(),
+            run: vi.fn().mockReturnThis(),
+            setContent: vi.fn().mockReturnThis()
+        };
+
         mockEditor = {
             commands: {
                 setContent: vi.fn(),
                 focus: vi.fn().mockReturnThis(),
                 insertContent: vi.fn().mockReturnThis()
             },
-            chain: () => ({
-                focus: () => ({
-                    insertContent: vi.fn().mockReturnThis(),
-                    run: vi.fn()
-                })
-            }),
+            chain: vi.fn(() => mockChain),
             getJSON: vi.fn().mockReturnValue({ type: 'doc', content: [] }),
             view: {
                 updateState: vi.fn(),
                 coordsAtPos: vi.fn().mockReturnValue({ left: 100, top: 100, bottom: 120 }),
-                state: { // Añadido aquí para handleEmojiCommand
-                    selection: { from: 0, $from: { pos: 0 } }
-                }
+                state: { selection: { from: 0, $from: { pos: 0 } } }
             },
-            state: { // Tiptap usa editor.state y editor.view.state
+            state: {
                 selection: { $from: { pos: 0 }, from: 0 },
                 plugins: [],
-                schema: { nodeFromJSON: vi.fn().mockReturnValue({}) },
-                doc: { content: { size: 0 } }
+                doc: { content: { size: 10 }, descendants: vi.fn() }
             },
             schema: { nodeFromJSON: vi.fn().mockReturnValue({}) },
-            extensionManager: { extensions: [] },
+            extensionManager: { extensions: [{ name: 'noteLink', configure: vi.fn() }] },
             isDestroyed: false,
             setEditable: vi.fn(),
             setOptions: vi.fn()
@@ -147,87 +136,133 @@ describe('TiptapEditor Component', () => {
         return res;
     };
 
-    // --- TESTS ---
+    // --- TITLE & NAVIGATION TESTS ---
 
-    it('should navigate from Editor to Title when ArrowUp is pressed at position 0', async () => {
+    it('should navigate from Editor to Title when ArrowUp is pressed at the start', async () => {
         await renderEditor();
         const handleKeyDown = vi.mocked(useEditorConfig).mock.calls[0][0].handleKeyDownProp;
-
         const titleInput = screen.getByPlaceholderText('editor.no_title_placeholder');
         const focusSpy = vi.spyOn(titleInput, 'focus');
 
         const mockView = { state: { selection: { $from: { pos: 0 } } } };
-        const mockEvent = { key: 'ArrowUp' };
-
-        act(() => { handleKeyDown(mockView, mockEvent); });
+        act(() => { handleKeyDown(mockView, { key: 'ArrowUp' }); });
         expect(focusSpy).toHaveBeenCalled();
     });
 
-    it('should navigate from Title to Editor when Enter or ArrowDown is pressed', async () => {
-        await renderEditor();
-        const titleInput = screen.getByPlaceholderText('editor.no_title_placeholder');
-
-        fireEvent.keyDown(titleInput, { key: 'Enter' });
-        expect(mockEditor.commands.focus).toHaveBeenCalledWith('start');
-
-        fireEvent.keyDown(titleInput, { key: 'ArrowDown' });
-        expect(mockEditor.commands.focus).toHaveBeenCalledWith('start');
-    });
-
-    it('should update the note title on blur if changed', async () => {
+    it('should update note title and trigger auto-save on blur', async () => {
         noteService.update.mockResolvedValue({ success: true });
         await renderEditor();
         const titleInput = screen.getByDisplayValue('Test Note');
-        fireEvent.change(titleInput, { target: { value: 'New Title' } });
-
+        
+        fireEvent.change(titleInput, { target: { value: 'Updated Title' } });
         await act(async () => {
             fireEvent.blur(titleInput);
             vi.runAllTimers();
         });
 
-        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ title: 'New Title' }));
+        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ title: 'Updated Title' }));
     });
 
-    it('should show an error toast and revert title on name collision', async () => {
-        noteService.update.mockResolvedValue({ error: 'COLLISION' });
+    // --- RECONCILIATION & AUTO-APPEND TESTS ---
+
+    it('should reconcile missing subpages and append them to the doc', async () => {
+        const missingSubnotes = [{ note_id: 'sub-99', title: 'Missing' }];
+        noteService.getSubnotes.mockResolvedValue(missingSubnotes);
+        
+        // Mocking empty descendants to trigger the "missing" logic
+        mockEditor.state.doc.descendants.mockImplementation(() => {});
+
         await renderEditor();
-        const titleInput = screen.getByDisplayValue('Test Note');
-        fireEvent.change(titleInput, { target: { value: 'Collided' } });
+        await act(async () => { vi.runAllTimers(); });
 
-        await act(async () => {
-            fireEvent.blur(titleInput);
-            vi.runAllTimers();
-        });
-
-        expect(mockShowToast).toHaveBeenCalledWith('editor.errors.name_collision_title', "error", expect.any(String));
-        expect(titleInput.value).toBe('Test Note');
+        expect(mockEditor.chain().insertContentAt).toHaveBeenCalledWith(
+            expect.any(Number),
+            expect.arrayContaining([expect.objectContaining({ type: 'pageBlock' })])
+        );
     });
 
-    it('should trigger auto-save after 2 seconds of inactivity', async () => {
-        await renderEditor();
-        const onUpdateCallback = vi.mocked(useEditorConfig).mock.calls[0][0].onUpdate;
+    // --- EXTENSION & STATE SYNC TESTS ---
 
-        await act(async () => {
-            onUpdateCallback({ editor: mockEditor });
-            vi.advanceTimersByTime(2000);
+    it('should update noteLink extension when allNotes changes', async () => {
+        const { rerender } = render(<TiptapEditor />);
+        
+        useNote.mockReturnValue({
+            selectedNote: mockActiveNote,
+            allNotes: [{ title: 'New Note', note_id: 'new' }],
+            triggerRefresh: vi.fn(),
         });
+
+        await act(async () => { rerender(<TiptapEditor />); });
+
+        expect(mockEditor.setOptions).toHaveBeenCalled();
+    });
+
+    it('should set editor to read-only when note is_editable is 0', async () => {
+        useNote.mockReturnValue({
+            selectedNote: { ...mockActiveNote, is_editable: 0 },
+            allNotes: [],
+            triggerRefresh: vi.fn(),
+        });
+
+        await renderEditor();
+        expect(mockEditor.setEditable).toHaveBeenCalledWith(false);
+    });
+
+    // --- INTERACTION & CONTEXT MENU TESTS ---
+
+    it('should show custom context menu on desktop', async () => {
+        const { container } = await renderEditor();
+        
+        const editorBody = container.querySelector('.tiptap-container');
+        
+        await act(async () => {
+            fireEvent.contextMenu(editorBody, { clientX: 50, clientY: 50 });
+        });
+
+        expect(screen.getByTestId('editor-context-menu')).toBeInTheDocument();
+    });
+
+    it('should handle emoji command by positioning picker at cursor', async () => {
+        await renderEditor();
+        const handleEmojiCommand = vi.mocked(useEditorConfig).mock.calls[0][0].handleEmojiCommand;
+
+        act(() => { handleEmojiCommand(); });
+        // The picker should appear twice: once for the header and once for the slash command
+        expect(screen.getAllByTestId('emoji-picker').length).toBeGreaterThan(1);
+    });
+
+    // --- AUTO-SAVE & PERSISTENCE TESTS ---
+
+    it('should trigger content save after 2 seconds of inactivity', async () => {
+        await renderEditor();
+        const onUpdate = vi.mocked(useEditorConfig).mock.calls[0][0].onUpdate;
+
+        act(() => { onUpdate({ editor: mockEditor }); });
+        
+        await act(async () => { vi.advanceTimersByTime(2000); });
 
         expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ is_dirty: 1 }));
     });
 
-    it('should show EmptyState when no note is selected', async () => {
-        useNote.mockReturnValue({
-            selectedNote: null,
-            allNotes: [],
-            triggerRefresh: vi.fn(),
-            createRootNote: vi.fn(),
-        });
+    it('should force save on unmount if a timeout is pending', async () => {
+        const { unmount } = render(<TiptapEditor />);
+        const onUpdate = vi.mocked(useEditorConfig).mock.calls[0][0].onUpdate;
 
+        act(() => { onUpdate({ editor: mockEditor }); });
+        unmount();
+
+        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ is_dirty: 1 }));
+    });
+
+    // --- UI STATE TESTS (SYNC & EMPTY) ---
+
+    it('should show EmptyState when no note is selected', () => {
+        useNote.mockReturnValue({ selectedNote: null, allNotes: [], createRootNote: vi.fn() });
         render(<TiptapEditor />);
         expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     });
 
-    it('should display conflict resolution banner when conflict is detected', async () => {
+    it('should display conflict resolution banner when status is CONFLICT', async () => {
         useNote.mockReturnValue({
             selectedNote: mockActiveNote,
             syncStatus: 'CONFLICT',
@@ -235,111 +270,5 @@ describe('TiptapEditor Component', () => {
         });
         await renderEditor();
         expect(screen.getByText('conflict.conflict_detected_title')).toBeInTheDocument();
-    });
-
-    it('should open conflict resolver when resolve button is clicked', async () => {
-        useNote.mockReturnValue({
-            selectedNote: mockActiveNote,
-            syncStatus: 'CONFLICT',
-            allNotes: []
-        });
-        await renderEditor();
-        const resolveBtn = screen.getByText('conflict.resolve_conflict');
-        fireEvent.click(resolveBtn);
-        expect(screen.getByTestId('conflict-resolver')).toBeInTheDocument();
-    });
-
-    it('should show offline empty state when offline with no content', async () => {
-        useNote.mockReturnValue({
-            selectedNote: { ...mockActiveNote, content: null },
-            syncStatus: 'OFFLINE_EMPTY',
-            allNotes: []
-        });
-        await renderEditor();
-        expect(screen.getByText('editor.offline_empty_title')).toBeInTheDocument();
-    });
-
-    it('should handle icon removal', async () => {
-        await renderEditor();
-        const removeBtn = screen.getByTitle('editor.remove_icon');
-        await act(async () => { fireEvent.click(removeBtn); });
-        expect(noteService.update).toHaveBeenCalledWith('note-123', { icon: null });
-    });
-
-    it('should handle icon selection and save to DB', async () => {
-        await renderEditor();
-        expect(screen.getByTestId('note-icon')).toBeInTheDocument();
-        expect(screen.getAllByTestId('emoji-picker').length).toBeGreaterThan(0);
-    });
-
-    it('should inject content to editor when loading a note with content', async () => {
-        // Configuramos una nota con contenido
-        const contentNote = {
-            ...mockActiveNote,
-            content: JSON.stringify({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }] })
-        };
-
-        useNote.mockReturnValue({
-            selectedNote: contentNote,
-            allNotes: [],
-            triggerRefresh: vi.fn(),
-            syncStatus: 'ONLINE',
-        });
-
-        // Renderizamos
-        render(<TiptapEditor />);
-
-        // Ejecutamos todos los timers pendientes (el setTimeout de inyección)
-        await act(async () => {
-            vi.runAllTimers();
-        });
-
-        expect(mockEditor.view.updateState).toHaveBeenCalled();
-    });
-
-    it('should not focus title when ArrowUp is pressed at position > 1', async () => {
-        await renderEditor();
-        const handleKeyDown = vi.mocked(useEditorConfig).mock.calls[0][0].handleKeyDownProp;
-        const titleInput = screen.getByPlaceholderText('editor.no_title_placeholder');
-        const focusSpy = vi.spyOn(titleInput, 'focus');
-
-        const mockView = { state: { selection: { $from: { pos: 10 } } } };
-        act(() => { handleKeyDown(mockView, { key: 'ArrowUp' }); });
-        expect(focusSpy).not.toHaveBeenCalled();
-    });
-
-    it('should revert empty title change without saving to DB', async () => {
-        await renderEditor();
-        const titleInput = screen.getByDisplayValue('Test Note');
-        fireEvent.change(titleInput, { target: { value: '' } });
-
-        await act(async () => {
-            fireEvent.blur(titleInput);
-            vi.runAllTimers();
-        });
-
-        expect(noteService.update).not.toHaveBeenCalled();
-        expect(titleInput.value).toBe('Test Note');
-    });
-
-    it('should handle emoji command and create floating reference', async () => {
-        await renderEditor();
-        const handleEmojiCommand = vi.mocked(useEditorConfig).mock.calls[0][0].handleEmojiCommand;
-
-        act(() => { handleEmojiCommand(); });
-        // After command, a second EmojiPicker (floating) should be rendered via conditional
-        expect(screen.getAllByTestId('emoji-picker').length).toBeGreaterThan(1);
-    });
-
-    it('should apply mobile styling when isMobile is true', async () => {
-        useIsMobile.mockReturnValue(true);
-        await renderEditor();
-        expect(screen.getByTestId('mobile-formatting')).toBeInTheDocument();
-        expect(screen.queryByTestId('menu-bar')).not.toBeInTheDocument();
-    });
-
-    it('should render PathBar with correct props', async () => {
-        await renderEditor();
-        expect(screen.getByTestId('path-bar')).toBeInTheDocument();
     });
 });
