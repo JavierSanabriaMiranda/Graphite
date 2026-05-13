@@ -88,7 +88,7 @@ const AlignmentSelector = ({ editor }) => {
                 ref={refs.setReference}
                 {...getReferenceProps()}
                 className="cursor-pointer flex items-center gap-2 p-2 bg-main-bg rounded-lg hover:bg-hover-primary-bg transition-colors"
-                title={t('editor.toolbar.alignment')}
+                title={t('editor.toolbar.alignment.alignment')}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +126,7 @@ const AlignmentSelector = ({ editor }) => {
                                     ? 'text-white dark:text-primary bg-primary dark:bg-primary/10 shadow-sm'
                                     : 'hover:bg-hover-primary-bg text-text-primary'
                                 }`}
-                            title={align.name}
+                            title={t('editor.toolbar.alignment.' + align.value)}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

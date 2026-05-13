@@ -41,8 +41,12 @@ describe('ToastProvider', () => {
 
     const toast = screen.getByText('Successful operation');
     expect(toast).toBeInTheDocument();
-    // Verificamos que tiene las clases de éxito (línea 40 aprox)
-    expect(toast.parentElement).toHaveClass('bg-green-100');
+    // Verificamos que tiene el icono de éxito (CheckCircle2)
+    const toastContainer = toast.closest('div[class*="pointer-events-auto"]');
+    expect(toastContainer).toHaveClass('bg-white');
+    // Verificamos que el accent bar tiene el color verde
+    const accentBar = toastContainer?.querySelector('div[class*="bg-green-600"]');
+    expect(accentBar).toBeInTheDocument();
   });
 
   it('should show error and info toasts with correct styles', () => {
@@ -53,7 +57,11 @@ describe('ToastProvider', () => {
     );
 
     fireEvent.click(screen.getByText('Show Toast'));
-    expect(screen.getByText('Critical error').parentElement).toHaveClass('bg-red-50');
+    const errorToast = screen.getByText('Critical error');
+    const errorContainer = errorToast.closest('div[class*="pointer-events-auto"]');
+    // Verificamos que el accent bar tiene el color rojo para error
+    const errorAccentBar = errorContainer?.querySelector('div[class*="bg-red-600"]');
+    expect(errorAccentBar).toBeInTheDocument();
 
     rerender(
       <ToastProvider>
@@ -61,7 +69,11 @@ describe('ToastProvider', () => {
       </ToastProvider>
     );
     fireEvent.click(screen.getByText('Show Toast'));
-    expect(screen.getByText('Info message').parentElement).toHaveClass('bg-blue-50');
+    const infoToast = screen.getByText('Info message');
+    const infoContainer = infoToast.closest('div[class*="pointer-events-auto"]');
+    // Verificamos que el accent bar tiene el color azul para info
+    const infoAccentBar = infoContainer?.querySelector('div[class*="bg-blue-600"]');
+    expect(infoAccentBar).toBeInTheDocument();
   });
 
   it('should remove toast when clicking the close button', () => {
@@ -72,7 +84,12 @@ describe('ToastProvider', () => {
     );
 
     fireEvent.click(screen.getByText('Show Toast'));
-    const closeButton = screen.getByText('✕');
+    expect(screen.getByText('Delete me')).toBeInTheDocument();
+    
+    // Find the close button (it contains an X icon from lucide-react)
+    const toast = screen.getByText('Delete me');
+    const toastContainer = toast.closest('div[class*="pointer-events-auto"]');
+    const closeButton = toastContainer?.querySelector('button');
     
     fireEvent.click(closeButton);
     

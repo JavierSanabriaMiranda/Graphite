@@ -5,6 +5,10 @@ import DropdownArrow from '../util/DropdownArrow';
 import NoteIcon from '../util/NoteIcon';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
+import NavContextMenu from '../context_menu/NavContextMenu';
+import DeleteConfirmModal from '../options_menu/DeleteConfirmModal';
+
+import { useToast } from '../context/ToastContext';
 
 /**
  * Component that represents a page with its subnotes in the sidebar
@@ -16,8 +20,9 @@ import { useNote } from '../context/NoteContext';
  */
 const NavItem = ({ note: initialNote, level = 0 }) => {
     const { t } = useTranslation();
+    const { showToast } = useToast();
 
-    const { selectedNote, selectNote, refreshTrigger } = useNote();
+    const { selectedNote, selectNote, refreshTrigger, createSubnote, triggerRefresh } = useNote();
 
     const [note, setNote] = useState(initialNote);
 
@@ -25,12 +30,15 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
     const [subnotes, setSubnotes] = useState([]);
     const [hasSubnotes, setHasSubnotes] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    // Context menu state
+    const [contextMenu, setContextMenu] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // Effect to sync local note state with the database whenever the selected 
     // note changes or a refresh is triggered.
     useEffect(() => {
         let isMounted = true;
-        
+
         noteService.getByNoteId(initialNote.note_id).then(updatedNote => {
             if (isMounted && updatedNote) {
                 setNote(updatedNote);
@@ -57,6 +65,30 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
         }
     }, [isExpanded, note.note_id, subnotes.length, refreshTrigger]);
 
+    // Right click handler
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setContextMenu({ x: e.clientX, y: e.clientY });
+    };
+
+    // NavItem.jsx
+    const handleCreateSubpage = async () => {
+        try {
+            // Create note on db with it's parent_id
+            const newSubnote = await createSubnote(note.note_id);
+            if (!newSubnote) return;
+
+            setIsExpanded(true);
+            triggerRefresh();
+            selectNote(newSubnote);
+            showToast(t('sidebar.context_menu.subpage_created'), "success");
+        } catch (error) {
+            showToast(t('sidebar.context_menu.error_creating_subpage'), "error");
+            console.error("Error creating subpage:", error);
+        }
+    };
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -71,10 +103,11 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
             <div
                 role="button"
                 tabIndex={0}
+                onContextMenu={handleContextMenu}
                 className={`flex items-center gap-1 px-2 py-1 rounded-md cursor-pointer transition-all group
-          ${isActive ? 'bg-primary/10 text-primary' : 'text-text-primary hover:bg-hover-primary-bg'}`}
+                    ${isActive ? 'bg-primary/10 text-primary' : 'text-text-primary hover:bg-hover-primary-bg'}`}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
-                onClick={() => {if(!isActive) selectNote(note)}}
+                onClick={() => { if (!isActive) selectNote(note) }}
                 onKeyDown={handleKeyDown}
             >
                 <button
@@ -96,6 +129,24 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
                 <span className="truncate text-sm font-medium">{note.title}</span>
             </div>
 
+            {/* Contextual menu */}
+            {contextMenu && (
+                <NavContextMenu
+                    x={contextMenu.x}
+                    y={contextMenu.y}
+                    onClose={() => setContextMenu(null)}
+                    onDeleteClick={() => setIsDeleteModalOpen(true)}
+                    onCreateSubpageClick={handleCreateSubpage}
+                />
+            )}
+
+            <DeleteConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                noteToDelete={note}
+            />
+
+            { /* Recursive subnotes */}
             {isExpanded && hasSubnotes && (
                 <ul className="mt-0.5">
                     {isLoading ? (

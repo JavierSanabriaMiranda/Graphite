@@ -16,6 +16,9 @@
         "saving": "Saving...",
         "saved": "Saved",
         "untitled_note": "New page",
+        "lock_note": "Lock page",
+        "unlock_note": "Unlock page",
+        "remove_icon": "Remove icon",
         "empty_state": {
             "title": "No page selected",
             "description": "There's no page selected. Select one or create a new one"
@@ -51,6 +54,8 @@
                 "search": "Search font...",
                 "search_not_found": "Font not found"
             },
+            "new_subnote": "New subpage",
+            "attach_file": "Attach file",
             "bold": "Bold",
             "italic": "Italic",
             "underline": "Underline",
@@ -65,7 +70,13 @@
                 "purple": "Purple"
             },
             "highlight_color": "Highlight color",
-            "alignment": "Alignment",
+            "alignment": {
+                "alignment": "Alignment",
+                "left": "Left",
+                "center": "Center",
+                "right": "Right",
+                "justify": "Justified"
+            },
             "bulleted_list": {
                 "bulleted_list": "Bulleted List",
                 "dots": "Dots",
@@ -85,6 +96,20 @@
             "change_light_theme": "Change to light theme",
             "change_dark_theme": "Change to dark theme"
         },
+        "info_bar": {
+            "show_info": "Show info",
+            "hide_info": "Hide info",
+            "created_at": "Created at",
+            "updated_at": "Last update",
+            "backlinks": "Backlinks"
+        },
+        "context_menu": {
+            "copy": "Copy",
+            "cut": "Cut",
+            "paste": "Paste",
+            "add_link_to_note": "Add link to another page",
+            "add_content_block": "Add content block"
+        },
         "options_menu": {
             "options_menu": "Options menu",
             "export": {
@@ -93,7 +118,12 @@
                 "modal_instructions": "Select the desired format:",
                 "modal_cancel": "Cancel",
                 "modal_export": "Export now",
-                "export_success": "Document exported successfully!"
+                "export_success": "Document exported successfully!",
+                "export_failed": "There was a failure during export",
+                "preparing_pdf": "Preparing pdf...",
+                "select_theme": "Select theme for export",
+                "theme_light": "Light",
+                "theme_dark": "Dark"
             },
             "import": "Import",
             "import_success": "Document imported successfully!",
@@ -107,7 +137,8 @@
             }
         },
         "errors": {
-            "name_collision": "There's already a page with this title on this location"
+            "name_collision_title": "Page name conflict",
+            "name_collision_message": "There's already a page with this title on this location"
         },
         "slash": {
             "normal_text": {
@@ -117,6 +148,10 @@
             "page": {
                 "title": "Page",
                 "search": "page,subpage,note,link"
+            },
+            "attached_file": {
+                "title": "Attached file",
+                "search": "file,attached,image,video,audio"
             },
             "h1": {
                 "title": "Heading 1",
@@ -169,7 +204,36 @@
         "pages": "Pages",
         "new_note": "New page",
         "loading": "Loading...",
-        "workspace": "Workspace"
+        "workspace": "Workspace",
+        "context_menu": {
+            "delete_page": "Delete page",
+            "add_subpage": "Add subpage",
+            "subpage_created": "Subpage created successfully",
+            "error_creating_subpage": "Error while creating subpage"
+        },
+        "search": "Search"
+    },
+    "search": {
+        "placeholder": "Search all your pages...",
+        "no_results": "No results found",
+        "title": "Search pages"
+    },
+    "note_link": {
+        "broken_link": "Note not found"
+    },
+    "attachment": {
+        "attachment_zone_title": "Inserts attached file",
+        "attachment_zone_description": "Click here or drop a file to attach it",
+        "loading": "Loading file...",
+        "not_available": "File not available",
+        "download": "Download file",
+        "download_success": "File downloaded",
+        "download_success_message": "The file \"{{fileName}}\" has been downloaded successfully",
+        "download_failed": "Error while downloading the file",
+        "error_too_large": "File too large",
+        "error_too_large_message": "The file \"{{fileName}}\" exceeds the allowed size limit of 5MB",
+        "error_invalid_type": "Invalid file type",
+        "error_invalid_type_message": "The file \"{{fileName}}\" has an invalid type"
     },
     "settings": {
         "title": "Settings",
@@ -185,6 +249,15 @@
                 "description": "This font will be applied by default to all notes in the app, except for those texts where you have manually changed the font",
                 "search": "Search font...",
                 "restart_notice": "Font changed successfully. Changes will take effect after restarting the app."
+            },
+            "zoom": {
+                "title": "Interface Zoom",
+                "description": "Adjust the global zoom level of the interface. This will affect the size of text, icons, and other elements in the interface.",
+                "min": "Min",
+                "max": "Max",
+                "reset": "Reset Zoom",
+                "increase": "Increase Zoom",
+                "decrease": "Decrease Zoom"
             }
         },
         "account": {
@@ -295,13 +368,6 @@
             "objects": "Objects",
             "symbols": "Symbols",
             "flags": "Flags"
-        },
-        "names": {
-            "grinning_face": "laugh smile happy",
-            "joy": "cry laugh joy haha",
-            "heart_eyes": "love heart",
-            "pizza": "food pizza dinner cheese",
-            "rocket": "rocket space launch"
         }
     },
     "icons": {

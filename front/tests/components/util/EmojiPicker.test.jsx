@@ -98,7 +98,7 @@ describe('EmojiPicker', () => {
     /**
      * Test selection flow for Emojis
      */
-    it('should call onSelect and close when an emoji is clicked', () => {
+    it('should call onSelect and close when an emoji is clicked', async () => {
         renderPicker();
         fireEvent.click(screen.getByText('Open Picker'));
 
@@ -107,9 +107,9 @@ describe('EmojiPicker', () => {
 
         expect(mockOnSelect).toHaveBeenCalledWith('😀');
         
-        // Picker container should have visibility: hidden after selection
-        const pickerContainer = screen.getByPlaceholderText('emojis.search').closest('.z-1000');
-        expect(pickerContainer).toHaveStyle({ visibility: 'hidden' });
+        await waitFor(() => {
+            expect(screen.queryByPlaceholderText('emojis.search')).not.toBeInTheDocument();
+        });
     });
 
     /**
@@ -142,12 +142,14 @@ describe('EmojiPicker', () => {
         fireEvent.click(iconsTab);
 
         // Verify icons view is displayed with search input
-        expect(screen.getByPlaceholderText('icons.search')).toBeInTheDocument();
+        const searchInput = screen.getByPlaceholderText('icons.search');
+        expect(searchInput).toBeInTheDocument();
 
-        // Verify there are icon buttons rendered (with SVG children)
-        const iconButtons = screen.getAllByRole('button')
-            .filter(btn => btn.querySelector('svg') && btn !== iconsTab);
-
+        // Find the content grid container more efficiently
+        const gridContainer = searchInput.closest('.z-1000').querySelector('.grid');
+        
+        // Verify there are icon buttons rendered (with SVG children) within the grid only
+        const iconButtons = gridContainer.querySelectorAll('button svg');
         expect(iconButtons.length).toBeGreaterThan(0);
     });
 

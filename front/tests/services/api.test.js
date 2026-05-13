@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { authService, remoteWorkspaceService, remoteNoteService } from '../../src/services/api';
+import {
+    authService,
+    remoteWorkspaceService,
+    remoteNoteService,
+    remoteAttachmentService,
+    remoteNoteLinkService
+} from '../../src/services/api';
 import ApiError from '../../src/custom_errors/ApiError';
 
 // Mock fetch globally
@@ -322,6 +328,134 @@ describe('API Service Suite', () => {
                 global.fetch.mockResolvedValue(mockResponse);
 
                 await expect(remoteNoteService.getRemoteNoteContent('n-123')).rejects.toThrow();
+            });
+        });
+    });
+    describe('remoteNoteLinkService', () => {
+        const sourceNoteId = 'note-src-123';
+        const targetNoteIds = ['target-1', 'target-2'];
+
+        describe('updateRemoteLinks', () => {
+            it('should successfully update links on the server', async () => {
+                global.fetch.mockResolvedValue({ ok: true });
+
+                const result = await remoteNoteLinkService.updateRemoteLinks(sourceNoteId, targetNoteIds);
+
+                expect(result).toBe(true);
+                expect(global.fetch).toHaveBeenCalledWith(
+                    expect.stringContaining(`notes/${sourceNoteId}/links`),
+                    expect.objectContaining({
+                        method: 'PUT',
+                        body: JSON.stringify({ targetNoteIds })
+                    })
+                );
+            });
+
+            it('should throw error if links sync fails', async () => {
+                global.fetch.mockResolvedValue({ ok: false });
+                await expect(remoteNoteLinkService.updateRemoteLinks(sourceNoteId, targetNoteIds))
+                    .rejects.toThrow("Links sync failed");
+            });
+        });
+
+        describe('getRemoteNoteGraph', () => {
+            it('should fetch the graph for a specific note', async () => {
+                const mockGraph = { incoming: [], outgoing: targetNoteIds };
+                global.fetch.mockResolvedValue({
+                    ok: true,
+                    json: vi.fn().mockResolvedValue(mockGraph)
+                });
+
+                const result = await remoteNoteLinkService.getRemoteNoteGraph(sourceNoteId);
+
+                expect(result.outgoing).toContain('target-1');
+                expect(global.fetch).toHaveBeenCalledWith(
+                    expect.stringContaining(`notes/${sourceNoteId}/links`),
+                    expect.any(Object)
+                );
+            });
+        });
+
+        describe('getRemoteLinksByWorkspace', () => {
+            it('should fetch all links for a workspace', async () => {
+                const mockWorkspaceLinks = [{ source: 'n1', target: 'n2' }];
+                global.fetch.mockResolvedValue({
+                    ok: true,
+                    json: vi.fn().mockResolvedValue(mockWorkspaceLinks)
+                });
+
+                const result = await remoteNoteLinkService.getRemoteLinksByWorkspace('ws-123');
+
+                expect(result).toHaveLength(1);
+                expect(global.fetch).toHaveBeenCalledWith(
+                    expect.stringContaining('workspaces/ws-123/links'),
+                    expect.any(Object)
+                );
+            });
+        });
+    });
+
+    describe('remoteAttachmentService', () => {
+        const attachmentId = 'att-999';
+
+        describe('checkAttachment', () => {
+            it('should return check info for deduplication', async () => {
+                const payload = { hash: 'file-hash-123', size: 1024 };
+                const mockCheckResult = { attachmentId, needsUpload: true, uploadUrl: 'http://s3.url' };
+
+                global.fetch.mockResolvedValue({
+                    ok: true,
+                    json: vi.fn().mockResolvedValue(mockCheckResult)
+                });
+
+                const result = await remoteAttachmentService.checkAttachment(payload);
+
+                expect(result.needsUpload).toBe(true);
+                expect(global.fetch).toHaveBeenCalledWith(
+                    expect.stringContaining('attachments/check'),
+                    expect.objectContaining({ method: 'POST' })
+                );
+            });
+        });
+
+        describe('getMetadataAndDownloadUrl', () => {
+            it('should return metadata and SAS URL', async () => {
+                const mockData = { attachmentId, downloadUrl: 'http://temp-sas-url.com' };
+                global.fetch.mockResolvedValue({
+                    ok: true,
+                    json: vi.fn().mockResolvedValue(mockData)
+                });
+
+                const result = await remoteAttachmentService.getMetadataAndDownloadUrl(attachmentId);
+
+                expect(result.downloadUrl).toContain('temp-sas-url');
+            });
+
+            it('should return null if attachment is 404', async () => {
+                global.fetch.mockResolvedValue({ ok: false, status: 404 });
+
+                const result = await remoteAttachmentService.getMetadataAndDownloadUrl(attachmentId);
+
+                expect(result).toBeNull();
+            });
+
+            it('should throw error on generic failure', async () => {
+                global.fetch.mockResolvedValue({ ok: false, status: 500 });
+                await expect(remoteAttachmentService.getMetadataAndDownloadUrl(attachmentId))
+                    .rejects.toThrow("Error al obtener información del adjunto");
+            });
+        });
+
+        describe('deleteRemoteAttachment', () => {
+            it('should call delete endpoint silently', async () => {
+                global.fetch.mockResolvedValue({ ok: true });
+
+                await remoteAttachmentService.deleteRemoteAttachment(attachmentId);
+
+                expect(global.fetch).toHaveBeenCalledWith(
+                    expect.stringContaining(`attachments/${attachmentId}`),
+                    expect.objectContaining({ method: 'DELETE' })
+                );
             });
         });
     });

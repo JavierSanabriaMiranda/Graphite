@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, Component } from 'react';
 import { FloatingPortal } from '@floating-ui/react';
+import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
 const ToastContext = createContext();
 
@@ -12,9 +13,9 @@ export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
   // Function to add a notification. It accepts a message and a type (success, error, info) for styling.
-  const showToast = useCallback((message, type = 'success') => {
+  const showToast = useCallback((title, type = 'success', message = null) => {
     const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
+    setToasts((prev) => [...prev, { id, title, message, type }]);
 
     // Remove the toast after 3 seconds
     setTimeout(() => {
@@ -26,33 +27,82 @@ export const ToastProvider = ({ children }) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   };
 
+  /**
+   * Returns specific styles and icons based on the toast type, 
+   * supporting both light and dark mode scales.
+   */
+  const getToastStyles = (type) => {
+    switch (type) {
+      case 'success':
+        return {
+          icon: <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-500" />,
+          accent: 'bg-green-600 dark:bg-green-500',
+          iconBg: 'bg-green-600/10 dark:bg-green-500/10',
+        };
+      case 'error':
+        return {
+          icon: <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-500" />,
+          accent: 'bg-red-600 dark:bg-red-500',
+          iconBg: 'bg-red-600/10 dark:bg-red-500/10',
+        };
+      case 'info':
+      default:
+        return {
+          icon: <Info className="w-5 h-5 text-blue-600 dark:text-blue-500" />,
+          accent: 'bg-blue-600 dark:bg-blue-500',
+          iconBg: 'bg-blue-600/10 dark:bg-blue-500/10',
+        };
+    }
+  };
+
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      
-      {/* Notifications render */}
+
       <FloatingPortal>
-        <div className="fixed top-25 right-4 z-10000 flex flex-col gap-2 w-full max-w-xs pointer-events-none">
-          {toasts.map((toast) => (
-            <div
-              key={toast.id}
-              className={`
-                pointer-events-auto flex items-center justify-between p-4 rounded-xl shadow-2xl border
-                animate-in slide-in-from-right-full fade-in duration-300
-                ${toast.type === 'success' ? 'bg-green-100 border-green-300 text-green-800 dark:bg-green-900/30 dark:border-green-800 dark:text-green-300' : ''}
-                ${toast.type === 'error' ? 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/30 dark:border-red-800 dark:text-red-300' : ''}
-                ${toast.type === 'info' ? 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300' : ''}
-              `}
-            >
-              <span className="text-sm font-medium">{toast.message}</span>
-              <button 
-                onClick={() => removeToast(toast.id)}
-                className="cursor-pointer ml-4 hover:opacity-70 transition-opacity"
+        <div className="fixed top-8 right-8 z-10000 flex flex-col gap-3 w-full max-w-sm pointer-events-none">
+          {toasts.map((toast) => {
+            const styles = getToastStyles(toast.type);
+            return (
+              <div
+                key={toast.id}
+                className={`
+                  pointer-events-auto relative flex items-start gap-4 p-4 rounded-lg shadow-xl overflow-hidden
+                  animate-in slide-in-from-right-full fade-in duration-300
+                  bg-white border border-zinc-200 
+                  dark:bg-[#1a212c] dark:border-zinc-800/50 dark:shadow-2xl
+                `}
               >
-                ✕
-              </button>
-            </div>
-          ))}
+                {/* Visual Accent Bar */}
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${styles.accent}`} />
+
+                {/* Status Icon Wrapper */}
+                <div className={`shrink-0 p-2.5 rounded-lg ${styles.iconBg}`}>
+                  {styles.icon}
+                </div>
+
+                {/* Content Body */}
+                <div className={`grow flex flex-col self-stretch ${!toast.message ? 'justify-center' : 'pt-0.5'}`}>
+                  <h3 className="font-bold text-sm leading-tight text-zinc-900 dark:text-white">
+                    {toast.title}
+                  </h3>
+                  {toast.message && (
+                    <p className="text-xs mt-1 leading-normal text-zinc-500 dark:text-zinc-400">
+                      {toast.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Close Action */}
+                <button
+                  onClick={() => removeToast(toast.id)}
+                  className="cursor-pointer shrink-0 transition-colors p-1 text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-white"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            );
+          })}
         </div>
       </FloatingPortal>
     </ToastContext.Provider>

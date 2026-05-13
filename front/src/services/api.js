@@ -149,7 +149,7 @@ export const remoteNoteService = {
             else {
                 throw new Error("Failed to fetch note metadata");
             }
-        } 
+        }
         return await response.json();
     },
 
@@ -161,5 +161,96 @@ export const remoteNoteService = {
         const response = await fetch(`${API_URL}notes/${noteId}/content`, { headers });
         if (!response.ok) throw new Error("Failed to fetch note content");
         return await response.json();
+    }
+};
+
+/**
+ * Service to handle note relationships (backlinks) with the remote server
+ */
+export const remoteNoteLinkService = {
+    /**
+     * Replaces all links for a source note on the server.
+     * @param {string} sourceNoteId 
+     * @param {Array<string>} targetNoteIds 
+     */
+    async updateRemoteLinks(sourceNoteId, targetNoteIds) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/${sourceNoteId}/links`, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify({ targetNoteIds })
+        });
+
+        if (!response.ok) throw new Error("Links sync failed");
+        return true;
+    },
+
+    /**
+     * Fetches all links that involves the specified note.
+     */
+    async getRemoteNoteGraph(noteId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}notes/${noteId}/links`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch backlinks");
+        return await response.json();
+    },
+
+    /**
+     * Fetches all links in the specified workspace.
+     */
+    async getRemoteLinksByWorkspace(workspaceId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}workspaces/${workspaceId}/links`, { headers });
+        if (!response.ok) throw new Error("Failed to fetch backlinks");
+        return await response.json();
+    }
+};
+
+/**
+ * Service to handle file attachments with the remote server
+ */
+export const remoteAttachmentService = {
+    /**
+     * Checks if a file exists on the server (deduplication) and gets an upload URL if needed.
+     */
+    async checkAttachment(payload) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}attachments/check`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error("Attachment check failed");
+        return await response.json(); // Structure: { attachmentId, needsUpload, uploadUrl }
+    },
+
+    /**
+     * Gets file metadata and a temporary SAS URL to download the file.
+     */
+    async getMetadataAndDownloadUrl(attachmentId) {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}attachments/${attachmentId}`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            if (response.status === 404) return null;
+            throw new Error("Error al obtener información del adjunto");
+        }
+
+        return await response.json();
+    },
+
+    /**
+     * Deletes the file inserted as param on remote storage
+     */
+    async deleteRemoteAttachment(attachmentId) {
+        const headers = await getAuthHeader();
+        await fetch(`${API_URL}attachments/${attachmentId}`, {
+            method: 'DELETE',
+            headers: headers
+        });
     }
 };

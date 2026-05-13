@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 import { syncService } from '../../services/db/syncService';
 import { useWorkspace } from './WorkspaceContext';
 import { SyncStatus } from '../../util/SyncStatus';
+import { useAttachment } from './AttachmentContext';
 
 /**
  * Context object to hold the global state of the active note and UI synchronization.
@@ -22,7 +23,9 @@ export const NoteProvider = ({ children }) => {
     const { dek } = useAuth();
     const { t } = useTranslation();
     const { activeWorkspace: workspace } = useWorkspace();
+    const { deleteAllAttachmentsForNote } = useAttachment();
 
+    const [allNotes, setAllNotes] = useState([])
     const [selectedNote, setSelectedNote] = useState(null);
     // A numeric counter used to signal other components (like Sidebar) 
     // that a note's metadata (title, icon, etc.) has changed in the DB.
@@ -42,6 +45,19 @@ export const NoteProvider = ({ children }) => {
         setSelectedNote(null);
     }, [workspace]);
 
+    // Effect to load all notes of the workspace when it changes or when refreshTrigger updates (after a note update)
+    useEffect(() => {
+        const fetchAllNotes = async () => {
+            if (workspace) {
+                const notes = await noteService.getByWorkspace(workspace.workspace_id);
+                setAllNotes(notes);
+            } else {
+                setAllNotes([]);
+            }
+        };
+        fetchAllNotes();
+    }, [workspace, refreshTrigger]);
+
     /**
      * Increments the refresh counter.
      * Used whenever a note is updated in the database to force 
@@ -50,7 +66,6 @@ export const NoteProvider = ({ children }) => {
     const triggerRefresh = useCallback(() => {
         setRefreshTrigger(prev => prev + 1);
     }, []);
-
 
     /**
      * Updates the currently active note.
@@ -105,6 +120,11 @@ export const NoteProvider = ({ children }) => {
         }
 
     }, [dek, isSyncing]);
+
+    const selectNoteById = useCallback(async (noteId) => {
+        const note = await noteService.getByNoteId(noteId);
+        selectNote(note);
+    }, [selectNote]);
 
     /**
      * Refresh the current note state by selecting it again
@@ -169,6 +189,49 @@ export const NoteProvider = ({ children }) => {
         }
     }, [workspace, t, triggerRefresh]);
 
+    /**
+     * Updates the isEditable property of a note, 
+     * which controls whether the note can be edited in the UI.
+     */
+    const setNoteEditableMode = useCallback(async (isEditable) => {
+        if (!selectedNote) return;
+
+        const editMode = isEditable ? 1 : 0;
+
+        try {
+            // Update on db
+            await noteService.update(selectedNote.note_id, { is_editable: editMode });
+            const updatedNote = await noteService.getByNoteId(selectedNote.note_id);
+
+            // Update local state to reflect the change immediately in the UI
+            setSelectedNote(updatedNote);
+
+        } catch (error) {
+            console.error("Error while updating note editable mode:", error);
+        }
+    }, [selectedNote, setSelectedNote]);
+
+    /**
+     * Deletes a note by its ID. If the deleted note is currently selected, it clears the selection.
+     * Also triggers a refresh to update the sidebar and other components that depend on the notes list.
+     * @param {string} noteId - The ID of the note to delete
+     */
+    const deleteNote = useCallback(async (noteId) => {
+        try {
+            await deleteAllAttachmentsForNote(noteId); // Clean up attachments related to the note
+            await noteService.delete(noteId);
+
+            // If deleting current note, clear editor
+            if (selectedNoteRef.current?.note_id === noteId) {
+                setSelectedNote(null);
+            }
+
+            triggerRefresh();
+        } catch (error) {
+            console.error("Error deleting note:", error);
+        }
+    }, [setSelectedNote, triggerRefresh]);
+
     // Context value object containing the state and the updater functions
     const value = {
         selectedNote,
@@ -176,11 +239,15 @@ export const NoteProvider = ({ children }) => {
         syncStatus,
         setSelectedNote, // Raw setter for direct manipulation if needed
         selectNote,
+        selectNoteById,
         refreshCurrentNote,
         refreshTrigger,
         triggerRefresh,
         createRootNote,
-        createSubnote
+        createSubnote,
+        allNotes,
+        setNoteEditableMode,
+        deleteNote
     };
 
     return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;

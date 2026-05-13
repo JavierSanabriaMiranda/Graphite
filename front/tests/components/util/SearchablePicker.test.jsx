@@ -83,19 +83,29 @@ describe('SearchablePicker', () => {
     expect(items[0]).toHaveClass('font-bold');
   });
 
-  it('should select item when pressing Enter', () => {
+  it('should select item when pressing Enter', async () => {
     render(<SearchablePicker items={mockItems} buttonLabel="Picker" onSelect={onSelectMock} />);
+
+    // Open the picker
     fireEvent.click(screen.getByText('Picker'));
 
-    const input = screen.getByPlaceholderText(/search/i);
+    // Find input and move active index to second item (English)
+    const input = screen.getByPlaceholderText('common.search');
 
-    // go to second element and press enter
-    fireEvent.keyDown(input, { key: 'ArrowDown' });
-    fireEvent.keyDown(input, { key: 'Enter' });
+    await act(async () => {
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+    });
 
+    // Press Enter to select
+    await act(async () => {
+      fireEvent.keyDown(input, { key: 'Enter' });
+    });
+
+    // Verify selection callback was called with the second item's value
     expect(onSelectMock).toHaveBeenCalledWith('en');
-    // Verify that search cleans and menu gets closed
-    expect(screen.queryByPlaceholderText(/search/i)).not.toBeVisible();
+
+    // Verify that the picker is removed from DOM after selection
+    expect(screen.queryByPlaceholderText('common.search')).not.toBeInTheDocument();
   });
 
   it('should close the menu when pressing Escape', async () => {

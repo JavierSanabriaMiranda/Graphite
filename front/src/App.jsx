@@ -7,17 +7,22 @@ import { userService } from './services/db/userService';
 import { workspaceService } from './services/db/workspaceService';
 import { NoteProvider } from './components/context/NoteContext';
 import { WorkspaceProvider, useWorkspace } from './components/context/WorkspaceContext';
+import { AttachmentProvider } from './components/context/AttachmentContext';
 import { useIsMobile } from './hooks/useIsMobile';
 import BottomNavbar from './components/navigation/BottomNavBar';
 import { UIProvider, useUI } from './components/context/UIContext';
-import SettingsModal from './components/configuration_menu/SettingsModal';
+import SettingsModal from './components/settings/SettingsModal';
+
 import MobileBrowseView from './components/navigation/MobileBrowseView';
+import MobileSearchView from './components/views/MobileSearchView';
+
 import { useAuth, AuthProvider } from './components/context/AuthContext';
 import AuthenticationView from './components/views/AuthenticationView';
 import { useOnlineSync } from './hooks/useOnlineSync';
 import CreateWorkspaceView from './components/views/CreateWorkspaceView';
 import { Loader2 } from 'lucide-react';
-import { SettingsProvider } from './components/context/SettingsContext';
+import { SettingsProvider, useSettings } from './components/context/SettingsContext';
+import SearchOverlay from './components/note_search/SearchOverlay';
 
 // Component to access to the context inside the app
 const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
@@ -25,6 +30,7 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
 
   const { isSettingsOpen, closeSettings, activeTab, setActiveTab, openSettings } = useUI();
   const { isCreatingWorkspace, isLoading: wsLoading, workspaces } = useWorkspace();
+  const { setZoomIndex, ZOOM_LEVELS, DEFAULT_ZOOM_INDEX } = useSettings();
 
   const handleTabChange = (tabId) => {
     if (tabId === 'settings') {
@@ -66,33 +72,22 @@ const AppContent = ({ isMobile, isSidebarPinned, setIsSidebarPinned }) => {
         ${isMobile ? 'pb-16' : ''}
       `}>
         <SettingsProvider>
-          <ToastProvider>
-            {activeTab === 'editor' && <TiptapEditor />}
-            {activeTab === 'search' && (isMobile ? (
-              <div className="p-8">Sección de Búsqueda</div>
-            ) : (
-              <TiptapEditor />
-            ))}
-            {activeTab === 'browse' && (
-              isMobile ? (
-                <MobileBrowseView />
-              ) : (
-                <TiptapEditor />
-              )
-            )}
-          </ToastProvider>
+          <div style={{ display: activeTab === 'editor' ? 'block' : 'none' }}>
+            <TiptapEditor />
+          </div>
+          {activeTab === 'search' && isMobile && <MobileSearchView />}
+          {activeTab === 'browse' && isMobile && <MobileBrowseView />}
         </SettingsProvider>
       </main>
 
       {/* Global components (Portals) */}
       <SettingsProvider>
-        <ToastProvider>
-          <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
-        </ToastProvider>
+        <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
       </SettingsProvider>
       {isMobile && (
         <BottomNavbar activeTab={activeTab} onTabChange={handleTabChange} />
       )}
+      {!isMobile && <SearchOverlay />}
     </div>
   );
 };
@@ -147,17 +142,21 @@ const DataWrapper = ({ isMobile }) => {
 
   return (
     <SettingsProvider>
-      <UIProvider>
-        <WorkspaceProvider>
-          <NoteProvider>
-            <AppContent
-              isMobile={isMobile}
-              isSidebarPinned={isSidebarPinned}
-              setIsSidebarPinned={setIsSidebarPinned}
-            />
-          </NoteProvider>
-        </WorkspaceProvider>
-      </UIProvider>
+      <ToastProvider>
+        <UIProvider>
+          <WorkspaceProvider>
+            <AttachmentProvider>
+              <NoteProvider>
+                <AppContent
+                  isMobile={isMobile}
+                  isSidebarPinned={isSidebarPinned}
+                  setIsSidebarPinned={setIsSidebarPinned}
+                />
+              </NoteProvider>
+            </AttachmentProvider>
+          </WorkspaceProvider>
+        </UIProvider>
+      </ToastProvider>
     </SettingsProvider>
   );
 };

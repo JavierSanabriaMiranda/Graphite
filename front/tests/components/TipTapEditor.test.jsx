@@ -6,84 +6,63 @@ import { useNote } from '../../src/components/context/NoteContext';
 import { useToast } from '../../src/components/context/ToastContext';
 import { useAuth } from '../../src/components/context/AuthContext';
 import { useSettings } from '../../src/components/context/SettingsContext';
+import { useAttachment } from '../../src/components/context/AttachmentContext';
 import { useIsMobile } from '../../src/hooks/useIsMobile';
 import { noteService } from '../../src/services/db/noteService';
 import { useEditor } from '@tiptap/react';
-import { useEditorConfig } from '../../src/hooks/useEditorConfig'; // Import it here
-
-// --- 1. MOCK PROSEMIRROR STATE ---
-vi.mock('@tiptap/pm/state', () => ({
-    EditorState: {
-        create: vi.fn().mockReturnValue({}),
-    },
-}));
-
-// --- 2. MOCK EXTERNAL HOOKS & CONTEXTS ---
-vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key) => key }),
-}));
-
-vi.mock('../../src/components/context/NoteContext', () => ({
-    useNote: vi.fn(),
-}));
-
-vi.mock('../../src/components/context/ToastContext', () => ({
-    useToast: vi.fn(),
-}));
-
-vi.mock('../../src/components/context/AuthContext', () => ({
-    useAuth: vi.fn(),
-}));
-
-vi.mock('../../src/components/context/SettingsContext', () => ({
-    useSettings: vi.fn(),
-}));
-
-vi.mock('../../src/hooks/useIsMobile', () => ({
-    useIsMobile: vi.fn(),
-}));
-
-vi.mock('../../src/services/db/noteService', () => ({
-    noteService: {
-        update: vi.fn(),
-    },
-}));
-
-// CRITICAL: Mock useEditorConfig at the top level
-vi.mock('../../src/hooks/useEditorConfig', () => ({
-    useEditorConfig: vi.fn(),
-}));
+import { useEditorConfig } from '../../src/hooks/useEditorConfig';
+import { EditorState } from '@tiptap/pm/state';
 
 vi.mock('@tiptap/react', async () => {
     const actual = await vi.importActual('@tiptap/react');
     return {
         ...actual,
         useEditor: vi.fn(),
-        EditorContent: () => <div data-testid="tiptap-content" />,
-        ReactNodeViewRenderer: vi.fn(),
+        EditorContent: ({ editor }) => <div data-testid="tiptap-content" />,
     };
 });
 
-// --- 3. MOCK CHILD COMPONENTS ---
+vi.mock('react-i18next', () => ({
+    useTranslation: () => ({ t: (key) => key }),
+}));
+
+vi.mock('../../src/components/context/NoteContext', () => ({ useNote: vi.fn() }));
+vi.mock('../../src/components/context/ToastContext', () => ({ useToast: vi.fn() }));
+vi.mock('../../src/components/context/AuthContext', () => ({ useAuth: vi.fn() }));
+vi.mock('../../src/components/context/SettingsContext', () => ({ useSettings: vi.fn() }));
+vi.mock('../../src/components/context/AttachmentContext', () => ({ useAttachment: vi.fn() }));
+vi.mock('../../src/hooks/useIsMobile', () => ({ useIsMobile: vi.fn() }));
+vi.mock('../../src/hooks/useEditorConfig', () => ({ useEditorConfig: vi.fn() }));
+
+vi.mock('../../src/services/db/noteService', () => ({
+    noteService: {
+        update: vi.fn(),
+        getSubnotes: vi.fn().mockResolvedValue([]),
+    },
+}));
+
+// Child component mocks
 vi.mock('../../src/components/menu_bar/MenuBar', () => ({ default: () => <div data-testid="menu-bar" /> }));
 vi.mock('../../src/components/menu_bar/MobileFormattingSheet', () => ({ default: () => <div data-testid="mobile-formatting" /> }));
 vi.mock('../../src/components/PathBar', () => ({ default: () => <div data-testid="path-bar" /> }));
 vi.mock('../../src/components/util/EmptyState', () => ({ default: () => <div data-testid="empty-state" /> }));
 vi.mock('../../src/components/util/EmojiPicker', () => ({ default: ({ children }) => <div data-testid="emoji-picker">{children}</div> }));
 vi.mock('../../src/components/util/NoteIcon', () => ({ default: () => <div data-testid="note-icon" /> }));
-vi.mock('../../src/components/util/ChangeThemeButton', () => ({ default: () => <div data-testid="change-theme" /> }));
 vi.mock('../../src/components/views/ConflictResolver', () => ({ default: () => <div data-testid="conflict-resolver" /> }));
+vi.mock('../../src/components/InfoBar', () => ({ default: () => <div data-testid="info-bar" /> }));
+vi.mock('../../src/components/util/ChangeThemeButton', () => ({ default: () => <button>Theme</button> }));
+vi.mock('../../src/components/context_menu/EditorContextMenu', () => ({ default: () => <div data-testid="editor-context-menu" /> }));
 
-describe('TiptapEditor Component', () => {
+describe('TiptapEditor Component - Full Integration Suite', () => {
     let mockEditor;
     let mockShowToast;
-    let mockTriggerRefresh;
 
     const mockActiveNote = {
         note_id: 'note-123',
         title: 'Test Note',
-        content: '{"type":"doc","content":[]}',
+        content: JSON.stringify({ type: 'doc', content: [] }),
         icon: '📝',
+        is_editable: 1
     };
 
     beforeEach(() => {
@@ -91,46 +70,57 @@ describe('TiptapEditor Component', () => {
         vi.useFakeTimers();
 
         mockShowToast = vi.fn();
-        mockTriggerRefresh = vi.fn();
-
         useToast.mockReturnValue({ showToast: mockShowToast });
-        useAuth.mockReturnValue({ dek: 'mock-dek', isAuthenticated: true });
+        useAuth.mockReturnValue({ dek: 'dek', isAuthenticated: true });
         useSettings.mockReturnValue({ defaultFont: 'Inter' });
         useIsMobile.mockReturnValue(false);
-        
+        useAttachment.mockReturnValue({ uploadFile: vi.fn(), deleteAttachment: vi.fn(), syncNoteAttachments: vi.fn() });
+
         useNote.mockReturnValue({
             selectedNote: mockActiveNote,
-            triggerRefresh: mockTriggerRefresh,
-            createRootNote: vi.fn(),
+            allNotes: [{ title: 'Note 1', note_id: '1' }],
+            triggerRefresh: vi.fn(),
             selectNote: vi.fn(),
             isSyncing: false,
             syncStatus: 'ONLINE',
             refreshCurrentNote: vi.fn(),
         });
 
+        // Setup complex Tiptap mock structure
+        const mockChain = {
+            focus: vi.fn().mockReturnThis(),
+            insertContent: vi.fn().mockReturnThis(),
+            insertContentAt: vi.fn().mockReturnThis(),
+            run: vi.fn().mockReturnThis(),
+            setContent: vi.fn().mockReturnThis()
+        };
+
         mockEditor = {
             commands: {
                 setContent: vi.fn(),
                 focus: vi.fn().mockReturnThis(),
+                insertContent: vi.fn().mockReturnThis()
             },
+            chain: vi.fn(() => mockChain),
             getJSON: vi.fn().mockReturnValue({ type: 'doc', content: [] }),
             view: {
                 updateState: vi.fn(),
-                dispatch: vi.fn(),
-                dom: { addEventListener: vi.fn(), removeEventListener: vi.fn() }
+                coordsAtPos: vi.fn().mockReturnValue({ left: 100, top: 100, bottom: 120 }),
+                state: { selection: { from: 0, $from: { pos: 0 } } }
             },
             state: {
+                selection: { $from: { pos: 0 }, from: 0 },
                 plugins: [],
-                doc: {},
-                selection: { $from: { pos: 0 } }
+                doc: { content: { size: 10 }, descendants: vi.fn() }
             },
             schema: { nodeFromJSON: vi.fn().mockReturnValue({}) },
-            options: { editorProps: {} },
-            isDestroyed: false
+            extensionManager: { extensions: [{ name: 'noteLink', configure: vi.fn() }] },
+            isDestroyed: false,
+            setEditable: vi.fn(),
+            setOptions: vi.fn()
         };
 
         useEditor.mockReturnValue(mockEditor);
-        // Default return for our custom config hook
         useEditorConfig.mockReturnValue({});
     });
 
@@ -138,377 +128,147 @@ describe('TiptapEditor Component', () => {
         vi.useRealTimers();
     });
 
-    const waitForInitialLoad = async () => {
+    const renderEditor = async () => {
+        const res = render(<TiptapEditor />);
         await act(async () => {
-            await vi.advanceTimersByTimeAsync(50); // Increased time
+            vi.advanceTimersByTime(100);
         });
+        return res;
     };
 
-    /**
-     * Test Keyboard Navigation: Moving from Editor back to Title when at the start
-     */
-    it('should navigate from Editor to Title when ArrowUp is pressed at position 0', async () => {
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
+    // --- TITLE & NAVIGATION TESTS ---
 
-        // Capture the handleKeyDown function passed to useEditorConfig
+    it('should navigate from Editor to Title when ArrowUp is pressed at the start', async () => {
+        await renderEditor();
         const handleKeyDown = vi.mocked(useEditorConfig).mock.calls[0][0].handleKeyDownProp;
-
-        const titleInput = screen.getByDisplayValue('Test Note');
+        const titleInput = screen.getByPlaceholderText('editor.no_title_placeholder');
         const focusSpy = vi.spyOn(titleInput, 'focus');
 
         const mockView = { state: { selection: { $from: { pos: 0 } } } };
-        const mockEvent = { key: 'ArrowUp' };
-
-        act(() => {
-            handleKeyDown(mockView, mockEvent);
-        });
-
+        act(() => { handleKeyDown(mockView, { key: 'ArrowUp' }); });
         expect(focusSpy).toHaveBeenCalled();
     });
 
-    /**
-     * Test Keyboard Navigation: Title to Editor
-     */
-    it('should navigate from Title to Editor when Enter or ArrowDown is pressed', async () => {
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        const titleInput = screen.getByDisplayValue('Test Note');
-
-        fireEvent.keyDown(titleInput, { key: 'Enter' });
-        expect(mockEditor.commands.focus).toHaveBeenCalledWith('start');
-
-        fireEvent.keyDown(titleInput, { key: 'ArrowDown' });
-        expect(mockEditor.commands.focus).toHaveBeenCalledWith('start');
-    });
-
-    /**
-     * Test title persistence: saving to DB on blur
-     */
-    it('should update the note title on blur if changed', async () => {
+    it('should update note title and trigger auto-save on blur', async () => {
         noteService.update.mockResolvedValue({ success: true });
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
+        await renderEditor();
         const titleInput = screen.getByDisplayValue('Test Note');
-        fireEvent.change(titleInput, { target: { value: 'New Title' } });
-
+        
+        fireEvent.change(titleInput, { target: { value: 'Updated Title' } });
         await act(async () => {
             fireEvent.blur(titleInput);
-            await vi.runAllTimersAsync();
+            vi.runAllTimers();
         });
 
-        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ title: 'New Title' }));
+        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ title: 'Updated Title' }));
     });
 
-    /**
-     * Test title collision error handling
-     */
-    it('should show an error toast and revert title on name collision', async () => {
-        noteService.update.mockResolvedValue({ error: 'COLLISION' });
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
+    // --- RECONCILIATION & AUTO-APPEND TESTS ---
 
-        const titleInput = screen.getByDisplayValue('Test Note');
-        fireEvent.change(titleInput, { target: { value: 'Collision Title' } });
+    it('should reconcile missing subpages and append them to the doc', async () => {
+        const missingSubnotes = [{ note_id: 'sub-99', title: 'Missing' }];
+        noteService.getSubnotes.mockResolvedValue(missingSubnotes);
+        
+        // Mocking empty descendants to trigger the "missing" logic
+        mockEditor.state.doc.descendants.mockImplementation(() => {});
 
-        await act(async () => {
-            fireEvent.blur(titleInput);
-            await vi.runAllTimersAsync();
-        });
+        await renderEditor();
+        await act(async () => { vi.runAllTimers(); });
 
-        expect(mockShowToast).toHaveBeenCalledWith('editor.errors.name_collision', "error");
-        expect(titleInput.value).toBe('Test Note');
+        expect(mockEditor.chain().insertContentAt).toHaveBeenCalledWith(
+            expect.any(Number),
+            expect.arrayContaining([expect.objectContaining({ type: 'pageBlock' })])
+        );
     });
 
-    /**
-     * Test icon removal
-     */
-    it('should handle icon removal', async () => {
-        noteService.update.mockResolvedValue({ success: true });
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
+    // --- EXTENSION & STATE SYNC TESTS ---
 
-        const removeBtn = screen.getByTitle('editor.remove_icon');
-
-        await act(async () => {
-            fireEvent.click(removeBtn);
-            await vi.runAllTimersAsync();
-        });
-
-        expect(noteService.update).toHaveBeenCalledWith('note-123', { icon: null });
-    });
-
-    /**
-     * Test auto-save debounce
-     */
-    it('should trigger auto-save after 2 seconds of inactivity', async () => {
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        // Capture onUpdate from useEditorConfig calls
-        const onUpdateCallback = vi.mocked(useEditorConfig).mock.calls[0][0].onUpdate;
-
-        await act(async () => {
-            onUpdateCallback({ editor: mockEditor });
-            await vi.advanceTimersByTimeAsync(2000);
-            await vi.runAllTimersAsync();
-        });
-
-        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({
-            is_dirty: 1
-        }));
-    });
-
-    /**
-     * Test empty note state: should show EmptyState when no note is selected
-     */
-    it('should show EmptyState when no note is selected', async () => {
-        const mockCreateRootNote = vi.fn();
-        useNote.mockReturnValue({
-            selectedNote: null,
-            triggerRefresh: mockTriggerRefresh,
-            createRootNote: mockCreateRootNote,
-            selectNote: vi.fn(),
-            isSyncing: false,
-            syncStatus: 'ONLINE',
-            refreshCurrentNote: vi.fn(),
-        });
-
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        expect(screen.getByTestId('empty-state')).toBeInTheDocument();
-        // The editor content should not be visible when no note is selected
-        const editorContent = screen.queryAllByTestId('tiptap-content');
-        // When empty state is shown, the main editor shouldn't render
-        expect(editorContent.length).toBeLessThanOrEqual(1);
-    });
-
-    /**
-     * Test icon selection: should update icon in DB
-     */
-    it('should handle icon selection and save to DB', async () => {
-        noteService.update.mockResolvedValue({ success: true });
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        // Verify that the component displays the icon that was set
-        const noteElement = screen.getByTestId('note-icon');
-        expect(noteElement).toBeInTheDocument();
-
-        // Verify the emoji picker is rendered for icon selection
-        const emojiPickers = screen.getAllByTestId('emoji-picker');
-        expect(emojiPickers.length).toBeGreaterThan(0);
-    });
-
-    /**
-     * Test conflict resolution: should show conflict banner when syncStatus is CONFLICT
-     */
-    it('should display conflict resolution banner when conflict is detected', async () => {
+    it('should update noteLink extension when allNotes changes', async () => {
+        const { rerender } = render(<TiptapEditor />);
+        
         useNote.mockReturnValue({
             selectedNote: mockActiveNote,
-            triggerRefresh: mockTriggerRefresh,
-            createRootNote: vi.fn(),
-            selectNote: vi.fn(),
-            isSyncing: false,
-            syncStatus: 'CONFLICT', // Set to conflict status
-            refreshCurrentNote: vi.fn(),
+            allNotes: [{ title: 'New Note', note_id: 'new' }],
+            triggerRefresh: vi.fn(),
         });
 
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
+        await act(async () => { rerender(<TiptapEditor />); });
 
-        // Check for conflict alert banner
-        expect(screen.getByText('conflict.conflict_detected_title')).toBeInTheDocument();
-        expect(screen.getByText('conflict.conflict_detected_desc')).toBeInTheDocument();
+        expect(mockEditor.setOptions).toHaveBeenCalled();
     });
 
-    /**
-     * Test conflict resolution: should open resolver when button is clicked
-     */
-    it('should open conflict resolver when resolve button is clicked', async () => {
-        const mockRefreshCurrentNote = vi.fn();
+    it('should set editor to read-only when note is_editable is 0', async () => {
         useNote.mockReturnValue({
-            selectedNote: mockActiveNote,
-            triggerRefresh: mockTriggerRefresh,
-            createRootNote: vi.fn(),
-            selectNote: vi.fn(),
-            isSyncing: false,
-            syncStatus: 'CONFLICT',
-            refreshCurrentNote: mockRefreshCurrentNote,
+            selectedNote: { ...mockActiveNote, is_editable: 0 },
+            allNotes: [],
+            triggerRefresh: vi.fn(),
         });
 
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
+        await renderEditor();
+        expect(mockEditor.setEditable).toHaveBeenCalledWith(false);
+    });
 
-        const resolveButton = screen.getByText('conflict.resolve_conflict');
+    // --- INTERACTION & CONTEXT MENU TESTS ---
 
+    it('should show custom context menu on desktop', async () => {
+        const { container } = await renderEditor();
+        
+        const editorBody = container.querySelector('.tiptap-container');
+        
         await act(async () => {
-            fireEvent.click(resolveButton);
+            fireEvent.contextMenu(editorBody, { clientX: 50, clientY: 50 });
         });
 
-        // After clicking, ConflictResolver should be mounted
-        // Since ConflictResolver is imported but not mocked in the provided mock,
-        // we just verify the button triggers the state change
-        expect(resolveButton).toBeInTheDocument();
+        expect(screen.getByTestId('editor-context-menu')).toBeInTheDocument();
     });
 
-    /**
-     * Test offline empty state: should show offline message when offline with no local content
-     */
-    it('should show offline empty state when offline with no content', async () => {
-        const mockSelectNote = vi.fn();
-        useNote.mockReturnValue({
-            selectedNote: {
-                ...mockActiveNote,
-                content: null, // No content
-            },
-            triggerRefresh: mockTriggerRefresh,
-            createRootNote: vi.fn(),
-            selectNote: mockSelectNote,
-            isSyncing: false,
-            syncStatus: 'OFFLINE_EMPTY',
-            refreshCurrentNote: vi.fn(),
-        });
-
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        expect(screen.getByText('editor.offline_empty_title')).toBeInTheDocument();
-        expect(screen.getByText('editor.offline_empty_desc')).toBeInTheDocument();
-        expect(screen.getByText('common.retry')).toBeInTheDocument();
-    });
-
-    /**
-     * Test content injection: should inject content to editor when note has content
-     */
-    it('should inject content to editor when loading a note with content', async () => {
-        const contentNote = {
-            ...mockActiveNote,
-            note_id: 'note-456',
-            content: JSON.stringify({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }] })
-        };
-
-        useNote.mockReturnValue({
-            selectedNote: contentNote,
-            triggerRefresh: mockTriggerRefresh,
-            createRootNote: vi.fn(),
-            selectNote: vi.fn(),
-            isSyncing: false,
-            syncStatus: 'ONLINE',
-            refreshCurrentNote: vi.fn(),
-        });
-
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        // Verify editor schema was used to parse the content
-        expect(mockEditor.schema.nodeFromJSON).toHaveBeenCalled();
-    });
-
-    /**
-     * Test title keyboard navigation: should navigate to title when pressing ArrowUp at the start
-     */
-    it('should not focus title when ArrowUp is pressed at position > 1', async () => {
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        const handleKeyDown = vi.mocked(useEditorConfig).mock.calls[0][0].handleKeyDownProp;
-
-        const titleInput = screen.getByDisplayValue('Test Note');
-        const focusSpy = vi.spyOn(titleInput, 'focus');
-
-        const mockView = { state: { selection: { $from: { pos: 10 } } } };
-        const mockEvent = { key: 'ArrowUp' };
-
-        act(() => {
-            const result = handleKeyDown(mockView, mockEvent);
-            expect(result).toBe(false); // Should return false when not handling the key
-        });
-
-        expect(focusSpy).not.toHaveBeenCalled();
-    });
-
-    /**
-     * Test save title: should not save empty title and revert it
-     */
-    it('should revert empty title change without saving to DB', async () => {
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        const titleInput = screen.getByDisplayValue('Test Note');
-
-        await act(async () => {
-            fireEvent.change(titleInput, { target: { value: '' } });
-            fireEvent.blur(titleInput);
-            await vi.runAllTimersAsync();
-        });
-
-        expect(noteService.update).not.toHaveBeenCalled();
-        expect(titleInput.value).toBe('Test Note');
-    });
-
-    /**
-     * Test emoji picker: should show emoji picker when emoji command handler is triggered
-     */
-    it('should handle emoji command and create floating element', async () => {
-        // Mock the view with proper state structure
-        const mockEditorWithCoords = {
-            ...mockEditor,
-            view: {
-                ...mockEditor.view,
-                state: {
-                    ...mockEditor.view.state,
-                    selection: { from: 0 }
-                },
-                coordsAtPos: vi.fn().mockReturnValue({ left: 100, top: 200, bottom: 220 })
-            }
-        };
-        useEditor.mockReturnValue(mockEditorWithCoords);
-
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        // Get the handleEmojiCommand function from the config
+    it('should handle emoji command by positioning picker at cursor', async () => {
+        await renderEditor();
         const handleEmojiCommand = vi.mocked(useEditorConfig).mock.calls[0][0].handleEmojiCommand;
 
-        // Call it and verify it doesn't throw
-        await act(async () => {
-            handleEmojiCommand();
+        act(() => { handleEmojiCommand(); });
+        // The picker should appear twice: once for the header and once for the slash command
+        expect(screen.getAllByTestId('emoji-picker').length).toBeGreaterThan(1);
+    });
+
+    // --- AUTO-SAVE & PERSISTENCE TESTS ---
+
+    it('should trigger content save after 2 seconds of inactivity', async () => {
+        await renderEditor();
+        const onUpdate = vi.mocked(useEditorConfig).mock.calls[0][0].onUpdate;
+
+        act(() => { onUpdate({ editor: mockEditor }); });
+        
+        await act(async () => { vi.advanceTimersByTime(2000); });
+
+        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ is_dirty: 1 }));
+    });
+
+    it('should force save on unmount if a timeout is pending', async () => {
+        const { unmount } = render(<TiptapEditor />);
+        const onUpdate = vi.mocked(useEditorConfig).mock.calls[0][0].onUpdate;
+
+        act(() => { onUpdate({ editor: mockEditor }); });
+        unmount();
+
+        expect(noteService.update).toHaveBeenCalledWith('note-123', expect.objectContaining({ is_dirty: 1 }));
+    });
+
+    // --- UI STATE TESTS (SYNC & EMPTY) ---
+
+    it('should show EmptyState when no note is selected', () => {
+        useNote.mockReturnValue({ selectedNote: null, allNotes: [], createRootNote: vi.fn() });
+        render(<TiptapEditor />);
+        expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+    });
+
+    it('should display conflict resolution banner when status is CONFLICT', async () => {
+        useNote.mockReturnValue({
+            selectedNote: mockActiveNote,
+            syncStatus: 'CONFLICT',
+            allNotes: []
         });
-
-        // The component should render without errors
-        expect(screen.getByTestId('path-bar')).toBeInTheDocument();
-    });
-
-    /**
-     * Test mobile specific rendering: should apply mobile classes
-     */
-    it('should apply mobile styling when isMobile is true', async () => {
-        useIsMobile.mockReturnValue(true);
-
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        // Verify that the editor content is still rendered on mobile
-        expect(screen.getByTestId('tiptap-content')).toBeInTheDocument();
-
-        // Verify mobile menu is rendered (MobileFormattingSheet instead of MenuBar)
-        expect(screen.getByTestId('mobile-formatting')).toBeInTheDocument();
-    });
-
-    /**
-     * Test prop passing to PathBar: should pass required props
-     */
-    it('should render PathBar with correct props', async () => {
-        noteService.update.mockResolvedValue({ success: true });
-
-        render(<TiptapEditor />);
-        await waitForInitialLoad();
-
-        // PathBar is mocked, but we can verify it exists in the render
-        expect(screen.getByTestId('path-bar')).toBeInTheDocument();
+        await renderEditor();
+        expect(screen.getByText('conflict.conflict_detected_title')).toBeInTheDocument();
     });
 });

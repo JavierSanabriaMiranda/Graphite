@@ -15,15 +15,16 @@
         "label": "main",
         "title": "Graphite",
         "width": 1280,
-        "height": 720
+        "height": 720,
+        "dragDropEnabled": false
       }
     ],
     "security": {
-      "capabilities": ["default"]
+      "csp": "default-src 'self'; img-src 'self' https://asset.localhost; connect-src 'self' https:; font-src 'self'; script-src 'self' 'unsafe-inline'"
     }
   },
   "plugins": {
-    "sql": {} 
+    "sql": {}
   },
   "bundle": {
     "active": true,
@@ -34,6 +35,9 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
+    ],
+    "resources": [
+      "resources/fonts/Twemoji.Mozilla.ttf"
     ]
   }
 }

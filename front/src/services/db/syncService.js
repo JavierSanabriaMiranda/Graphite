@@ -1,11 +1,23 @@
 import { getDB } from '.';
-import { remoteNoteService, remoteWorkspaceService } from '../api';
+import { remoteNoteService, remoteWorkspaceService, remoteNoteLinkService, remoteAttachmentService } from '../api';
 import { encryptData, decryptData } from '../../util/crypto';
 import { formatDateForServer } from '../../util/formatDate';
 import { noteService } from './noteService';
 import { SyncStatus } from '../../util/SyncStatus';
+import { noteLinkService } from './noteLinkService';
+import { invoke } from "@tauri-apps/api/core";
 
 // --- Private helper functions for sync logic ---
+
+/**
+ * Pushes local links of a note to the remote server.
+ */
+const syncNoteLinks = async (noteId) => {
+    const localLinks = await noteLinkService.getLinksBySource(noteId);
+    const targetIds = localLinks.map(l => l.target_id);
+
+    await remoteNoteLinkService.updateRemoteLinks(noteId, targetIds);
+};
 
 /**
  * Syncs the workspaces received as parameter with the remote server, encrypting them with the provided DEK. 
@@ -63,6 +75,7 @@ const syncNotes = async (notes, dek) => {
             iv: iv,
             isFavorite: note.is_favorite === 1,
             isDeleted: note.is_deleted === 1,
+            isEditable: note.is_editable === 1,
             createdAt: formattedCreatedAt,
             updatedAt: formattedUpdatedAt,
             noteVersion: note.note_version
@@ -71,6 +84,11 @@ const syncNotes = async (notes, dek) => {
         const response = await remoteNoteService.updateRemoteNote(notePayload);
 
         if (response.ok) {
+            try {
+                await syncNoteLinks(note.note_id);
+            } catch (e) {
+                console.error("Failed to sync links for note:", note.note_id, e);
+            }
             const data = await response.json();
             const newVersion = data.newVersion;
 
@@ -86,7 +104,7 @@ const syncNotes = async (notes, dek) => {
 
             try {
                 // Get subnotes metadata
-                await ensureRemoteChildrenMetadata(noteId, dek);
+                await ensureRemoteChildrenMetadata(note.note_id, dek);
             } catch (e) {
                 console.warn("Error obtaining remote children metadata:", e);
             }
@@ -102,6 +120,63 @@ const syncNotes = async (notes, dek) => {
                 remoteMeta.noteVersion
             );
 
+        }
+    }
+};
+
+/**
+ * Internal helper to sync all dirty attachments of a note or in general.
+ */
+const syncAttachmentsUploads = async (attachments) => {
+    for (const attachment of attachments) {
+        try {
+            // Calculate checksum on rust
+            const checksum = await invoke('calculate_attachment_checksum', {
+                path: attachment.local_path
+            });
+
+            // Verify if file is already on server
+            const checkRequest = {
+                attachmentId: attachment.attachment_id,
+                checksum: checksum,
+                fileName: attachment.file_name,
+                mimeType: attachment.mime_type,
+                fileSize: attachment.file_size,
+                noteId: attachment.note_id,
+                imgWidth: attachment.img_width
+            };
+
+            const { needsUpload, uploadUrl } = await remoteAttachmentService.checkAttachment(checkRequest);
+
+            // Upload if needed with Rust
+            if (needsUpload && uploadUrl) {
+                await invoke('upload_to_azure', {
+                    url: uploadUrl,
+                    filePath: attachment.local_path,
+                    mimeType: attachment.mime_type
+                });
+            }
+
+            // Mark as clean on DB
+            await syncService.markAsClean('ATTACHMENTS', 'attachment_id', attachment.attachment_id);
+
+        } catch (e) {
+            console.error(`Failed to sync attachment ${attachment.attachment_id}:`, e);
+            // Don't mark as clean, it has to retry upload
+        }
+    }
+};
+
+/**
+ * Inform the remote server about the attached files to delete
+ */
+const syncAttachmentDeletes = async (attachments) => {
+    for (const attachment of attachments) {
+        try {
+            await remoteAttachmentService.deleteRemoteAttachment(attachment.attachment_id);
+            await syncService.markAsClean('ATTACHMENTS', 'attachment_id', attachment.attachment_id);
+        } catch (e) {
+            console.error(`Failed to sync deletion for attachment ${attachment.attachment_id}:`, e);
         }
     }
 };
@@ -159,14 +234,14 @@ const pullRemoteNotesOfAWorkspace = async (remoteNotes, dek, db) => {
         const { title, icon, notePath } = JSON.parse(metaJson);
 
         await db.execute(
-            `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, updated_at, note_version, is_dirty)
-                VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, 0) 
+            `INSERT INTO NOTES (note_id, workspace_id, parent_id, title, icon, note_path, is_favorite, is_deleted, is_editable, updated_at, note_version, is_dirty)
+                VALUES (?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, 0) 
                 ON CONFLICT(note_id) DO UPDATE SET
                     title = excluded.title, icon = excluded.icon, note_path = excluded.note_path, workspace_id = excluded.workspace_id,
-                    is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, 
+                    is_favorite = excluded.is_favorite, is_deleted = excluded.is_deleted, is_editable = excluded.is_editable, 
                     updated_at = excluded.updated_at, note_version = excluded.note_version
                 WHERE NOTES.is_dirty = 0`,
-            [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.updatedAt, rn.noteVersion]
+            [rn.noteId, rn.workspaceId, title, icon, notePath, rn.isFavorite ? 1 : 0, rn.isDeleted ? 1 : 0, rn.isEditable ? 1 : 0, rn.updatedAt, rn.noteVersion]
         );
     }
 
@@ -177,6 +252,28 @@ const pullRemoteNotesOfAWorkspace = async (remoteNotes, dek, db) => {
                 "UPDATE NOTES SET parent_id = ? WHERE note_id = ?",
                 [rn.parentId, rn.noteId]
             );
+        }
+    }
+
+    // Get and insert links for each note of the workspace
+    if (remoteNotes.length > 0) {
+        const workspaceId = remoteNotes[0].workspaceId;
+        try {
+            // Get all workspace links from a single endpoint
+            const allWorkspaceLinks = await remoteNoteLinkService.getRemoteLinksByWorkspace(workspaceId);
+
+            for (const entry of allWorkspaceLinks) {
+                await db.execute("DELETE FROM NOTE_LINKS WHERE source_id = ?", [entry.sourceNoteId]);
+
+                for (const targetId of entry.targetNoteIds) {
+                    await db.execute(
+                        "INSERT INTO NOTE_LINKS (source_id, target_id) VALUES (?, ?)",
+                        [entry.sourceNoteId, targetId]
+                    );
+                }
+            }
+        } catch (e) {
+            console.warn("Sync: Error pulling workspace links", e);
         }
     }
 };
@@ -197,13 +294,20 @@ export const syncService = {
         if (!dek) return;
 
         try {
-            const { notes, workspaces } = await syncService.getPendingUploads();
+            const { notes, workspaces, attachments } = await syncService.getPendingUploads();
 
             // Sync Workspaces (Dependencies)
             await syncWorkspaces(workspaces, dek);
 
             // Sync Notes
             await syncNotes(notes, dek);
+
+            // Sync attachments
+            const toDelete = attachments.filter(a => a.is_deleted === 1);
+            const toUpload = attachments.filter(a => a.is_deleted === 0);
+
+            await syncAttachmentDeletes(toDelete)
+            await syncAttachmentsUploads(toUpload);
 
             // Final purge of records that are already synced and marked as deleted
             await syncService.purgeSyncedDeletes();
@@ -221,6 +325,7 @@ export const syncService = {
     purgeSyncedDeletes: async () => {
         const db = await getDB();
         try {
+            // Notes
             await db.execute(`
                 DELETE FROM NOTES 
                 WHERE is_deleted = 1 
@@ -233,7 +338,26 @@ export const syncService = {
                     SELECT note_id FROM NOTES WHERE conflict_content IS NOT NULL
                 )
             `);
+            // Workspaces
             await db.execute("DELETE FROM WORKSPACES WHERE is_deleted = 1 AND is_dirty = 0");
+
+            // Attached files
+            const syncedDeletes = await db.select(
+                "SELECT * FROM ATTACHMENTS WHERE is_deleted = 1 AND is_dirty = 0"
+            );
+
+            for (const att of syncedDeletes) {
+                // Try to remove from disc
+                if (att.local_path) {
+                    try {
+                        await invoke('delete_attachment_file', { filePath: att.local_path });
+                    } catch (err) {
+                        console.warn(`Could not delete file from disk during purge: ${att.local_path}`, err);
+                    }
+                }
+                // Delete from db
+                await db.execute("DELETE FROM ATTACHMENTS WHERE attachment_id = ?", [att.attachment_id]);
+            }
         } catch (error) {
             console.error("Error while database purge:", error);
         }
@@ -246,7 +370,63 @@ export const syncService = {
         const db = await getDB();
         const pendingNotes = await db.select("SELECT * FROM NOTES WHERE is_dirty = 1");
         const pendingWorkspaces = await db.select("SELECT * FROM WORKSPACES WHERE is_dirty = 1");
-        return { notes: pendingNotes, workspaces: pendingWorkspaces };
+        const pendingAttachments = await db.select("SELECT * FROM ATTACHMENTS WHERE is_dirty = 1");
+        return {
+            notes: pendingNotes,
+            workspaces: pendingWorkspaces,
+            attachments: pendingAttachments
+        };
+    },
+
+    // Añadir al objeto syncService dentro de syncService.js
+
+    /**
+     * Downloads a file from remote, stores it on disc with Rust and registers it on db.
+     */
+    downloadAttachment: async (attachmentId) => {
+        try {
+            // Get metadata and download URL
+            const remoteInfo = await remoteAttachmentService.getMetadataAndDownloadUrl(attachmentId);
+            if (!remoteInfo) throw new Error("Attachment not found on remote server");
+
+            // Get the folder to store the file
+            const attachmentsDir = await invoke('get_app_attachments_dir');
+
+            // Build local path
+            const extension = remoteInfo.fileName.split('.').pop();
+            const localPath = `${attachmentsDir}/${attachmentId}.${extension}`;
+
+            // Call rust to download the file from remote
+            await invoke('download_from_azure', {
+                url: remoteInfo.downloadUrl,
+                localPath: localPath
+            });
+
+            // Register on db
+            const db = await getDB();
+            await db.execute(
+                `INSERT INTO ATTACHMENTS (
+                attachment_id, note_id, file_name, mime_type, file_size, local_path, img_width, is_dirty
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+            ON CONFLICT(attachment_id) DO UPDATE SET
+                local_path = excluded.local_path,
+                is_dirty = 0`,
+                [
+                    attachmentId,
+                    remoteInfo.noteId,
+                    remoteInfo.fileName,
+                    remoteInfo.mimeType,
+                    remoteInfo.fileSize,
+                    localPath,
+                    remoteInfo.imgWidth
+                ]
+            );
+
+            return localPath;
+        } catch (error) {
+            console.error(`syncService: Error downloading attachment ${attachmentId}:`, error);
+            throw error;
+        }
     },
 
     /**
@@ -347,6 +527,30 @@ export const syncService = {
                 const remoteFull = await remoteNoteService.getRemoteNoteContent(noteId);
                 const decryptedContent = await decryptData(remoteFull.encryptedPayload, dek, remoteFull.iv);
 
+                // Sync links from server to local
+                try {
+                    const graph = await remoteNoteLinkService.getRemoteNoteGraph(noteId);
+
+                    // Update outgoing links
+                    await db.execute("DELETE FROM NOTE_LINKS WHERE source_id = ?", [noteId]);
+                    for (const targetId of graph.outgoing) {
+                        await db.execute(
+                            "INSERT INTO NOTE_LINKS (source_id, target_id) VALUES (?, ?)",
+                            [noteId, targetId]
+                        );
+                    }
+
+                    // Update incoming links (backlinks)
+                    for (const sourceId of graph.incoming) {
+                        await db.execute(
+                            "INSERT OR IGNORE INTO NOTE_LINKS (source_id, target_id) VALUES (?, ?)",
+                            [sourceId, noteId]
+                        );
+                    }
+                } catch (e) {
+                    console.error("Sync: Error updating individual note links", e);
+                }
+
                 try {
                     // Get metadata from the childs of the content and update the childs that were not locally
                     const remoteChildren = await remoteNoteService.getRemoteMetadataByParent(noteId);
@@ -357,21 +561,22 @@ export const syncService = {
                         await db.execute(
                             `INSERT INTO NOTES (
                                 note_id, workspace_id, parent_id, title, icon, 
-                                note_path, is_favorite, updated_at, note_version, 
+                                note_path, is_favorite, updated_at, note_version, is_editable,
                                 is_deleted, is_dirty
                             )
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0) 
                             ON CONFLICT(note_id) DO UPDATE SET
                                 title = excluded.title,
                                 icon = excluded.icon,
                                 parent_id = excluded.parent_id,
                                 note_version = excluded.note_version,
+                                is_editable = excluded.is_editable,
                                 is_deleted = 0,
                                 is_dirty = 0`,
                             [
                                 child.noteId, child.workspaceId, noteId, title, icon,
                                 notePath, child.isFavorite ? 1 : 0,
-                                child.updatedAt, child.noteVersion
+                                child.updatedAt, child.noteVersion, child.isEditable ? 1 : 0
                             ]
                         );
                     }

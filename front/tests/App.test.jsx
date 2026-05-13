@@ -30,57 +30,37 @@ vi.mock('../src/components/context/WorkspaceContext', () => ({
     useWorkspace: vi.fn(),
 }));
 
-vi.mock('../src/components/context/NoteContext', () => ({
-    NoteProvider: ({ children }) => children,
-}));
-
+// Mock empty providers for performance
+vi.mock('../src/components/context/NoteContext', () => ({ NoteProvider: ({ children }) => children }));
 vi.mock('../src/components/context/SettingsContext', () => ({
     SettingsProvider: ({ children }) => children,
+    useSettings: () => ({
+        setZoomIndex: vi.fn(),
+        ZOOM_LEVELS: [],
+        DEFAULT_ZOOM_INDEX: 0
+    })
 }));
-
-vi.mock('../src/components/context/ToastContext', () => ({
-    ToastProvider: ({ children }) => children,
-}));
+vi.mock('../src/components/context/ToastContext', () => ({ ToastProvider: ({ children }) => children }));
+vi.mock('../src/components/context/AttachmentContext', () => ({ AttachmentProvider: ({ children }) => children }));
 
 vi.mock('../src/services/db/userService', () => ({
-    userService: {
-        getCurrentUser: vi.fn(),
-    },
+    userService: { getCurrentUser: vi.fn() },
 }));
 
 vi.mock('../src/services/db/workspaceService', () => ({
-    workspaceService: {
-        getByUser: vi.fn(),
-    },
+    workspaceService: { getByUser: vi.fn() },
 }));
 
-vi.mock('../src/components/TiptapEditor', () => ({
-    default: () => <div data-testid="tiptap-editor">TiptapEditor</div>,
-}));
-
-vi.mock('../src/components/navigation/Sidebar', () => ({
-    default: () => <div data-testid="sidebar">Sidebar</div>,
-}));
-
-vi.mock('../src/components/navigation/BottomNavBar', () => ({
-    default: () => <div data-testid="bottom-navbar">BottomNavBar</div>,
-}));
-
-vi.mock('../src/components/navigation/MobileBrowseView', () => ({
-    default: () => <div data-testid="mobile-browse">MobileBrowseView</div>,
-}));
-
-vi.mock('../src/components/views/AuthenticationView', () => ({
-    default: () => <div data-testid="auth-view">AuthenticationView</div>,
-}));
-
-vi.mock('../src/components/views/CreateWorkspaceView', () => ({
-    default: () => <div data-testid="create-workspace">CreateWorkspaceView</div>,
-}));
-
-vi.mock('../src/components/configuration_menu/SettingsModal', () => ({
-    default: () => <div data-testid="settings-modal">SettingsModal</div>,
-}));
+// Mock views with data-testids
+vi.mock('../src/components/TiptapEditor', () => ({ default: () => <div data-testid="tiptap-editor">Editor</div> }));
+vi.mock('../src/components/navigation/Sidebar', () => ({ default: () => <div data-testid="sidebar">Sidebar</div> }));
+vi.mock('../src/components/navigation/BottomNavBar', () => ({ default: () => <div data-testid="bottom-navbar">Navbar</div> }));
+vi.mock('../src/components/navigation/MobileBrowseView', () => ({ default: () => <div data-testid="mobile-browse">Browse</div> }));
+vi.mock('../src/components/views/AuthenticationView', () => ({ default: () => <div data-testid="auth-view">Auth</div> }));
+vi.mock('../src/components/views/CreateWorkspaceView', () => ({ default: () => <div data-testid="create-workspace">Create</div> }));
+vi.mock('../src/components/settings/SettingsModal', () => ({ default: () => <div data-testid="settings-modal">Settings</div> }));
+vi.mock('../src/components/note_search/SearchOverlay', () => ({ default: () => <div data-testid="search-overlay">Search</div> }));
+vi.mock('../src/components/views/MobileSearchView', () => ({ default: () => <div data-testid="mobile-search-view">Mobile Search</div> }));
 
 import { useAuth } from '../src/components/context/AuthContext';
 import { useWorkspace } from '../src/components/context/WorkspaceContext';
@@ -90,6 +70,28 @@ import { userService } from '../src/services/db/userService';
 import { workspaceService } from '../src/services/db/workspaceService';
 
 describe('App Component', () => {
+    /**
+     * Setup default success state for authenticated tests
+     */
+    const setupAuthenticatedState = () => {
+        useAuth.mockReturnValue({ isAuthenticated: true, loading: false });
+        useIsMobile.mockReturnValue(false);
+        userService.getCurrentUser.mockResolvedValue({ user_id: 'user1' });
+        workspaceService.getByUser.mockResolvedValue([{ workspace_id: 'ws1' }]);
+        useWorkspace.mockReturnValue({
+            isCreatingWorkspace: false,
+            isLoading: false,
+            workspaces: [{ workspace_id: 'ws1' }],
+        });
+        useUI.mockReturnValue({
+            isSettingsOpen: false,
+            activeTab: 'editor',
+            closeSettings: vi.fn(),
+            setActiveTab: vi.fn(),
+            openSettings: vi.fn(),
+        });
+    };
+
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -324,20 +326,19 @@ describe('App Component', () => {
             });
         });
 
-        it('should show search view on search tab', async () => {
+        it('should show search view on search tab (Mobile)', async () => {
+            setupAuthenticatedState();
             useIsMobile.mockReturnValue(true);
             useUI.mockReturnValue({
-                isSettingsOpen: false,
                 activeTab: 'search',
-                closeSettings: vi.fn(),
+                isSettingsOpen: false,
                 setActiveTab: vi.fn(),
-                openSettings: vi.fn(),
             });
 
             render(<App />);
 
             await waitFor(() => {
-                expect(screen.getByText(/Sección de Búsqueda/)).toBeInTheDocument();
+                expect(screen.getByTestId('mobile-search-view')).toBeInTheDocument();
             });
         });
 

@@ -82,23 +82,23 @@ describe('AlignmentSelector Suite', () => {
     it('should open the dropdown menu when clicked', () => {
         render(<AlignmentSelector editor={mockEditor} />);
 
-        const mainButton = screen.getByTitle('editor.toolbar.alignment');
+        const mainButton = screen.getByTitle('editor.toolbar.alignment.alignment');
         fireEvent.click(mainButton);
 
         // Verify that menu options appear
-        expect(screen.getByTitle('Center')).toBeInTheDocument();
-        expect(screen.getByTitle('Right')).toBeInTheDocument();
-        expect(screen.getByTitle('Justified')).toBeInTheDocument();
+        expect(screen.getByTitle('editor.toolbar.alignment.center')).toBeInTheDocument();
+        expect(screen.getByTitle('editor.toolbar.alignment.right')).toBeInTheDocument();
+        expect(screen.getByTitle('editor.toolbar.alignment.justify')).toBeInTheDocument();
     });
 
     it('should call setTextAlign and close menu when an option is selected', () => {
         render(<AlignmentSelector editor={mockEditor} />);
 
         // Open Menu
-        fireEvent.click(screen.getByTitle('editor.toolbar.alignment'));
+        fireEvent.click(screen.getByTitle('editor.toolbar.alignment.alignment'));
 
         // Click on "Right" option
-        const rightButton = screen.getByTitle('Right');
+        const rightButton = screen.getByTitle('editor.toolbar.alignment.right');
         fireEvent.click(rightButton);
 
         // Verify tiptap commands
@@ -107,7 +107,7 @@ describe('AlignmentSelector Suite', () => {
         expect(mockChain.run).toHaveBeenCalled();
 
         // Verify menu is closed
-        expect(screen.queryByTitle('Center')).not.toBeInTheDocument();
+        expect(screen.queryByTitle('editor.toolbar.alignment.center')).not.toBeInTheDocument();
     });
 
     it('should apply active classes to the selected alignment in the menu', () => {
@@ -124,9 +124,9 @@ describe('AlignmentSelector Suite', () => {
         render(<AlignmentSelector editor={mockEditor} />);
 
         // Open menu
-        fireEvent.click(screen.getByTitle('editor.toolbar.alignment'));
+        fireEvent.click(screen.getByTitle('editor.toolbar.alignment.alignment'));
 
-        const justifyButton = screen.getByTitle('Justified');
+        const justifyButton = screen.getByTitle('editor.toolbar.alignment.justify');
         // Must have bg-primary class
         expect(justifyButton).toHaveClass('bg-primary');
     });

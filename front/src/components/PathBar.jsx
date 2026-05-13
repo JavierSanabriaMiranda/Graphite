@@ -7,6 +7,7 @@ import { noteService } from '../services/db/noteService'
 import { useNote } from './context/NoteContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { SyncStatus } from '../util/SyncStatus';
+import EditModeButton from './EditModeButton';
 
 /**
  * PathBar - Topbar for navigation and note state
@@ -14,7 +15,13 @@ import { SyncStatus } from '../util/SyncStatus';
 const PathBar = ({ saveStatus, editor, onResolveConflict }) => {
     const { t } = useTranslation();
     const isMobile = useIsMobile();
-    const { selectedNote: activeNote, selectNote: onNoteSelect, refreshTrigger, syncStatus } = useNote();
+    const {
+        selectedNote: activeNote,
+        selectNote: onNoteSelect,
+        refreshTrigger,
+        syncStatus,
+        setNoteEditableMode
+    } = useNote();
     const [displayNote, setDisplayNote] = useState(activeNote);
 
     // When selected note changes or refreshTrigger
@@ -31,6 +38,15 @@ const PathBar = ({ saveStatus, editor, onResolveConflict }) => {
 
         syncNoteData();
     }, [activeNote?.note_id, refreshTrigger]);
+
+    const handleToggleEditMode = async () => {
+        if (!displayNote) return;
+        const newStatus = !displayNote.is_editable;
+
+        await setNoteEditableMode(newStatus);
+
+        setDisplayNote(prev => ({ ...prev, is_editable: newStatus }));
+    };
 
     // Handles the click on a path part to redirect to that note
     const handlePathClick = async (parts, index) => {
@@ -195,6 +211,12 @@ const PathBar = ({ saveStatus, editor, onResolveConflict }) => {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1">
+                    {displayNote && (
+                        <EditModeButton
+                            isEditable={displayNote.is_editable}
+                            onToggle={handleToggleEditMode}
+                        />
+                    )}
                     <ChangeThemeButton />
                     <OptionsMenu editor={editor} />
                 </div>

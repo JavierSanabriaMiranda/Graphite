@@ -20,13 +20,27 @@ const Icon = ({ d, className = "w-4 h-4", strokeWidth = 2 }) => (
  * @param {Function} onSelect - Callback function to call when a emoji or icon is selected
  * @param {Component} childer - Children to be wrapped. It can open the EmojiPicker floating menu 
  * @param {Boolean} showIconsMenu - True if the icons menu must be shown, false otherwise
+ * @param {Boolean} disabled - True if the emoji picker should be disabled, false otherwise
  */
-const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReference = null }) => {
+const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReference = null, disabled = false }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [view, setView] = useState('emojis');
     const [activeCategory, setActiveCategory] = useState('people');
+
+    // Avoid opening the menu if there is no reference element to anchor to
+    useEffect(() => {
+        if (externalReference && !disabled) setIsOpen(true);
+    }, [externalReference, disabled]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setSearch('');
+            setView('emojis');
+            setActiveCategory('people');
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (externalReference) setIsOpen(true);
@@ -46,6 +60,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
         onOpenChange: (open) => {
+            if (disabled) return;
             setIsOpen(open);
             // If close and comming from externalReference,clean parent state
             if (!open && externalReference && externalReference.onClose) externalReference.onClose();
@@ -59,7 +74,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     });
 
     const { getReferenceProps, getFloatingProps } = useInteractions([
-        useClick(context),
+        useClick(context, { enabled: !disabled}),
         useDismiss(context),
         useRole(context),
     ]);
@@ -67,8 +82,14 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     /**
      * Normalizes text to ignore accents
      */
-    const normalizeText = (text) =>
-        text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
+    const normalizeText = (text) => {
+        const str = String(text || "");
+        return str
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    };
 
     // Searching logic
     const filteredItems = useMemo(() => {
@@ -76,11 +97,22 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
         if (!s) return null;
 
         const dataSource = view === 'emojis' ? EMOJI_DATA : ICON_DATA;
-        const translationPrefix = view === 'emojis' ? 'emojis.names' : 'icons.names';
+
+        // Get all the translations for the current view (emojis or icons)
+        const ns = view === 'emojis' ? 'emojis' : 'icons';
+        const allTranslations = t('names', { ns, returnObjects: true });
+
+        const translationsMap = typeof allTranslations === 'object' ? allTranslations : {};
 
         return dataSource.filter(item => {
-            const translatedName = t(`${translationPrefix}.${item.id}`, { defaultValue: '' });
-            return normalizeText(translatedName).includes(s) || item.id.includes(s);
+            // Check Id
+            const matchesId = normalizeText(item.id).includes(s);
+
+            // get translations for the item, if not found use empty string to avoid errors
+            const translationValue = translationsMap[item.id] || "";
+            const matchesTranslation = normalizeText(translationValue).includes(s);
+
+            return matchesId || matchesTranslation;
         }).slice(0, 36);
     }, [search, t, view]);
 
@@ -97,17 +129,18 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
     return (
         <>
             {children && (
-                <div ref={refs.setReference} {...getReferenceProps()} className="cursor-pointer">
+                <div ref={refs.setReference} {...getReferenceProps()} className={disabled ? "" : "cursor-pointer"}>
                     {children}
                 </div>
             )}
 
-            <FloatingPortal>
-                <div
-                    ref={refs.setFloating}
-                    {...getFloatingProps()}
-                    style={{ ...floatingStyles, visibility: isOpen ? 'visible' : 'hidden' }}
-                    className="z-1000 w-90 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+            {isOpen && (
+                <FloatingPortal>
+                    <div
+                        ref={refs.setFloating}
+                        {...getFloatingProps()}
+                        style={{ ...floatingStyles }}
+                        className="z-1000 w-90 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
                 >
                     {/* Mode selector (Emojis vs Icons) */}
                     {showIconsMenu ? (<div className="flex p-1 bg-zinc-100 dark:bg-zinc-800/50 m-2 rounded-lg">
@@ -173,7 +206,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
                         </div>
                     </div>
                 </div>
-            </FloatingPortal>
+            </FloatingPortal>)}
         </>
     );
 };

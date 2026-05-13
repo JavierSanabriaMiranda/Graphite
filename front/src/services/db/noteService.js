@@ -1,6 +1,7 @@
 import { getDB } from '.';
 import i18next from 'i18next';
 import { getWelcomeNote } from './pre_designed_pages/welcomeContent'
+import { noteLinkService } from './noteLinkService';
 
 const emptyContent = JSON.stringify({
     type: 'doc',
@@ -23,6 +24,23 @@ const getChildIdsFromContent = (json) => {
     };
     if (json) traverse(json);
     return ids;
+};
+
+/**
+ * Extracts note IDs from inline links ([[note]]) for the backlinks graph.
+ */
+const getNoteLinkIdsFromContent = (json) => {
+    const ids = new Set();
+    const traverse = (node) => {
+        if (node.type === 'noteLink' && node.attrs?.noteId) {
+            ids.add(node.attrs.noteId);
+        }
+        if (node.content) {
+            node.content.forEach(traverse);
+        }
+    };
+    if (json) traverse(json);
+    return Array.from(ids);
 };
 
 /**
@@ -79,7 +97,7 @@ export const noteService = {
     getByWorkspace: async (workspaceId) => {
         const db = await getDB();
         return await db.select(
-            "SELECT * FROM NOTES WHERE workspace_id = $1 ORDER BY updated_at DESC",
+            "SELECT * FROM NOTES WHERE workspace_id = $1 AND is_deleted = 0 ORDER BY updated_at DESC",
             [workspaceId]
         );
     },
@@ -218,6 +236,12 @@ export const noteService = {
     update: async (noteId, data) => {
         const db = await getDB();
         const now = new Date().toISOString();
+
+        // If new content, update the note links table with the new links in the content
+        if (data.content) {
+            const linkIds = getNoteLinkIdsFromContent(data.content);
+            await noteLinkService.updateLinks(noteId, linkIds);
+        }
 
         // Path logic (if parent or title changes)
         if (data.title || 'parent_id' in data) {
@@ -366,6 +390,8 @@ export const noteService = {
                 [noteId]
             );
         }
+        const linkIds = getNoteLinkIdsFromContent(content);
+        await noteLinkService.updateLinks(noteId, linkIds);
     },
 
     resurrectNotes: async (noteIds) => {

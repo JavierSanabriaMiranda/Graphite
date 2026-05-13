@@ -16,6 +16,9 @@
         "saving": "Guardando...",
         "saved": "Guardado",
         "untitled_note": "Nueva página",
+        "lock_note": "Bloquear página",
+        "unlock_note": "Desbloquear página",
+        "remove_icon": "Quitar icono",
         "empty_state": {
             "title": "Ninguna página seleccionada",
             "description": "No hay ninguna página seleccionada. Selecciona una o crea una nueva"
@@ -50,6 +53,8 @@
                 "search": "Buscar fuente...",
                 "search_not_found": "Fuente no encontrada"
             },
+            "new_subnote": "Nueva subpágina",
+            "attach_file": "Adjuntar archivo",
             "bold": "Negrita",
             "italic": "Cursiva",
             "underline": "Subrayado",
@@ -64,7 +69,13 @@
                 "yellow": "Amarillo",
                 "purple": "Púrpura"
             },
-            "alignment": "Alineación",
+            "alignment": {
+                "alignment": "Alineación",
+                "left": "Izquierda",
+                "center": "Centro",
+                "right": "Derecha",
+                "justify": "Justificado"
+            },
             "bulleted_list": {
                 "bulleted_list": "Lista de viñetas",
                 "dots": "Puntos",
@@ -84,6 +95,20 @@
             "change_light_theme": "Cambiar a modo claro",
             "change_dark_theme": "Cambiar a modo oscuro"
         },
+        "info_bar": {
+            "show_info": "Mostrar info",
+            "hide_info": "Ocultar info",
+            "created_at": "Creado en",
+            "updated_at": "Última actualización",
+            "backlinks": "Enlaces entrantes"
+        },
+        "context_menu": {
+            "copy": "Copiar",
+            "cut": "Cortar",
+            "paste": "Pegar",
+            "add_link_to_note": "Añadir enlace a otra página",
+            "add_content_block": "Añadir bloque de contenido"
+        },
         "options_menu": {
             "options_menu": "Opciones",
             "export": {
@@ -92,7 +117,12 @@
                 "modal_instructions": "Selecciona el formato deseado:",
                 "modal_cancel": "Cancelar",
                 "modal_export": "Exportar ahora",
-                "export_success": "¡Documento exportado con éxito!"
+                "export_success": "¡Documento exportado con éxito!",
+                "export_failed": "Ha habido un fallo durante la exportación",
+                "preparing_pdf": "Preparando documento pdf...",
+                "select_theme": "Selecciona tema para la exportación",
+                "theme_light": "Claro",
+                "theme_dark": "Oscuro"
             },
             "import": "Importar",
             "import_success": "¡Documento importado con éxito!",
@@ -106,7 +136,8 @@
             }
         },
         "errors": {
-            "name_collision": "Ya hay una página con este nombre en esta ubicación"
+            "name_collision_title": "Nombre de página en conflicto",
+            "name_collision_message": "Ya hay una página con este nombre en esta ubicación"
         },
         "slash": {
             "normal_text": {
@@ -116,6 +147,10 @@
             "page": {
                 "title": "Página",
                 "search": "página,pagina,subpagina,subpágina,nota"
+            },
+            "attached_file": {
+                "title": "Archivo adjunto",
+                "search": "archivo,adjunto,imagen,video,audio"
             },
             "h1": {
                 "title": "Título 1",
@@ -168,7 +203,36 @@
         "pages": "Páginas",
         "new_note": "Nueva página",
         "loading": "Cargando...",
-        "workspace": "Espacio de Trabajo"
+        "workspace": "Espacio de Trabajo",
+        "context_menu": {
+            "delete_page": "Borrar página",
+            "add_subpage": "Añadir subpágina",
+            "subpage_created": "Subpágina creada correctamente",
+            "error_creating_subpage": "Error al crear la subpágina"
+        },
+        "search": "Buscar"
+    },
+    "search": {
+        "placeholder": "Buscar en todas tus páginas...",
+        "no_results": "No se han encontrado resultados",
+        "title": "Buscar páginas"
+    },
+    "note_link": {
+        "broken_link": "Nota no encontrada"
+    },
+    "attachment": {
+        "attachment_zone_title": "Insertar archivo adjunto",
+        "attachment_zone_description": "Pulsa aquí o arrastra un archivo para adjuntarlo",
+        "loading": "Cargando archivo...",
+        "not_available": "Archivo no disponible",
+        "download": "Descargar archivo",
+        "download_success": "Archivo descargado",
+        "download_success_message": "El archivo \"{{fileName}}\" se ha descargado correctamente",
+        "download_failed": "Error al descargar el archivo",
+        "error_too_large": "Archivo demasiado grande",
+        "error_too_large_message": "El archivo \"{{fileName}}\" excede el límite de tamaño permitido de 5MB",
+        "error_invalid_type": "Tipo de archivo no permitido",
+        "error_invalid_type_message": "El archivo \"{{fileName}}\" tiene un tipo no permitido"
     },
     "settings": {
         "title": "Ajustes",
@@ -184,6 +248,15 @@
                 "description": "Esta fuente se aplicará por defecto en todas las notas de la aplicación menos en aquellos textos en los que hayas modificado la fuente a mano",
                 "search": "Buscar fuente...",
                 "restart_notice": "Fuente cambiada correctamente. Los cambios se aplicarán al reiniciar la aplicación"
+            },
+            "zoom": {
+                "title": "Zoom de la interfaz",
+                "description": "Ajusta el nivel de zoom global de la interfaz. Esto afectará el tamaño de texto, iconos y otros elementos de la interfaz.",
+                "min": "Min",
+                "max": "Máx",
+                "reset": "Restablecer zoom",
+                "increase": "Aumentar zoom",
+                "decrease": "Disminuir zoom"
             }
         },
         "account": {
@@ -294,13 +367,6 @@
             "objects": "Objetos",
             "symbols": "Símbolos",
             "flags": "Banderas"
-        },
-        "names": {
-            "grinning_face": "risa sonrisa feliz",
-            "joy": "llorar risa alegría jaja",
-            "heart_eyes": "amor corazon enamorado",
-            "pizza": "comida pizza cena queso",
-            "rocket": "cohete espacio despegar"
         }
     },
     "icons": {

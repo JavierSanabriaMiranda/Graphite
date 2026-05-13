@@ -1,23 +1,23 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import ChangeThemeButton from '../../../src/components/util/ChangeThemeButton';
 
 Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation(query => ({
-    matches: false, // Light theme by default
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), 
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
+    writable: true,
+    value: vi.fn().mockImplementation(query => ({
+        matches: false, // Light theme by default
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+    })),
 });
 
 describe('ChangeThemeButton', () => {
-    
+
     beforeEach(() => {
         // Clean localstorage and dom classes
         localStorage.clear();
@@ -27,17 +27,20 @@ describe('ChangeThemeButton', () => {
 
     it('should initialize as Light Mode by default if no preference exists', () => {
         render(<ChangeThemeButton />);
+
+        // Use the title as a proxy to identify state since icons are SVGs
         const button = screen.getByRole('button');
-        
-        expect(button).toHaveTextContent('🌙');
+        expect(button).toHaveAttribute('title', 'editor.toolbar.change_dark_theme');
         expect(document.documentElement.classList.contains('dark')).toBe(false);
     });
 
     it('should initialize as Dark Mode if localStorage says so', () => {
         localStorage.setItem('theme', 'dark');
         render(<ChangeThemeButton />);
-        
-        expect(screen.getByText('☀️')).toBeInTheDocument();
+
+        const button = screen.getByRole('button');
+        // If dark, the title suggests changing to light
+        expect(button).toHaveAttribute('title', 'editor.toolbar.change_light_theme');
         expect(document.documentElement.classList.contains('dark')).toBe(true);
     });
 
@@ -51,31 +54,39 @@ describe('ChangeThemeButton', () => {
         expect(document.documentElement.classList.contains('dark')).toBe(true);
     });
 
-    it('should toggle theme and update DOM and localStorage on click', () => {
+    it('should toggle theme and update DOM and localStorage on click', async () => {
         render(<ChangeThemeButton />);
         const button = screen.getByRole('button');
 
-        // Change to dark
-        fireEvent.click(button);
-        expect(button).toHaveTextContent('☀️');
+        // Initial state: Light -> change to dark
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
+        expect(button).toHaveAttribute('title', 'editor.toolbar.change_light_theme');
         expect(document.documentElement.classList.contains('dark')).toBe(true);
         expect(localStorage.getItem('theme')).toBe('dark');
 
-        // Change to light
-        fireEvent.click(button);
-        expect(button).toHaveTextContent('🌙');
+        // Toggle back to light
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
+        expect(button).toHaveAttribute('title', 'editor.toolbar.change_dark_theme');
         expect(document.documentElement.classList.contains('dark')).toBe(false);
         expect(localStorage.getItem('theme')).toBe('light');
     });
 
-    it('should have the correct translation keys in the title', () => {
+    it('should have the correct translation keys in the title', async () => {
         render(<ChangeThemeButton />);
         const button = screen.getByRole('button');
-        
-        // Started theme is light so text sohuld suggest to change to dark theme
+
         expect(button).toHaveAttribute('title', 'editor.toolbar.change_dark_theme');
-        
-        fireEvent.click(button);
+
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
         expect(button).toHaveAttribute('title', 'editor.toolbar.change_light_theme');
     });
 });

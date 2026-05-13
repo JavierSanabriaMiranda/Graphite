@@ -19,7 +19,7 @@ export const CalloutComponent = (props) => {
   };
 
   return (
-    <NodeViewWrapper className="flex gap-3 p-2 my-2 rounded-lg bg-gray-200 dark:bg-zinc-800/50 border border-gray-300 dark:border-zinc-700 items-start group">
+    <NodeViewWrapper className="flex gap-3 p-2 my-2 rounded-lg bg-gray-200/50 dark:bg-zinc-800/50 border border-gray-300 dark:border-zinc-700 items-start group">
       {/* Wrap emoji with EmojiPicker */}
       <EmojiPicker onSelect={handleEmojiSelect}>
         <div className="text-xl my-4 ml-2 select-none cursor-pointer hover:scale-110 transition-transform p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 text-zinc-800 dark:text-zinc-100">

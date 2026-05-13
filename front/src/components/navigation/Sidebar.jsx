@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PanelLeft, Settings, Plus } from 'lucide-react';
+import { PanelLeft, Settings, Plus, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { noteService } from '../../services/db/noteService';
 import { useNote } from '../context/NoteContext';
@@ -19,7 +19,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     const { refreshTrigger, createRootNote } = useNote();
     const { activeWorkspace: workspace } = useWorkspace();
 
-    const { openSettings } = useUI();
+    const { openSettings, openSearch } = useUI();
 
     const [isHovered, setIsHovered] = useState(false);
     const [notes, setNotes] = useState([]);
@@ -55,7 +55,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 {/* HEADER: Workspace name */}
                 <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-zinc-700">
                     {/* Workspace button */}
-                    <WorkspaceSelector/>
+                    <WorkspaceSelector />
                     {/* Collapse button */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}
@@ -67,7 +67,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     </button>
                 </div>
 
-                <div className="p-3">
+                <div className="p-3 space-y-1">
+                    <button
+                        onClick={() => openSearch()}
+                        className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
+                    >
+                        <Search className="w-4 h-4" />
+                        <span>{t('sidebar.search')}</span>
+                    </button>
+
                     <button
                         onClick={() => openSettings()}
                         className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
@@ -76,6 +84,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                         <span>{t('sidebar.configuration')}</span>
                     </button>
                 </div>
+
 
                 {/* BODY: Notes list */}
                 <nav className="flex-1 overflow-y-auto p-3 custom-scrollbar">

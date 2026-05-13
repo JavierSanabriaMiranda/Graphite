@@ -77,6 +77,7 @@ export const AuthProvider = ({ children }) => {
         try {
             // Clear binary file on rust
             await invoke('clear_secure_data');
+            await invoke('clear_all_attachments');
             await userService.logout()
         } catch (e) {
             console.error("Error al borrar el vault:", e);

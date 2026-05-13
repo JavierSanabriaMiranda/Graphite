@@ -31,13 +31,17 @@ import { Callout } from '../components/advanced_blocks/Callout';
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import CodeBlockComponent, { CustomCodeBlock } from '../components/advanced_blocks/CodeBlockComponent';
+import { AttachmentExtension } from '../components/advanced_blocks/file_attachment/FileAttachmentNode';
 import { ToggleBlock } from '../components/advanced_blocks/toggle_block/ToggleBlock';
 import { ToggleTitle } from '../components/advanced_blocks/toggle_block/ToggleTitle'
 import { ToggleContent } from '../components/advanced_blocks/toggle_block/ToggleContent'
 import { PageBlock } from '../components/advanced_blocks/PageBlockComponent';
 import { BlockMoving } from '../components/extensions/BlockMoving';
-import { Commands } from '../components/slash_commands/Commands';
-import getSuggestionConfig from '../components/slash_commands/suggestions';
+import { Commands } from '../components/suggestions/Commands';
+import getSuggestionConfig from '../components/suggestions/suggestions';
+import { NoteLink } from '../components/suggestions/NoteLinkExtension';
+import { getNoteLinkSuggestionConfig } from '../components/suggestions/noteLinksSuggestions';
+import { AttachmentUploadNode } from '../components/advanced_blocks/file_attachment/AttachmentZone';
 
 /**
  * Custom hook used to config a Tiptap editor
@@ -47,11 +51,14 @@ export const useEditorConfig = ({
     onArrowUpAtStart,
     handleEmojiCommand,
     createSubnote,
+    allNotes,
     selectNote,
     handleKeyDownProp,
+    uploadFile,
+    noteId,
     extraProps = {},
     customClass = '',
-    defaultFont = 'Inter'
+    defaultFont = 'Inter',
 }) => {
     const { t } = useTranslation();
     const fontStack = `${defaultFont}, ui-sans-serif, system-ui, sans-serif, var(--font-emoji)`;
@@ -146,6 +153,31 @@ export const useEditorConfig = ({
                     handleEmojiCommand
                 ),
             }),
+            NoteLink.configure({
+                suggestion: {
+                    ...getNoteLinkSuggestionConfig(allNotes),
+                    char: '[[',
+                    allowSpaces: true,
+                    command: ({ editor, range, props }) => {
+                        editor
+                            .chain()
+                            .focus()
+                            .deleteRange(range)
+                            .insertContent([
+                                {
+                                    type: 'noteLink',
+                                    attrs: {
+                                        noteId: props.noteId,
+                                    },
+                                },
+                                { type: 'text', text: ' ' },
+                            ])
+                            .run();
+                    },
+                },
+            }),
+            AttachmentExtension,
+            AttachmentUploadNode,
             Placeholder.configure({
                 includeChildren: true,
                 placeholder: ({ node, editor, pos }) => {
@@ -180,6 +212,66 @@ export const useEditorConfig = ({
                 ...extraProps.attributes,
             },
             handleKeyDown: handleKeyDownProp || (() => false),
+            handleDragOver: (view, event) => {
+                event.preventDefault();
+                return true;
+            },
+            handlePaste: (view, event) => {
+                const items = Array.from(event.clipboardData?.files || []);
+                if (items.length > 0) {
+                    event.preventDefault(); // Avoid the default paste behavior
+
+                    items.forEach(async (file) => {
+                        try {
+                            const metadata = await uploadFile(file, noteId);
+                            if (!metadata) return;
+                            // Insert the attachment node at the current cursor position
+                            view.dispatch(view.state.tr.replaceSelectionWith(
+                                view.state.schema.nodes.attachment.create({
+                                    attachmentId: metadata.attachment_id,
+                                    fileName: metadata.file_name,
+                                    mimeType: metadata.mime_type,
+                                    imgWidth: metadata.img_width || 600
+                                })
+                            ));
+                        } catch (err) {
+                            console.error("Error subiendo archivo pegado:", err);
+                        }
+                    });
+                    return true;
+                }
+                return false;
+            },
+            handleDrop: (view, event, slice, moved) => {
+                if (!moved && event.dataTransfer?.files?.length > 0) {
+                    event.preventDefault();
+
+                    // Calculate the drop position in the document
+                    const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                    if (!coordinates) return false;
+
+                    Array.from(event.dataTransfer.files).forEach(async (file) => {
+                        try {
+                            const metadata = await uploadFile(file, noteId);
+                            if (!metadata) return;
+                            const node = view.state.schema.nodes.attachment.create({
+                                attachmentId: metadata.attachment_id,
+                                fileName: metadata.file_name,
+                                mimeType: metadata.mime_type,
+                                imgWidth: metadata.img_width || 600
+                            });
+
+                            // Insert the attachment node at the drop position
+                            const transaction = view.state.tr.insert(coordinates.pos, node);
+                            view.dispatch(transaction);
+                        } catch (err) {
+                            console.error("Error subiendo archivo arrastrado:", err);
+                        }
+                    });
+                    return true;
+                }
+                return false;
+            }
         },
-    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont]);
+    }), [t, onUpdate, onArrowUpAtStart, handleEmojiCommand, createSubnote, selectNote, defaultFont, allNotes, uploadFile, noteId]);
 }

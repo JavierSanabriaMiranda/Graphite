@@ -46,3 +46,17 @@ CREATE TABLE IF NOT EXISTS NOTE_LINKS (
     target_id TEXT REFERENCES NOTES(note_id) ON DELETE CASCADE,
     PRIMARY KEY (source_id, target_id)
 );
+
+CREATE TABLE IF NOT EXISTS ATTACHMENTS (
+    attachment_id TEXT PRIMARY KEY,
+    note_id TEXT REFERENCES NOTES(note_id) ON DELETE CASCADE,
+    file_name TEXT NOT NULL,
+    mime_type TEXT,
+    file_size INTEGER,
+    img_width INTEGER,
+    local_path TEXT,
+    is_dirty INTEGER DEFAULT 0,
+    is_deleted INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

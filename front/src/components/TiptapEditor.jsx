@@ -13,6 +13,8 @@ import EmptyState from './util/EmptyState';
 import MobileFormattingSheet from './menu_bar/MobileFormattingSheet';
 import ChangeThemeButton from './util/ChangeThemeButton';
 import ConflictResolver from './views/ConflictResolver';
+import InfoBar from './InfoBar';
+import EditorContextMenu from './context_menu/EditorContextMenu';
 
 import { noteService } from '../services/db/noteService';
 import { useAuth } from './context/AuthContext';
@@ -22,6 +24,7 @@ import { useToast } from './context/ToastContext';
 import { useIsMobile } from '../hooks/useIsMobile'
 import { useEditorConfig } from '../hooks/useEditorConfig';
 import { useSettings } from './context/SettingsContext';
+import { useAttachment } from './context/AttachmentContext';
 
 import { SyncStatus } from '../util/SyncStatus';
 
@@ -39,7 +42,20 @@ const TiptapEditor = () => {
   const { dek, isAuthenticated } = useAuth();
   const { defaultFont } = useSettings();
 
-  const { selectedNote: activeNote, triggerRefresh: onNoteUpdate, createRootNote, createSubnote, selectNote, isSyncing, syncStatus, refreshCurrentNote } = useNote();
+  const {
+    selectedNote: activeNote,
+    triggerRefresh: onNoteUpdate,
+    createRootNote,
+    createSubnote,
+    selectNote,
+    selectedNote,
+    isSyncing,
+    syncStatus,
+    refreshCurrentNote,
+    allNotes
+  } = useNote();
+
+  const { uploadFile, deleteAttachment, syncNoteAttachments } = useAttachment();
 
   const isMobile = useIsMobile();
   const [title, setTitle] = useState('');
@@ -48,6 +64,7 @@ const TiptapEditor = () => {
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [isResolvingConflict, setIsResolvingConflict] = useState(false);
   const [emojiPickerRef, setEmojiPickerRef] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);
 
   const saveTimeoutRef = useRef(null);
   const isProgrammaticRef = useRef(false); // Flag to indicate if content change is programmatic (to avoid save loops)
@@ -57,11 +74,16 @@ const TiptapEditor = () => {
   // References to context functions
   const createSubnoteRef = useRef(createSubnote);
   const selectNoteRef = useRef(selectNote);
+  const notesRef = useRef(allNotes);
 
   useEffect(() => {
     createSubnoteRef.current = createSubnote;
     selectNoteRef.current = selectNote;
   }, [createSubnote, selectNote]);
+
+  useEffect(() => {
+    notesRef.current = allNotes;
+  }, [allNotes]);
 
   /**
    * Function for showing emoji picker on users cursor coords when using emoji slash command
@@ -114,6 +136,14 @@ const TiptapEditor = () => {
     return false;
   };
 
+  const handleContextMenu = (e) => {
+    // If mobile keep native menu
+    if (isMobile) return;
+
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
   const editorConfig = useEditorConfig({
     onUpdate: ({ editor }) => {
       // Clean timeout if the user keeps typing
@@ -132,14 +162,78 @@ const TiptapEditor = () => {
         saveContentToDB(jsonContent);
       }, 2000);
     },
+    allNotes: notesRef,
     handleEmojiCommand: handleEmojiCommand,
     createSubnote: async (parentId) => await createSubnoteRef.current(parentId),
     selectNote: (note) => selectNoteRef.current(note),
     handleKeyDownProp: handleKeyDown,
-    defaultFont: defaultFont
+    defaultFont: defaultFont,
+    noteId: selectedNote?.note_id,
+    uploadFile: uploadFile,
+    deleteAttachment: deleteAttachment
   });
 
   const editor = useEditor(editorConfig);
+
+
+  // Tiptap doesn't update extensions automatically if their props change. 
+  // We need to manually update the editor options when the list of notes changes to keep the note 
+  // links suggestions up to date.
+  useEffect(() => {
+    if (editor && !editor.isDestroyed && allNotes.length > 0) {
+      editor.setOptions({
+        extensions: editor.extensionManager.extensions.map(ext => {
+          if (ext.name === 'noteLink') {
+            return ext.configure({
+              suggestion: {
+                items: ({ query }) =>
+                  allNotes
+                    .filter(n => n.title?.toLowerCase().includes(query.toLowerCase()))
+                    .slice(0, 10)
+                    .map(n => ({ title: n.title, noteId: n.note_id, icon: n.icon }))
+              }
+            });
+          }
+          return ext;
+        })
+      });
+    }
+  }, [allNotes, editor]);
+
+  /**
+ * Scans the editor content for missing subpages and appends them at the end.
+ */
+  const runReconciliation = useCallback(async (targetEditor, noteId) => {
+    if (!targetEditor || targetEditor.isDestroyed || !noteId) return;
+
+    const subnotes = await noteService.getSubnotes(noteId);
+    if (subnotes.length === 0) return;
+
+    // Map existing blocks in current editor state
+    const existingNoteIds = new Set();
+    targetEditor.state.doc.descendants((node) => {
+      if (node.type.name === 'pageBlock' && node.attrs.noteId) {
+        existingNoteIds.add(node.attrs.noteId);
+      }
+    });
+
+    // Filter subnotes that are not present
+    const missingNotes = subnotes.filter(sub => !existingNoteIds.has(sub.note_id));
+
+    if (missingNotes.length > 0) {
+      // We mark this as programmatic to avoid triggering the 'onUpdate' save timeout
+      isProgrammaticRef.current = true;
+
+      targetEditor.chain()
+        .insertContentAt(targetEditor.state.doc.content.size, missingNotes.map(note => ({
+          type: 'pageBlock',
+          attrs: { noteId: note.note_id }
+        })))
+        .run();
+
+      isProgrammaticRef.current = false;
+    }
+  }, []);
 
   /**
    * Function to inject content into the editor
@@ -202,7 +296,10 @@ const TiptapEditor = () => {
 
       // If there's content (optimistic loading) load it inmediately
       if (activeNote.content) {
-        injectContentToEditor(activeNote.content, () => setIsPageLoading(false));
+        injectContentToEditor(activeNote.content, () => {
+          runReconciliation(editor, activeNote.note_id);
+          setIsPageLoading(false);
+        });
       }
       // If no content and is syncing, we are in loading state, 
       // show skeleton and wait for sync to update the content when it arrives
@@ -221,12 +318,25 @@ const TiptapEditor = () => {
         : JSON.stringify(activeNote.content);
 
       if (saveStatus === 'saved' && currentJSON !== incomingJSON) {
-        injectContentToEditor(activeNote.content);
+        injectContentToEditor(activeNote.content, () => {
+          // Reconcile again to catch any possible missing subpages that could have arrived with the sync
+          runReconciliation(editor, activeNote.note_id);
+        });
       }
       setIsPageLoading(false);
     }
 
   }, [activeNote?.note_id, activeNote?.content, isSyncing, syncStatus, editor, injectContentToEditor]);
+
+  /**
+   * Effect to update editor editability based on
+   * note's is_editable property.
+   */
+  useEffect(() => {
+    if (editor && activeNote) {
+      editor.setEditable(activeNote.is_editable === 1);
+    }
+  }, [activeNote?.is_editable, editor]);
 
   /**
    * Sync title when note changes
@@ -256,6 +366,7 @@ const TiptapEditor = () => {
         clearTimeout(saveTimeoutRef.current);
         const currentContent = editor?.getJSON();
         if (currentContent) {
+          syncNoteAttachments(noteIdAtEffectTime, currentContent);
           saveContentToDB(currentContent, noteIdAtEffectTime);
         }
       } else {
@@ -305,7 +416,7 @@ const TiptapEditor = () => {
 
       if (result?.error === 'COLLISION') {
         // Feedback to user
-        showToast(t('editor.errors.name_collision'), "error");
+        showToast(t('editor.errors.name_collision_title'), "error", t('editor.errors.name_collision_message'));
 
         // Revert title change
         setTitle(activeNote.title);
@@ -434,10 +545,10 @@ const TiptapEditor = () => {
         <div className={`max-w-5xl mx-auto w-ful px-8 pb-16 ${icon !== '' ? 'pt-8' : ''}`}>
 
           {/* Header */}
-          <div className="group mb-8 ml-7">
+          <div className="group ml-7">
             <div className="relative w-fit group/icon-wrapper">
               {/* Page icon */}
-              <EmojiPicker onSelect={handleIconSelect}>
+              <EmojiPicker onSelect={handleIconSelect} disabled={activeNote.is_editable === 0}>
                 <div className="text-7xl mb-4 hover:bg-zinc-200 dark:hover:bg-zinc-800/50 w-24 h-24 mt-4 flex items-center justify-center rounded-xl cursor-pointer transition-colors group/icon">
                   {icon ? (
                     <div className="w-20 h-20 text-text-primary">
@@ -455,8 +566,9 @@ const TiptapEditor = () => {
               {icon && (
                 <button
                   onClick={handleRemoveIcon}
-                  className="absolute -top-2 -right-2 p-1.5 text-text-primary bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 transition-all z-10"
-                  title={t('editor.remove_icon') || "Quitar icono"}
+
+                  className={`${activeNote.is_editable === 0 ? 'hidden' : ''} absolute -top-2 -right-2 p-1.5 text-text-primary bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-sm opacity-0 group-hover/icon-wrapper:opacity-100 hover:text-red-500 hover:border-red-200 dark:hover:border-red-900 transition-all z-10`}
+                  title={t('editor.remove_icon')}
                 >
                   <Trash2 className="cursor-pointer w-3.5 h-3.5" />
                 </button>
@@ -471,14 +583,21 @@ const TiptapEditor = () => {
               onChange={handleTitleChange}
               onBlur={saveTitle}
               onKeyDown={handleTitleKeyDown}
+              disabled={activeNote.is_editable === 0}
               placeholder={t('editor.no_title_placeholder')}
               className="w-full text-5xl font-bold bg-transparent border-none outline-none text-text-primary placeholder:opacity-20 transition-all resize-none overflow-hidden py-2 leading-tight"
               style={{ fieldSizing: 'content' }}
             />
+
+            <InfoBar />
           </div>
 
           {/* Editor body */}
-          <div className="tiptap-container relative">
+          <div
+            className="tiptap-container relative"
+            onContextMenu={handleContextMenu}
+            role="textbox"
+          >
             {/* Skeleton for page loading */}
             {(isPageLoading || (isSyncing && !activeNote.content)) && (
               <div className="absolute inset-0 z-10 bg-main-bg">
@@ -512,8 +631,15 @@ const TiptapEditor = () => {
                 <EditorContent editor={editor} />
               </div>
             )}
-
           </div>
+          {contextMenu && (
+            <EditorContextMenu
+              x={contextMenu.x}
+              y={contextMenu.y}
+              editor={editor}
+              onClose={() => setContextMenu(null)}
+            />
+          )}
         </div>
       </div>
       {emojiPickerRef && (
