@@ -72,6 +72,11 @@ const ImageLightbox = ({ url, fileName, isOpen, onClose }) => {
                     {...getFloatingProps()}
                     className="relative w-full h-full flex items-center justify-center outline-none"
                     onClick={onClose}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            onClose();
+                        }
+                    }}
                     role='button'
                     tabIndex={0}
                 >
@@ -87,8 +92,8 @@ const ImageLightbox = ({ url, fileName, isOpen, onClose }) => {
 
                     <button
                         className={`relative transition-all duration-500 ease-in-out overflow-hidden 
-                            ${isZoomed ? 
-                                'cursor-zoom-out rounded-none shadow-none' : 
+                            ${isZoomed ?
+                                'cursor-zoom-out rounded-none shadow-none' :
                                 'cursor-zoom-in rounded-lg shadow-2xl'}
                             w-full h-full flex items-center justify-center`}
                         style={{

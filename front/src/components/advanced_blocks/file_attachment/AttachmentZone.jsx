@@ -44,10 +44,18 @@ const AttachmentZone = ({ editor, deleteNode }) => {
   return (
     <NodeViewWrapper className="attachment-zone-wrapper my-6">
       <div
+        role='button'
+        tabIndex={0}
         onClick={handleSelectClick}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleSelectClick(e);
+          }
+        }}
         className={`
           cursor-pointer relative group flex flex-col items-center justify-center 
           gap-4 p-10 rounded-2xl border-2 border-dashed transition-all duration-200
