@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FloatingPortal } from '@floating-ui/react';
 import { useToast } from '../context/ToastContext';
@@ -21,10 +21,10 @@ const saveAsFile = (content, fileName, contentType) => {
 };
 
 const normalizeText = (text) => {
-    return text
-        .toLowerCase()
-        .normalize("NFD")
-        .replaceAll(/[\u0300-\u036f]/g, "");
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replaceAll(/[\u0300-\u036f]/g, "");
 };
 
 /**
@@ -42,6 +42,11 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
   // State for the selected format and theme
   const [selectedFormat, setSelectedFormat] = useState('json');
   const [exportTheme, setExportTheme] = useState('light');
+
+  useEffect(() => {
+    setSelectedFormat('json');
+    setExportTheme('light');
+  }, [isOpen])
 
   if (!isOpen) return null;
 
@@ -94,13 +99,23 @@ const ExportModal = ({ isOpen, onClose, editor }) => {
               <button
                 key={format.id}
                 onClick={() => setSelectedFormat(format.id)}
-                className={`cursor-pointer p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${selectedFormat === format.id
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                    : 'border-gray-100 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700'
+                className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${selectedFormat === format.id
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                  : 'border-gray-100 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700'
                   }`}
               >
                 {format.icon}
                 <span className="font-bold text-xs uppercase">{format.label}</span>
+                {format.id === 'pdf' && (
+                  <span className={`absolute -bottom-3 px-2 py-0.5 rounded-full text-[9px] font-black tracking-tighter shadow-sm
+                    ${selectedFormat === format.id ? 
+                      "bg-blue-50 dark:bg-main-bg-darker border border-blue-500 text-blue-600 dark:text-blue-400" :
+                      "bg-zinc-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-zinc-500"
+                    }
+                  `}>
+                    {t('editor.options_menu.export.macOS_only')}
+                  </span>
+                )}
               </button>
             ))}
           </div>
