@@ -11,7 +11,10 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "build:tauri-debug": "npm run build && cd ../tauri && npx tauri build --debug",
+    "test:e2e": "npm run build:tauri-debug && node run-e2e.js",
+    "test:e2e:fast": "node run-e2e.js"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.18",
@@ -54,7 +57,12 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^4.1.0",
+    "@wdio/cli": "^9.27.1",
+    "@wdio/local-runner": "^9.27.1",
+    "@wdio/mocha-framework": "^9.27.1",
+    "@wdio/spec-reporter": "^9.27.1",
     "autoprefixer": "^10.4.24",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
@@ -67,6 +75,7 @@
   },
   "overrides": {
     "ajv": "^8.18.0",
-    "minimatch": "^10.2.1"
+    "minimatch": "^10.2.1",
+    "serialize-javascript": "^7.0.5"
   }
 }
