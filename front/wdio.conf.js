@@ -9,7 +9,8 @@ const binaryName = isWindows ? 'graphite.exe' : 'graphite';
 export const config = {
     // Where the test specs are located
     specs: [
-        './tests-e2e/**/*.spec.js'
+        './tests-e2e/auth.spec.js',
+        './tests-e2e/editor.spec.js',
     ],
     maxInstances: 1, // Compulsory for desktop apps
 

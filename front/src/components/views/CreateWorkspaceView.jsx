@@ -46,7 +46,7 @@ const CreateWorkspaceView = ({ showCancelBtn = true }) => {
                     <div className="flex flex-col gap-2 items-center">
                         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">{t('workspaces.icon')}</span>
                         <div className="relative w-fit group/icon-wrapper">
-                            <EmojiPicker onSelect={(emoji) => setIcon(emoji)} showIconsMenu={false}>
+                            <EmojiPicker data-testid="workspace-emoji-picker" onSelect={(emoji) => setIcon(emoji)} showIconsMenu={false}>
                                 <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-700 dark:border-0 border-2 border-dashed border-zinc-500 hover: hover:border-0 dark:hover:border-2 hover:border-dashed dark:hover:border-primary/50 rounded-xl flex flex-col items-center justify-center hover:bg-zinc-800/50 transition-all cursor-pointer group">
                                     {icon ? (
                                         <span className="text-4xl" style={{ fontFamily: 'var(--font-emoji)' }}>{icon}</span>
@@ -71,6 +71,7 @@ const CreateWorkspaceView = ({ showCancelBtn = true }) => {
                     <div className="flex-1 flex flex-col gap-2">
                         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">{t('workspaces.set_name')}</span>
                         <input
+                            data-testid="input-workspace-name"
                             autoFocus
                             type="text"
                             value={name}
@@ -94,6 +95,7 @@ const CreateWorkspaceView = ({ showCancelBtn = true }) => {
                     )}
 
                     <button
+                        data-testid="btn-create-workspace"
                         onClick={handleCreate}
                         disabled={!name.trim()}
                         className={`${isMobile ? "px-4" : "px-8"} flex items-center gap-3 bg-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 cursor-pointer`}

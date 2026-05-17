@@ -108,6 +108,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 {/* FOOTER: Add new note */}
                 <div className="p-3 border-t border-gray-300 dark:border-zinc-700">
                     <button
+                        data-testid="btn-create-root-note"
                         onClick={createRootNote}
                         className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
                     >

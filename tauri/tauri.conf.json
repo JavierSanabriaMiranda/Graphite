@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.graphite.app",
   "build": {
-    "beforeDevCommand": "",
+    "beforeDevCommand": "npm run front:dev",
     "beforeBuildCommand": "",
     "devUrl": "http://localhost:1420",
     "frontendDist": "../front/dist"

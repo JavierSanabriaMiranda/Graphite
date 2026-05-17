@@ -29,7 +29,7 @@ const driverCommand = isWindows
     ? `tauri-driver --port 4444 --native-driver "${driverPath}"`
     : 'tauri-driver --port 4444';
 
-console.log(`[E2E] Launching tauri-driver and WebDriverIO in real production environment...`);
+console.log(`[E2E] Launching tauri-driver and WebDriverIO`);
 
 const { result } = concurrently([
     { command: driverCommand, name: 'tauri-driver', prefixColor: 'blue' },
