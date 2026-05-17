@@ -20,7 +20,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; img-src 'self' https://asset.localhost; connect-src 'self' https:; font-src 'self'; script-src 'self' 'unsafe-inline'"
+      "csp": "default-src 'self'; img-src 'self' https://asset.localhost; connect-src 'self' https: http://localhost:* http://ipc.localhost ipc:; font-src 'self'; script-src 'self' 'unsafe-inline'"
     }
   },
   "plugins": {

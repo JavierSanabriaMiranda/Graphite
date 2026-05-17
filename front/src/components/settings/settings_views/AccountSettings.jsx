@@ -21,6 +21,7 @@ const AccountSettings = ({ t, onLogoutClick }) => {
                     </p>
                 </div>
                 <button
+                    data-testid="account-logout-btn"
                     onClick={onLogoutClick}
                     className="cursor-pointer inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white text-sm font-bold rounded-xl dark:brightness-90 hover:bg-red-700 transition-all active:scale-95 shadow-lg shadow-red-600/20"
                 >

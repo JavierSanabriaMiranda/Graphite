@@ -1,6 +1,8 @@
 import path from 'path';
 
-// Detectamos si estamos en Windows para añadir el ".exe" al binario
+const isProd = process.env.TEST_ENV === 'production';
+const targetFolder = isProd ? 'release' : 'debug';
+
 const isWindows = process.platform === 'win32';
 const binaryName = isWindows ? 'graphite.exe' : 'graphite';
 
@@ -16,7 +18,7 @@ export const config = {
         maxInstances: 1,
         browserName: 'wry',
         'tauri:options': {
-            application: path.join(process.cwd(), `../tauri/target/debug/${binaryName}`)
+            application: path.join(process.cwd(), `../tauri/target/${targetFolder}/${binaryName}`)
         }
     }],
 

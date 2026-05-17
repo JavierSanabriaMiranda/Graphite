@@ -49,8 +49,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <aside
                 onMouseLeave={() => setIsHovered(false)}
                 className={`fixed top-0 left-0 z-50 h-full bg-main-bg border-r border-gray-300 dark:border-zinc-700 transition-transform duration-300 ease-in-out flex flex-col
-          ${showSidebar ? 'translate-x-0' : '-translate-x-full'}
-          w-64`}
+                    ${showSidebar ? 'translate-x-0' : '-translate-x-full'}
+                    w-64`}
             >
                 {/* HEADER: Workspace name */}
                 <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-zinc-700">
@@ -77,6 +77,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     </button>
 
                     <button
+                        data-testid="open-settings-btn"
                         onClick={() => openSettings()}
                         className="cursor-pointer w-full flex items-center gap-2 px-2 py-2 text-sm text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
                     >
