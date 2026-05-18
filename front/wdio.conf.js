@@ -11,6 +11,7 @@ export const config = {
     specs: [
         './tests-e2e/auth.spec.js',
         './tests-e2e/editor.spec.js',
+        './tests-e2e/encryption.spec.js'
     ],
     maxInstances: 1, // Compulsory for desktop apps
 
