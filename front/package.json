@@ -13,7 +13,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "build:tauri-dev": "vite build --mode development && cd ../tauri && npx tauri build --debug",
-    "build:tauri-prod": "vite build --mode production && cd ../tauri && npx tauri build --release",
+    "build:tauri-prod": "vite build --mode production && cd ../tauri && npx tauri build",
     "test:e2e:dev": "cross-env TEST_ENV=development npm run build:tauri-dev && cross-env TEST_ENV=development node run-e2e.js",
     "test:e2e:prod": "cross-env TEST_ENV=production npm run build:tauri-prod && cross-env TEST_ENV=production node run-e2e.js",
     "test:e2e:fast": "node run-e2e.js"
