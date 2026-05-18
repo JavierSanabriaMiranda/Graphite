@@ -1,4 +1,5 @@
 import { expect } from '@wdio/globals'
+import { registerUser, logoutUser, loginUser } from './helpers/auth.helper.js';
 
 describe('Lifecycle and Authentication Flow', () => {
 
@@ -11,6 +12,7 @@ describe('Lifecycle and Authentication Flow', () => {
     const shortTime = Date.now().toString(36);
     const testUsername = `usr${shortTime}`;
     const testEmail = `test_${Date.now()}@graphite.com`; 
+    const testPassword = 'Test1234@';
 
     it('Smoke Test: Should boot clean and display the Auth screen', async () => {
         // Arrange: Locate key input elements
@@ -28,32 +30,11 @@ describe('Lifecycle and Authentication Flow', () => {
     });
 
     it('Registration Flow: Should create a new user and auto-login', async () => {
-        // Act: Switch to the Registration view
-        const toggleToRegisterBtn = await $('button[data-testid="toggle-auth-mode"]');
-        if (await toggleToRegisterBtn.isExisting()) {
-            await toggleToRegisterBtn.click();
-        }
-
-        // Act: Fill in the registration form
-        const usernameInput = await $('input[data-testid="username-input"]');
-        const emailInput = await $('input[type="email"]');
-        const passwordInput = await $('#password');
-        const passwordConfirmInput = await $('#confirm-password');
-        const submitBtn = await $('button[type="submit"]');
-
-        await usernameInput.setValue(testUsername);
-        await emailInput.setValue(testEmail);
-        await passwordInput.setValue('Test1234@');
-        await passwordConfirmInput.setValue('Test1234@');
-        await submitBtn.click();
+        // Register a new user to ensure we have a clean session for testing
+        await registerUser(testUsername, testEmail, testPassword);
 
         // Assert: Validate automatic transition to the Workspace
         const emptyEditor = await $('div[data-testid="empty-state"]'); 
-        
-        await emptyEditor.waitForExist({ 
-            timeout: 25000,
-            timeoutMsg: 'Registration failed or auto-login transition took too long.'
-        });
 
         await expect(emptyEditor).toBeExisting();
     });
@@ -75,30 +56,7 @@ describe('Lifecycle and Authentication Flow', () => {
     });
 
     it('Secure Logout: Should destroy local credentials and block access', async () => {
-        // Act: Trigger the logout action
-        const settingsBtn = await $('button[data-testid="open-settings-btn"]');
-        await settingsBtn.click();
-
-        const accountSettingsBtn = await $('button[data-testid="account-settings-btn"]');
-        await accountSettingsBtn.waitForExist({ 
-            timeout: 5000,
-            timeoutMsg: 'Account settings button not found. Cannot proceed to logout.'
-        });
-        await accountSettingsBtn.click();
-
-        const logoutBtn = await $('button[data-testid="account-logout-btn"]'); 
-        await logoutBtn.waitForExist({ 
-            timeout: 5000,
-            timeoutMsg: 'Logout button not found in account settings.'
-        });
-        await logoutBtn.click();
-
-        const confirmLogoutBtn = await $('button[data-testid="confirm-logout-btn"]');
-        await confirmLogoutBtn.waitForExist({ 
-            timeout: 5000,
-            timeoutMsg: 'Confirm logout button did not appear after clicking logout.'
-        });
-        await confirmLogoutBtn.click();
+        await logoutUser();
 
         // Assert: The app must return to the Login screen immediately
         const emailInput = await $('input[type="email"]');
@@ -118,22 +76,11 @@ describe('Lifecycle and Authentication Flow', () => {
     });
 
     it('Standard Login: Should authenticate the previously registered user', async () => {
-        const emailInput = await $('input[type="email"]');
-        const passwordInput = await $('input[type="password"]');
-        const submitBtn = await $('button[type="submit"]');
-
-        // Act: Fill login credentials with the user created in Test 1.2
-        await emailInput.setValue(testEmail);
-        await passwordInput.setValue('Test1234@');
-        await submitBtn.click();
+        await loginUser(testEmail, testPassword);
 
         // Assert: Validate transition back to the Workspace
         const emptyEditor = await $('div[data-testid="empty-state"]'); 
-        
-        await emptyEditor.waitForExist({ 
-            timeout: 5000,
-            timeoutMsg: 'Standard Login failed for an existing user.'
-        });
+        const emailInput = await $('input[type="email"]');
 
         await expect(emptyEditor).toBeExisting();
         await expect(emailInput).not.toBeExisting();
