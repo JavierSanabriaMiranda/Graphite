@@ -577,6 +577,7 @@ const TiptapEditor = () => {
 
             {/* Title */}
             <textarea
+              data-testid="note-title-input"
               ref={titleRef}
               rows={1} // Start with just one row
               value={title}

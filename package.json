@@ -6,7 +6,9 @@
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",
-    "build": "tauri build",
+    "build": "npm run build:tauri-prod --prefix front",
+    "build:dev": "npm run build:tauri-dev --prefix front",
+    "test:e2e": "npm run test:e2e:dev --prefix front",
     "front:dev": "npm run dev --prefix front",
     "android:prep": "xcopy /s /y /i tauri\\resources\\android\\res tauri\\gen\\android\\app\\src\\main\\res",
     "android:dev": "npm run android:prep && tauri android dev",

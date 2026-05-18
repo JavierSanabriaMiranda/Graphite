@@ -98,6 +98,7 @@ const SettingsView = ({ t, onClose, isMobile }) => {
                         </h3>
                         <div className="space-y-1">
                             <button
+                                data-testid="account-settings-btn"
                                 onClick={() => setActiveTab('account')}
                                 className={getTabClass('account')}
                             >

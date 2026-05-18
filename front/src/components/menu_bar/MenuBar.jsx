@@ -87,7 +87,7 @@ const MenuBar = ({ editor }) => {
 
         { /* Format buttons group */}
         <div className="flex items-center gap-2 flex-nowrap">
-          <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={getBtnClass(state.isBold)} title={t('editor.toolbar.bold')}><b>B</b></button>
+          <button data-testid="toolbar-bold" type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={getBtnClass(state.isBold)} title={t('editor.toolbar.bold')}><b>B</b></button>
           <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={getBtnClass(state.isItalic)} title={t('editor.toolbar.italic')}><i>I</i></button>
           <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={getBtnClass(state.isUnderline)} title={t('editor.toolbar.underline')}><u>U</u></button>
           <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} className={getBtnClass(state.isStrike)} title={t('editor.toolbar.strikethrough')}><s className="decoration-2">S</s></button>

@@ -80,6 +80,7 @@ const LogoutModal = ({ isOpen, onClose, onConfirm, isUnsynced }) => {
                                 {t('common.cancel')}
                             </button>
                             <button
+                                data-testid="confirm-logout-btn"
                                 type="button"
                                 onClick={() => {
                                     onConfirm();

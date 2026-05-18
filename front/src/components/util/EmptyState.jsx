@@ -5,7 +5,10 @@ const EmptyState = ({ onCreateNote }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-full w-full overflow-hidden bg-main-bg">
+    <div
+        data-testid="empty-state" 
+        className="relative flex flex-col items-center justify-center h-full w-full overflow-hidden bg-main-bg"
+      >
       
       {/* Background logo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none p-10">

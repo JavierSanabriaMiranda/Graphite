@@ -163,6 +163,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
                         : "px-3 pb-2 border-b border-zinc-100 dark:border-zinc-800 my-2"
                     }>
                         <input
+                            data-testid="emoji-search-input"
                             autoFocus
                             placeholder={view === 'emojis' ? t('emojis.search') : t('icons.search') || "Buscar..."}
                             value={search}
@@ -192,7 +193,7 @@ const EmojiPicker = ({ onSelect, children, showIconsMenu = true, externalReferen
                         <div className="grid grid-cols-8 gap-1">
                             {search ? (
                                 filteredItems?.map(item => (
-                                    <button key={item.id} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="cursor-pointer p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
+                                    <button key={item.id} data-testid={`emoji-item-${item.char}`} onClick={() => handleSelect(item)} style={{ fontFamily: 'var(--font-emoji)' }} className="cursor-pointer p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md flex justify-center items-center transition-colors text-zinc-800 dark:text-zinc-100">
                                         {view === 'emojis' ? <span className="text-2xl">{item.char}</span> : <Icon d={item.char} className="w-6 h-6" />}
                                     </button>
                                 ))

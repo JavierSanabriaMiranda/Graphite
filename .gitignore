@@ -69,3 +69,6 @@ Thumbs.db
 coverage/
 test-report.xml
 *.lcov
+
+# Testing E2E
+msedgedriver.exe

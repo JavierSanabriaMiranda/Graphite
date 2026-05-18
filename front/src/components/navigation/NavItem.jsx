@@ -101,6 +101,7 @@ const NavItem = ({ note: initialNote, level = 0 }) => {
     return (
         <li>
             <div
+                data-testid="nav-item"
                 role="button"
                 tabIndex={0}
                 onContextMenu={handleContextMenu}

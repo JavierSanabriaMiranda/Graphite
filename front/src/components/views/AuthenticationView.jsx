@@ -113,6 +113,7 @@ const AuthenticationView = () => {
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest block">{t('identification.username')}</label>
                                     <input
+                                        data-testid="username-input"
                                         type="text"
                                         required
                                         placeholder={t('identification.username_placeholder')}
@@ -184,6 +185,7 @@ const AuthenticationView = () => {
                             <p className="text-sm text-zinc-500 font-medium tracking-tight leading-relaxed">
                                 {authMode === 'login' ? t('identification.login.register_footer') : t('identification.register.login_footer')}
                                 <button
+                                    data-testid="toggle-auth-mode"
                                     onClick={toggleMode}
                                     className="font-bold text-primary cursor-pointer hover:underline ml-1 uppercase tracking-wider"
                                 >

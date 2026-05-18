@@ -47,6 +47,7 @@ const WorkspaceSelector = () => {
     return (
         <>
             <button
+                data-testid="workspace-selector-btn"
                 ref={refs.setReference}
                 {...getReferenceProps()}
                 className={`${isMobile ?
@@ -61,7 +62,7 @@ const WorkspaceSelector = () => {
                     {activeWorkspace?.icon || activeWorkspace?.name?.charAt(0).toUpperCase() || 'W'}
                 </div>
                 <div className="flex flex-col min-w-0">
-                    <h2 className={`${isMobile ? "text-2xl font-bold" : "font-semibold"}  text-text-primary truncate text-left`}>
+                    <h2 data-testid={`sidebar-ws-${activeWorkspace?.name || ''}`} className={`${isMobile ? "text-2xl font-bold" : "font-semibold"}  text-text-primary truncate text-left`}>
                         {activeWorkspace?.name || '...'}
                     </h2>
                 </div>
@@ -85,6 +86,7 @@ const WorkspaceSelector = () => {
                             <div className="mt-1 space-y-0.5">
                                 {workspaces.map((ws) => (
                                     <button
+                                        data-testid={`workspace-option-${ws.name}`}
                                         key={ws.workspace_id}
                                         onClick={() => {
                                             selectWorkspace(ws);
@@ -113,6 +115,7 @@ const WorkspaceSelector = () => {
 
                         <div className="border-t border-gray-300 dark:border-zinc-700 p-1">
                             <button
+                                data-testid="btn-new-workspace"
                                 onClick={() => { openCreation(); setIsOpen(false); }}
                                 className="cursor-pointer w-full flex items-center gap-2 px-2 py-1.5 text-xs text-zinc-500 hover:text-text-primary hover:bg-hover-primary-bg rounded-md transition-all"
                             >

@@ -49,6 +49,8 @@ export const authService = {
      * Registers user sending encrypted DEK from client
      */
     async signup(signupData) {
+        console.log("Attempting signup in:", `${API_URL}users/register`);
+
         // signupData contains: email, password, salt, wrappedDek, iv
         const response = await fetch(`${API_URL}users/register`, {
             method: 'POST',
