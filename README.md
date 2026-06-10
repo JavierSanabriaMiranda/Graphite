@@ -43,7 +43,6 @@ Graphite is built around three fundamental architectural concepts:
 
 ## 🛠️ Tech Stack
 
-* **Frontend/Core App:** Kotlin / Android (Material 3 UI, custom chart integrations, local storage architecture).
+* **Frontend/Core App:** React
 * **Rich Text Core:** Tiptap-based modular editor.
-* **Security & Cryptography:** Industry-standard End-to-End Encryption primitives (AES-GCM, asymmetric key exchanges).
-* **Backend Sincronización:** Custom synchronization server optimized for zero-knowledge data synchronization.
+* **Backend Sincronización:** Custom synchronization server optimized for zero-knowledge data synchronization on this other repo: [Graphite-Sync](https://github.com/JavierSanabriaMiranda/Graphite-Sync).
