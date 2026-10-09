@@ -331,7 +331,8 @@
             "title": "Join Graphite!",
             "login_footer": "Already have an account? ",
             "button": "SIGN UP"
-        }
+        },
+        "guest_access": "Continue as guest"
     },
     "conflict": {
         "conflict": "Conflict",

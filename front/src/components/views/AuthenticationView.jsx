@@ -5,6 +5,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import ChangeThemeButton from '../util/ChangeThemeButton';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import PasswordInput from '../util/PasswordInput';
+import { User } from 'lucide-react';
 
 /**
  * View that allows the user to authenticate with a login or a sign up form.
@@ -177,6 +178,14 @@ const AuthenticationView = () => {
                                 className="cursor-pointer w-full py-5 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/30 hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-xl mt-4"
                             >
                                 {status === 'loading' ? <Loader2 className="animate-spin w-5 h-5" /> : (authMode === 'login' ? t('identification.login.button').toUpperCase() : t('identification.register.button').toUpperCase())}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="cursor-pointer w-full py-3 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-white font-bold rounded-2xl border border-zinc-300 dark:border-zinc-700 shadow-2xs hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-l mt-4"
+                            >
+                                <User className="w-5 h-5" />
+                                {t('identification.guest_access')}
                             </button>
                         </form>
 
