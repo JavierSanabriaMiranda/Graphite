@@ -13,7 +13,8 @@ const WorkspaceContext = createContext();
  * @param {Component} children - The components that will have access to this context.
  */
 export const WorkspaceProvider = ({ children }) => {
-    const { dek, isAuthenticated } = useAuth();
+    const { dek, isAuthenticated, isGuest } = useAuth();
+    const canSync = isAuthenticated && !isGuest;
     const [workspaces, setWorkspaces] = useState([]);
     const [activeWorkspace, setActiveWorkspace] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +44,7 @@ export const WorkspaceProvider = ({ children }) => {
             // Refresh list
             const localWorkspaces = await workspaceService.getByUser(user.user_id);
             setWorkspaces(localWorkspaces);
-            await syncService.syncPendingData(dek);
+            if (canSync && dek) await syncService.syncPendingData(dek);
 
             // Select new workspace
             selectWorkspace(newWs);
@@ -89,7 +90,7 @@ export const WorkspaceProvider = ({ children }) => {
         setActiveWorkspace(workspace);
 
         // Lazy sync: just pull metadata for the selected workspace to update the note list in the sidebar
-        if (navigator.onLine && dek) {
+        if (canSync && navigator.onLine && dek) {
             try {
                 const user = await userService.getCurrentUser();
                 await syncService.pullAllMetadata(dek, user.user_id);
@@ -97,7 +98,7 @@ export const WorkspaceProvider = ({ children }) => {
                 console.error("Error while syncing workspace metadata:", error);
             }
         }
-    }, [dek]);
+    }, [canSync, dek]);
 
     /**
      * Updates the current selected workspace name with the name inserted as param
@@ -117,7 +118,7 @@ export const WorkspaceProvider = ({ children }) => {
             const updatedWorkspace = await workspaceService.getById(workspaceId);
             setActiveWorkspace(updatedWorkspace); // Update active workspace with new name
             // Sync changes
-            await syncService.syncPendingData(dek);
+            if (canSync && dek) await syncService.syncPendingData(dek);
 
         } catch (error) {
             console.error("Error while updating workspace name:", error);
@@ -142,7 +143,7 @@ export const WorkspaceProvider = ({ children }) => {
             const updatedWorkspace = await workspaceService.getById(workspaceId);
             setActiveWorkspace(updatedWorkspace); // Update active workspace with new icon
             // Sync changes
-            await syncService.syncPendingData(dek);
+            if (canSync && dek) await syncService.syncPendingData(dek);
 
         } catch (error) {
             console.error("Error while updating workspace name:", error);
@@ -166,7 +167,7 @@ export const WorkspaceProvider = ({ children }) => {
             } else {
                 setActiveWorkspace(null);
             }
-            await syncService.syncPendingData(dek);
+            if (canSync && dek) await syncService.syncPendingData(dek);
         } catch (error) {
             console.error("Error while deleting workspace:", error);
         }

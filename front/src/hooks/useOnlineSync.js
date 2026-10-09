@@ -6,12 +6,13 @@ import { syncService } from '../services/db/syncService';
  * Hook to monitor network status and trigger sync when connection is restored.
  */
 export const useOnlineSync = () => {
-    const { dek, isAuthenticated } = useAuth();
+    const { dek, isAuthenticated, isGuest } = useAuth();
+    const canSync = isAuthenticated && !isGuest;
 
     useEffect(() => {
         const handleOnline = () => {
             console.log("Graphite: Connection restored. Syncing pending data...");
-            if (isAuthenticated && dek) {
+            if (canSync && dek) {
                 syncService.syncPendingData(dek);
             }
         };
@@ -20,10 +21,10 @@ export const useOnlineSync = () => {
         window.addEventListener('online', handleOnline);
 
         // Initial check when the app loads
-        if (navigator.onLine && isAuthenticated && dek) {
+        if (navigator.onLine && canSync && dek) {
             syncService.syncPendingData(dek);
         }
 
         return () => window.removeEventListener('online', handleOnline);
-    }, [isAuthenticated, dek]);
+    }, [canSync, dek]);
 };

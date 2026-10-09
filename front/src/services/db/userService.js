@@ -14,6 +14,20 @@ export const userService = {
         return users.length > 0 ? users[0] : null;
     },
 
+    createGuestSession: async () => {
+        const db = await getDB();
+        const userId = crypto.randomUUID();
+        const localEmail = `guest-${userId}@local.graphite.invalid`;
+
+        await db.execute(
+            `INSERT INTO USERS (user_id, username, email, session_token)
+             VALUES ($1, $2, $3, NULL)`,
+            [userId, "guest", localEmail]
+        );
+
+        return userId;
+    },
+
     /**
      * Verifies if there's an active session (if email and/or token saved)
      */

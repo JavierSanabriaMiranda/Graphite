@@ -20,7 +20,7 @@ const NoteContext = createContext();
  * @param {Component} children - The components that will have access to this context.
  */
 export const NoteProvider = ({ children }) => {
-    const { dek } = useAuth();
+    const { dek, isGuest } = useAuth();
     const { t } = useTranslation();
     const { activeWorkspace: workspace } = useWorkspace();
     const { deleteAllAttachmentsForNote } = useAttachment();
@@ -100,8 +100,16 @@ export const NoteProvider = ({ children }) => {
 
         // Sync logic in background, we will update the note once we have the result
         try {
-            // Fetch full content with sync logic
-            const result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
+            let result;
+            if (isGuest) {
+                const localNote = await noteService.getByNoteId(noteMetadata.note_id);
+                result = {
+                    note: localNote,
+                    status: localNote?.content ? SyncStatus.OFFLINE_STALE : SyncStatus.OFFLINE_EMPTY
+                };
+            } else {
+                result = await syncService.getNoteWithSync(noteMetadata.note_id, dek);
+            }
             // Security verification: Is the user still looking at the same note they requested to sync? 
             // If not, we should not update the state to avoid confusion.
             if (selectedNoteRef.current?.note_id === noteMetadata.note_id) {
@@ -119,7 +127,7 @@ export const NoteProvider = ({ children }) => {
             triggerRefresh();
         }
 
-    }, [dek, isSyncing]);
+    }, [dek, isGuest, isSyncing]);
 
     const selectNoteById = useCallback(async (noteId) => {
         const note = await noteService.getByNoteId(noteId);

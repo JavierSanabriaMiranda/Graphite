@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, User } from 'lucide-react';
 import ChangeThemeButton from '../util/ChangeThemeButton';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import PasswordInput from '../util/PasswordInput';
-import { User } from 'lucide-react';
 
 /**
  * View that allows the user to authenticate with a login or a sign up form.
  */
 const AuthenticationView = () => {
     const { t } = useTranslation();
-    const { login, signUp } = useAuth();
+    const { login, signUp, continueAsGuest } = useAuth();
     const isMobile = useIsMobile();
 
     const [authMode, setAuthMode] = useState('login');
@@ -66,6 +65,18 @@ const AuthenticationView = () => {
                 setMessage(t('error.already_registered'))
             }
 
+        }
+    };
+
+    const handleGuestAccess = async () => {
+        setStatus('guest_loading');
+        setMessage('');
+        try {
+            await continueAsGuest();
+        } catch (error) {
+            console.error("Error al iniciar sesión como invitado:", error);
+            setStatus('error');
+            setMessage(t('error.guest_initialization_failed'));
         }
     };
 
@@ -171,7 +182,7 @@ const AuthenticationView = () => {
                                     {message}
                                 </div>
                             )}
-
+                            {/* Submit Button */}
                             <button
                                 type="submit"
                                 disabled={status === 'loading'}
@@ -179,12 +190,14 @@ const AuthenticationView = () => {
                             >
                                 {status === 'loading' ? <Loader2 className="animate-spin w-5 h-5" /> : (authMode === 'login' ? t('identification.login.button').toUpperCase() : t('identification.register.button').toUpperCase())}
                             </button>
-
+                            {/* Guest Access Button */}
                             <button
                                 type="button"
+                                disabled={status === 'guest_loading'}
+                                onClick={handleGuestAccess}
                                 className="cursor-pointer w-full py-3 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-white font-bold rounded-2xl border border-zinc-300 dark:border-zinc-700 shadow-2xs hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-l mt-4"
                             >
-                                <User className="w-5 h-5" />
+                                {status === 'guest_loading' ? <Loader2 className="animate-spin w-5 h-5" /> : <User className="w-5 h-5" />}
                                 {t('identification.guest_access')}
                             </button>
                         </form>

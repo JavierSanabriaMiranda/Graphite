@@ -26,7 +26,9 @@
         "offline_empty_title": "Contenido no disponible",
         "offline_empty_desc": "Necesitas conectarte a internet para descargar esta nota por primera vez en este dispositivo.",
         "sync_warning_title": "Sincronización pendiente",
+        "sync_warning_guest_title": "Sincronización no disponible",
         "sync_warning_description": "Esta nota puede no estar actualizada. Modificar su contenido puede causar conflictos de sincronización. Conéctate a internet para resolver los cambios pendientes.",
+        "sync_warning_guest_description": "Esta nota no se puede sincronizar al estar en modo invitado. Su contenido se perderá al cerrar sesión.",
         "toolbar": {
             "tools": "Herramientas",
             "block_type": {
@@ -353,8 +355,10 @@
         "invalid_credentials": "Credenciales incorrectas",
         "connection_error": "Error de conexión con el servidor",
         "already_registered": "Este usuario ya está registrado. Prueba iniciando sesión",
+        "guest_initialization_failed": "No se pudo iniciar la sesión de invitado. Inténtalo de nuevo.",
         "invalid_email_format": "Formato de correo electrónico inválido",
         "invalid_username_format": "Formato de nombre de usuario inválido. El nombre de usuario debe tener entre 3 y 20 caracteres y no puede contener caracteres especiales",
+        "reserved_username": "Nombre de usuario reservado. Por favor, elige otro nombre de usuario",
         "weak_password": "Contraseña débil. La contraseña debe tener al menos 8 caracteres e incluir una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&)."
     },
     "emojis": {

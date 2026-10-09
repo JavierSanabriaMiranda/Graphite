@@ -39,7 +39,8 @@ const EMPTY_DOC = {
 const TiptapEditor = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
-  const { dek, isAuthenticated } = useAuth();
+  const { dek, isAuthenticated, isGuest } = useAuth();
+  const canSync = isAuthenticated && !isGuest;
   const { defaultFont } = useSettings();
 
   const {
@@ -380,7 +381,7 @@ const TiptapEditor = () => {
    * It only runs if the user is authenticated and the device is online.
    */
   const triggerRemoteSync = async () => {
-    if (navigator.onLine && isAuthenticated && dek) {
+    if (navigator.onLine && canSync && dek) {
       // We don't await this to keep the UI snappy (Optimistic)
       syncService.syncPendingData(dek).catch(err =>
         console.error("Background sync failed:", err)

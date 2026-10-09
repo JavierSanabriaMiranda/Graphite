@@ -4,12 +4,14 @@ import { attachmentService } from '../../services/db/attachmentService';
 import { syncService } from '../../services/db/syncService';
 import { useTranslation } from 'react-i18next';
 import { useToast } from './ToastContext';
+import { useAuth } from './AuthContext';
 
 const AttachmentContext = createContext();
 
 export const AttachmentProvider = ({ children }) => {
     const { t } = useTranslation();
     const { showToast } = useToast();
+    const { isGuest } = useAuth();
     const [isUploading, setIsUploading] = useState(false);
 
     // Constants for restrictions
@@ -208,6 +210,14 @@ export const AttachmentProvider = ({ children }) => {
 
     const downloadFile = useCallback(async (fileId) => {
         try {
+            if (isGuest) {
+                const localFile = await attachmentService.getById(fileId);
+                if (!localFile) {
+                    throw new Error("Guest attachments are only available on this device");
+                }
+                return await getFileUrl(localFile.local_path);
+            }
+
             await syncService.downloadAttachment(fileId)
             // At this moment the file will have its metadata on db
             const file = await attachmentService.getById(fileId)
@@ -217,7 +227,7 @@ export const AttachmentProvider = ({ children }) => {
             throw error;
         }
 
-    }, [getFileUrl]);
+    }, [getFileUrl, isGuest]);
 
     /**
      * Helper to get the original width of an image file, used for proper rendering in the frontend.

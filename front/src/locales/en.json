@@ -26,7 +26,9 @@
         "offline_empty_title": "Content not available",
         "offline_empty_desc": "You need to connect to the internet to download this note for the first time on this device.",
         "sync_warning_title": "Synchronization pending",
+        "sync_warning_guest_title": "Synchronization not available",
         "sync_warning_description": "This note may not be up to date. Modifying it's content may cause synchronization conflicts. Connect to the internet to resolve pending changes.",
+        "sync_warning_guest_description": "This note cannot be synchronized while in guest mode. Its content will be lost upon logging out.",
         "toolbar": {
             "tools": "Tools",
             "block_type": {
@@ -354,8 +356,10 @@
         "invalid_credentials": "Invalid credentials",
         "connection_error": "Error while connecting to the server",
         "already_registered": "This user is already registered. Try login in",
+        "guest_initialization_failed": "Could not start a guest session. Please try again.",
         "invalid_email_format": "Invalid email format",
         "invalid_username_format": "Invalid username format. Username must be between 3 and 20 characters long and cannot contain special characters",
+        "reserved_username": "Reserved username. Please choose another username",
         "weak_password": "Weak password. Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number and a special character (@$!%*?&)."
     },
     "emojis": {

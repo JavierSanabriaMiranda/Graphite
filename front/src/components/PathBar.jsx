@@ -7,6 +7,7 @@ import { noteService } from '../services/db/noteService'
 import { useNote } from './context/NoteContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { SyncStatus } from '../util/SyncStatus';
+import { useAuth } from './context/AuthContext';
 import EditModeButton from './EditModeButton';
 
 /**
@@ -15,6 +16,7 @@ import EditModeButton from './EditModeButton';
 const PathBar = ({ saveStatus, editor, onResolveConflict }) => {
     const { t } = useTranslation();
     const isMobile = useIsMobile();
+    const { isGuest } = useAuth();
     const {
         selectedNote: activeNote,
         selectNote: onNoteSelect,
@@ -189,10 +191,10 @@ const PathBar = ({ saveStatus, editor, onResolveConflict }) => {
                         <div className="absolute right-0 top-full mt-2 w-64 p-3 bg-white dark:bg-zinc-800 border border-amber-300 dark:border-amber-900 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-tight">
-                                    {t('editor.sync_warning_title')}
+                                    {isGuest ? t('editor.sync_warning_guest_title') : t('editor.sync_warning_title')}
                                 </span>
                                 <p className="text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium">
-                                    {t('editor.sync_warning_description')}
+                                    {isGuest ? t('editor.sync_warning_guest_description') : t('editor.sync_warning_description')}
                                 </p>
                             </div>
                         </div>

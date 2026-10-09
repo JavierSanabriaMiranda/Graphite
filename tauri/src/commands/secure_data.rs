@@ -13,6 +13,8 @@ static MASTER_KEY_CACHE: OnceLock<Vec<u8>> = OnceLock::new();
 pub struct VaultData {
     pub token: String,
     pub dek: Vec<u8>,
+    #[serde(default)]
+    pub is_guest: bool,
 }
 
 // Generates a 32 bytes masterkey based on hardware
@@ -52,7 +54,7 @@ fn get_hardware_master_key() -> Vec<u8> {
 }
 
 #[tauri::command]
-pub async fn save_secure_data(app_handle: tauri::AppHandle, token: String, dek: Vec<u8>) -> Result<(), String> {
+pub async fn save_secure_data(app_handle: tauri::AppHandle, token: String, dek: Vec<u8>, is_guest: Option<bool>) -> Result<(), String> {
     let key_bytes = get_hardware_master_key();
     let key = Key::<Aes256Gcm>::from_slice(&key_bytes);
     let cipher = Aes256Gcm::new(key);
@@ -60,7 +62,7 @@ pub async fn save_secure_data(app_handle: tauri::AppHandle, token: String, dek: 
     let iv: [u8; 12] = thread_rng().r#gen(); 
     let nonce = Nonce::from_slice(&iv);
 
-    let data = VaultData { token, dek };
+    let data = VaultData { token, dek, is_guest: is_guest.unwrap_or(false) };
     let json = serde_json::to_string(&data).map_err(|e| e.to_string())?;
     
     let ciphertext = cipher.encrypt(nonce, json.as_bytes())

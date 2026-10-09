@@ -12,29 +12,44 @@ import ApiError from '../../custom_errors/ApiError';
 const AuthContext = createContext();
 
 /**
- * This wrapper manages the state of the current authenticated user
+ * This wrapper manages the current local session and its cloud-auth state.
  * 
  * @param {Component} children - Component that will be able to access to the auth functions 
  */
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isGuest, setIsGuest] = useState(false);
     const [loading, setLoading] = useState(true);
     const [dek, setDek] = useState(null);
+
+    const GUEST_USERNAME = "guest";
 
     useEffect(() => {
         const initAuth = async () => {
             try {
                 const data = await invoke('load_secure_data');
-                if (!data || !isTokenValid(data.token)) {
+                if (!data || (!data.is_guest && !isTokenValid(data.token))) {
                     await logout();
                 }
                 else {
                     const dekBytes = new Uint8Array(data.dek);
+                    if (data.is_guest) {
+                        const user = await userService.getCurrentUser();
+                        if (!user) {
+                            throw new Error("Guest session has no local user");
+                        }
+                        setDek(dekBytes);
+                        setIsGuest(true);
+                        setIsAuthenticated(true);
+                        return;
+                    }
+
                     setDek(dekBytes);
+                    setIsGuest(false);
                     setIsAuthenticated(true);
                     const user = await userService.getCurrentUser()
                     // INITIAL SYNC: Refresh metadata on app start
-                    if (navigator.onLine) {
+                    if (navigator.onLine && user) {
                         await syncService.pullAllMetadata(dekBytes, user.user_id);
                     }
                 }
@@ -61,6 +76,7 @@ export const AuthProvider = ({ children }) => {
         // Persistence (Tauri/Stronghold)
         await saveSessionLocally(token, decryptedDek);
         setDek(decryptedDek);
+        setIsGuest(false);
 
         await userService.saveCloudSession(userId, email, username, token)
 
@@ -84,6 +100,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             // Clear React state
             setIsAuthenticated(false);
+            setIsGuest(false);
             setDek(null);
         }
     };
@@ -117,11 +134,28 @@ export const AuthProvider = ({ children }) => {
 
         await saveSessionLocally(token, newDek);
         setDek(newDek);
+        setIsGuest(false);
         setIsAuthenticated(true);
     };
 
+    const continueAsGuest = async () => {
+        const guestDek = window.crypto.getRandomValues(new Uint8Array(32));
+        const guestUserId = await userService.createGuestSession();
+        const workspaceId = await workspaceService.addWelcomeWorkspace(guestUserId);
+        await noteService.addWelcomeNotes(workspaceId);
+        await saveSessionLocally('', guestDek, true);
+
+        setDek(guestDek);
+        setIsGuest(true);
+        setIsAuthenticated(true);
+    }
+
     // Validation logic for sign-up data
     const validateSignUpData = (email, password, username) => {
+        // Validate reserved username
+        if (username === GUEST_USERNAME) {
+            throw new ApiError("reserved_username", 400);
+        }
         // Username validation (3-20 chars, no special chars)
         const usernameRegex = /^[a-zA-Z0-9]{3,20}$/;
         if (!usernameRegex.test(username)) {
@@ -147,17 +181,18 @@ export const AuthProvider = ({ children }) => {
         return emailRegex.test(email);
     };
 
-    const saveSessionLocally = async (token, dek) => {
+    const saveSessionLocally = async (token, dek, isGuest = false) => {
         await invoke('save_secure_data', {
             token,
-            dek: Array.from(dek)
+            dek: Array.from(dek),
+            isGuest
         });
     };
 
     if (loading) return null;
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, loading, dek, login, logout, signUp }}>
+        <AuthContext.Provider value={{ isAuthenticated, isGuest, canSync: isAuthenticated && !isGuest, loading, dek, login, logout, signUp, continueAsGuest }}>
             {!loading && children}
         </AuthContext.Provider>
     );
