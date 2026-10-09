@@ -5,6 +5,7 @@ import PathBar from '../../src/components/PathBar';
 import { useNote } from '../../src/components/context/NoteContext';
 import { noteService } from '../../src/services/db/noteService';
 import { useIsMobile } from '../../src/hooks/useIsMobile';
+import { useAuth } from '../../src/components/context/AuthContext';
 import { SyncStatus } from '../../src/util/SyncStatus';
 
 vi.mock('react-i18next', () => ({
@@ -35,6 +36,10 @@ vi.mock('../../src/hooks/useIsMobile', () => ({
     useIsMobile: vi.fn(),
 }));
 
+vi.mock('../../src/components/context/AuthContext', () => ({
+    useAuth: vi.fn(),
+}));
+
 // Child components mocks
 vi.mock('../../src/components/util/ChangeThemeButton', () => ({ default: () => <button>ThemeBtn</button> }));
 vi.mock('../../src/components/options_menu/OptionsMenu', () => ({ default: () => <button>Options</button> }));
@@ -55,6 +60,7 @@ describe('PathBar Component - Full Integrated Suite', () => {
         
         // Default desktop environment
         vi.mocked(useIsMobile).mockReturnValue(false);
+        useAuth.mockReturnValue({ isGuest: false });
 
         // Standard NoteContext state
         useNote.mockReturnValue({

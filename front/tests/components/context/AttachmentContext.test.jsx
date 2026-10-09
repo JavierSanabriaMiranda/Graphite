@@ -4,6 +4,7 @@ import React from 'react';
 import { AttachmentProvider, useAttachment } from '../../../src/components/context/AttachmentContext';
 import { attachmentService } from '../../../src/services/db/attachmentService';
 import { invoke } from "@tauri-apps/api/core";
+import { useAuth } from '../../../src/components/context/AuthContext';
 
 vi.mock('@tauri-apps/api/core', () => ({
     invoke: vi.fn(),
@@ -26,6 +27,10 @@ vi.mock('../../../src/services/db/syncService', () => ({
 
 vi.mock('../../../src/components/context/ToastContext', () => ({
     useToast: () => ({ showToast: vi.fn() }),
+}));
+
+vi.mock('../../../src/components/context/AuthContext', () => ({
+    useAuth: vi.fn(),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -66,6 +71,7 @@ describe('AttachmentContext', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        useAuth.mockReturnValue({ isGuest: false });
         restoreImageMock = setupImageMock();
     });
 
