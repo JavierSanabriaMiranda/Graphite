@@ -1,0 +1,133 @@
+<svg id="s" viewBox="0 0 1904 1950" xmlns="http://www.w3.org/2000/svg">
+
+    <style>
+text{fill:#fff;font-family:Arial,Helvetica,sans-serif;font-size:20px}
+.l{paint-order:stroke;stroke:#0b1020;stroke-width:7px;stroke-linejoin:round}
+.bn{font-weight:bold;font-size:18px}.nt{font-size:16px}.hd{font-size:24px}
+.life{stroke:#fff;stroke-opacity:.55;stroke-width:2;stroke-dasharray:8 8}
+.a{fill:none;stroke:#fff;stroke-width:2.5;stroke-dasharray:16 8;animation:f .8s linear infinite}
+.r{stroke:#7dd3fc;stroke-dasharray:7 7}
+@keyframes f{to{stroke-dashoffset:-48}}
+@media (prefers-reduced-motion:reduce){.a{animation:none}}
+</style>
+    <defs>
+        <pattern id="g" width="64" height="64" patternUnits="userSpaceOnUse">
+            <path d="M64 0H0V64" fill="none" stroke="#fff" stroke-opacity=".13" stroke-width="2"></path>
+        </pattern>
+        <marker id="mf" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="9" refY="5"
+            orient="auto">
+            <path d="M0 0L10 5L0 10z" fill="#fff"></path>
+        </marker>
+        <marker id="mr" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="9" refY="5"
+            orient="auto">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#7dd3fc" stroke-width="1.6"></path>
+        </marker>
+    </defs>
+    <rect width="1904" height="1950" fill="#0b1020"></rect>
+    <rect width="1904" height="1950" fill="url(#g)"></rect>
+    <line class="life" x1="56" y1="172" x2="56" y2="1887"></line>
+    <line class="life" x1="383" y1="129" x2="383" y2="1887"></line>
+    <line class="life" x1="951" y1="129" x2="951" y2="1887"></line>
+    <line class="life" x1="1353" y1="129" x2="1353" y2="1887"></line>
+    <line class="life" x1="1793" y1="129" x2="1793" y2="1887"></line>
+    <rect x="28" y="166" width="1783" height="36" fill="#1e293b"></rect>
+    <text x="919" y="190" class="bn" text-anchor="middle">ESCENARIO 1: INICIO DE SESIÓN (Descarga de
+        Metadatos)</text>
+    <rect x="28" y="1081" width="1783" height="36" fill="#1e293b"></rect>
+    <text x="919" y="1105" class="bn" text-anchor="middle">ESCENARIO 2: SELECCIÓN DE NOTA (Lazy
+        Loading del Contenido)</text>
+    <rect x="28" y="1887" width="1783" height="36" fill="#1e293b"></rect>
+    <text x="919" y="1911" class="bn" text-anchor="middle">Nota visible y guardada localmente para
+        acceso offline futuro</text>
+    <rect x="1344" y="275" width="19" height="129" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <rect x="1344" y="514" width="19" height="127" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <rect x="1344" y="1392" width="19" height="110" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <rect x="942" y="854" width="19" height="55" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <rect x="942" y="1191" width="19" height="55" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <rect x="942" y="1703" width="19" height="55" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <rect x="291" y="55" width="184" height="74" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <text x="383" y="100" class="hd" text-anchor="middle">App Graphite</text>
+    <rect x="859" y="55" width="184" height="74" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <text x="951" y="100" class="hd" text-anchor="middle">DB Local</text>
+    <rect x="1261" y="55" width="184" height="74" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <text x="1353" y="100" class="hd" text-anchor="middle">Servidor</text>
+    <rect x="1701" y="55" width="184" height="74" fill="#0b1020" stroke="#fff" stroke-width="2"></rect>
+    <text x="1793" y="100" class="hd" text-anchor="middle">DB Remota</text>
+    <circle cx="56" cy="33" r="14" fill="none" stroke="#fff" stroke-width="2.5"></circle>
+    <path d="M56 47V92M28 70H84M56 92L28 128M56 92L84 128" fill="none" stroke="#fff"
+        stroke-width="2.5"></path>
+    <text x="56" y="160" class="hd" text-anchor="middle">Usuario</text>
+    <rect x="428" y="431" width="365" height="36" fill="#1e293b" stroke="#475569" stroke-width="1.5"></rect>
+    <text x="610.5" y="455" class="nt" text-anchor="middle">Fase A: Sincronización Inmediata
+        (Ligera)</text>
+    <rect x="430" y="657" width="411" height="36" fill="#1e293b" stroke="#475569" stroke-width="1.5"></rect>
+    <text x="635.5" y="681" class="nt" text-anchor="middle">Fase B: Actualización de UI y
+        Persistencia Local</text>
+    <rect x="408" y="1026" width="506" height="36" fill="#1e293b" stroke="#475569"
+        stroke-width="1.5"></rect>
+    <text x="661" y="1050" class="nt" text-anchor="middle">UI Operativa al instante. Estructura
+        visible pero notas vacías</text>
+    <rect x="428" y="1521" width="411" height="36" fill="#1e293b" stroke="#475569"
+        stroke-width="1.5"></rect>
+    <text x="633.5" y="1545" class="nt" text-anchor="middle">Fase C: Descifrado Local y
+        Actualización</text>
+    <circle cx="56" cy="257" r="9" fill="#fff"></circle>
+    <line class="a" x1="56" y1="257" x2="383" y2="257" marker-end="url(#mf)"></line>
+    <text x="219.5" y="245" class="l" text-anchor="middle">Introduce Credenciales</text>
+    <line class="a" x1="383" y1="275" x2="1344" y2="275" marker-end="url(#mf)"></line>
+    <text x="863.5" y="263" class="l" text-anchor="middle">POST /api/v1/users/login (Credenciales)</text>
+    <line class="a" x1="1363" y1="340" x2="1793" y2="340" marker-end="url(#mf)"></line>
+    <text x="1578" y="328" class="l" text-anchor="middle">Verificar Usuario</text>
+    <line class="a r" x1="1793" y1="376" x2="1363" y2="376" marker-end="url(#mr)"></line>
+    <text x="1578" y="364" class="l" text-anchor="middle">Usuario válido</text>
+    <line class="a r" x1="1344" y1="403" x2="383" y2="403" marker-end="url(#mr)"></line>
+    <text x="863.5" y="391" class="l" text-anchor="middle">200 OK / JWT Token</text>
+    <line class="a" x1="383" y1="514" x2="1344" y2="514" marker-end="url(#mf)"></line>
+    <text x="863.5" y="502" class="l" text-anchor="middle">GET
+        /api/v1/workspace/{workspaceId}/metadata</text>
+    <line class="a" x1="1363" y1="554" x2="1793" y2="554" marker-end="url(#mf)"></line>
+    <text x="1578" y="542" class="l" text-anchor="middle">SELECT encrypted_metadata FROM notes</text>
+    <line class="a r" x1="1793" y1="604" x2="1363" y2="604" marker-end="url(#mr)"></line>
+    <text x="1578" y="592" class="l" text-anchor="middle">Lista de metadatos encriptados</text>
+    <line class="a r" x1="1344" y1="641" x2="383" y2="641" marker-end="url(#mr)"></line>
+    <text x="863.5" y="629" class="l" text-anchor="middle">200 OK / JSON con Metadatos Encriptados</text>
+    <line class="a" x1="383" y1="854" x2="942" y2="854" marker-end="url(#mf)"></line>
+    <text x="662.5" y="842" class="l" text-anchor="middle">INSERT metadatos</text>
+    <line class="a r" x1="942" y1="909" x2="383" y2="909" marker-end="url(#mr)"></line>
+    <text x="662.5" y="897" class="l" text-anchor="middle">Confirmación</text>
+    <circle cx="56" cy="1172" r="9" fill="#fff"></circle>
+    <line class="a" x1="56" y1="1172" x2="383" y2="1172" marker-end="url(#mf)"></line>
+    <text x="219.5" y="1160" class="l" text-anchor="middle">Click en nota específica (ej: 'Nota A')</text>
+    <line class="a" x1="383" y1="1191" x2="942" y2="1191" marker-end="url(#mf)"></line>
+    <text x="662.5" y="1179" class="l" text-anchor="middle">SELECT content FROM notes WHERE note_id
+        = 'Nota A'</text>
+    <line class="a r" x1="942" y1="1246" x2="383" y2="1246" marker-end="url(#mr)"></line>
+    <text x="662.5" y="1234" class="l" text-anchor="middle">content = NULL</text>
+    <line class="a" x1="383" y1="1392" x2="1344" y2="1392" marker-end="url(#mf)"></line>
+    <text x="863.5" y="1380" class="l" text-anchor="middle">GET /api/v1/notes/{noteId}/content</text>
+    <line class="a" x1="1363" y1="1419" x2="1793" y2="1419" marker-end="url(#mf)"></line>
+    <text x="1578" y="1383" class="l" text-anchor="middle">SELECT encrypted_payload FROM notes</text>
+    <text x="1578" y="1407" class="l" text-anchor="middle">WHERE note_id = 'Nota A'</text>
+    <line class="a r" x1="1793" y1="1474" x2="1363" y2="1474" marker-end="url(#mr)"></line>
+    <text x="1578" y="1462" class="l" text-anchor="middle">Datos encriptados de la nota</text>
+    <line class="a r" x1="1344" y1="1502" x2="383" y2="1502" marker-end="url(#mr)"></line>
+    <text x="863.5" y="1490" class="l" text-anchor="middle">200 OK / JSON con Contenido Encriptado</text>
+    <line class="a" x1="383" y1="1703" x2="942" y2="1703" marker-end="url(#mf)"></line>
+    <text x="662.5" y="1691" class="l" text-anchor="middle">UPDATE notes SET content = ? WHERE
+        note_id = 'Nota A'</text>
+    <line class="a r" x1="942" y1="1758" x2="383" y2="1758" marker-end="url(#mr)"></line>
+    <text x="662.5" y="1746" class="l" text-anchor="middle">Confirmación</text>
+    <path class="a" d="M383 715C490 715 490 770 391 770" marker-end="url(#mf)"></path>
+    <text x="462" y="737.5" class="l" text-anchor="start">Desencriptar metadatos</text>
+    <text x="462" y="761.5" class="l" text-anchor="start">usando DEK local</text>
+    <path class="a" d="M383 953C490 953 490 1008 391 1008" marker-end="url(#mf)"></path>
+    <text x="462" y="987.5" class="l" text-anchor="start">Renderizar aplicación</text>
+    <path class="a" d="M383 1282C490 1282 490 1337 391 1337" marker-end="url(#mf)"></path>
+    <text x="462" y="1316.5" class="l" text-anchor="start">Mostrar "Cargando..."</text>
+    <path class="a" d="M383 1594C490 1594 490 1649 391 1649" marker-end="url(#mf)"></path>
+    <text x="462" y="1616.5" class="l" text-anchor="start">Desencriptar contenido</text>
+    <text x="462" y="1640.5" class="l" text-anchor="start">usando DEK local</text>
+    <path class="a" d="M383 1795C490 1795 490 1850 391 1850" marker-end="url(#mf)"></path>
+    <text x="462" y="1817.5" class="l" text-anchor="start">Renderizar Contenido de la</text>
+    <text x="462" y="1841.5" class="l" text-anchor="start">Nota en el Editor</text>
+</svg>

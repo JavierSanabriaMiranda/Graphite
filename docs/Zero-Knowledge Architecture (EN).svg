@@ -1,0 +1,121 @@
+<svg viewBox="0 0 2576 1360" xmlns="http://www.w3.org/2000/svg">
+    <style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+text{fill:#fff;font-family:Arial,Helvetica,sans-serif;font-size:30px;text-anchor:middle}
+.b{font-weight:bold}.h{font-size:36px;font-weight:bold}.i{font-style:italic;font-size:27px}
+.a{fill:none;stroke:#fff;stroke-width:6;stroke-dasharray:18 12;animation:f .9s linear infinite;marker-end:url(#m)}
+@keyframes f{to{stroke-dashoffset:-30}}
+.s{stroke:#fff;stroke-width:4;stroke-dasharray:14 12;fill:none;opacity:.7}
+.p{fill:#1e3a5f;stroke:#7ab8ff;stroke-width:3;--l:#9fd0ff}
+.sh{fill:none;stroke:#38bdf8;stroke-width:8;animation:g 2s ease-in-out infinite}
+@keyframes g{50%{filter:drop-shadow(0 0 10px #38bdf8)}}
+@media (prefers-reduced-motion:reduce){.a,.sh{animation:none}}
+</style>
+<rect width="100%" height="100%" fill="#0b1020"/>
+<defs>
+<pattern id="g" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0V64" fill="none" stroke="#fff" stroke-opacity=".13" stroke-width="2"/></pattern>
+<marker id="m" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4z" fill="#fff"/></marker>
+<g id="key"><circle cx="20" cy="20" r="20"/><rect x="30" y="14" width="68" height="13"/><rect x="72" y="26" width="10" height="12"/><rect x="88" y="26" width="10" height="12"/></g>
+<g id="doc"><path d="M0 0H62L90 28V125H0z"/><path d="M62 0V28H90" fill="none" style="stroke:var(--l,#9fd0ff)" stroke-width="5"/><path d="M16 50H74M16 68H74M16 86H74M16 104H52" fill="none" stroke-width="7" stroke-linecap="round" style="stroke:var(--l,#9fd0ff)"/></g>
+<g id="fold"><path d="M0 14H92V84H0z"/><path d="M48 14L58 2H80L84 14z"/></g>
+<g id="box"><path d="M0 55L30 0H128L158 55z" fill="#2b9bff" stroke="#0b1020" stroke-width="3"/><rect x="0" y="55" width="158" height="100" rx="12" fill="#1e6fb8" stroke="#7ab8ff" stroke-width="3"/><use href="#key" x="32" y="85" fill="#22d3ee"/></g>
+<g id="sh"><path class="sh" d="M0 -48L-44 -30V8C-44 30 -22 44 0 52C22 44 44 30 44 8V-30z"/><path d="M-20 4L-5 20L22 -14" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/></g>
+<g id="usr" fill="none" stroke="#fff" stroke-width="7"><circle cx="40" cy="24" r="20"/><path d="M5 100C5 60 75 60 75 100z"/></g>
+<g id="kek"><use href="#key" fill="#f59e0b"/><g transform="translate(92 66) scale(.5)"><path d="M0 -48L-44 -30V8C-44 30 -22 44 0 52C22 44 44 30 44 8V-30z" fill="#0b1020" stroke="#fbbf24" stroke-width="9" stroke-linejoin="round"/><path d="M-20 4L-5 20L22 -14" fill="none" stroke="#fbbf24" stroke-width="9" stroke-linecap="round"/></g></g>
+</defs>
+<rect width="2576" height="1360" fill="url(#g)"/>
+
+<!-- Titles -->
+<text class="h" x="682" y="58">USER DEVICE</text><text x="682" y="95" style="font-size:34px">(Tauri/Client React)</text>
+<text class="h" x="1519" y="58">NETWORK</text><text class="h" x="1519" y="95">TRANSIT</text>
+<text class="h" x="2128" y="58" style="font-size:36px">CLOUD</text><text x="2128" y="95" style="font-size:34px">(Spring Boot Server and DATABASE)</text>
+<line class="s" x1="1334" y1="100" x2="1334" y2="825"/><line class="s" x1="1722" y1="100" x2="1722" y2="825"/><line class="s" x1="20" y1="860" x2="2556" y2="860"/>
+
+<!-- User and input -->
+<use href="#usr" x="35" y="372"/><text class="b" x="76" y="505">USER</text>
+<text class="b" x="317" y="377">INPUT</text>
+<rect x="206" y="399" width="222" height="54" rx="4" fill="#0b1020" stroke="#fff" stroke-width="3"/><text x="258" y="428" style="font-size:30px">********</text>
+<text x="317" y="484">Password</text><text x="317" y="512">(e.g. "1234")</text>
+
+<!-- DEK generation -->
+<rect class="p" x="428" y="177" width="196" height="110" rx="18"/><text class="b" x="526" y="225">DEK</text><text class="b" x="526" y="253">GENERATION</text>
+<use href="#key" x="718" y="212" fill="#22d3ee"/>
+<text x="760" y="282">Data Encryption</text><text x="760" y="310">Key (DEK)</text>
+<use href="#sh" x="939" y="352"/>
+
+<!-- Plaintext notes -->
+<use href="#doc" x="590" y="392" transform="translate(590 392) scale(.68 .66) translate(-590 -392)" fill="#0b1020" stroke="#fff" stroke-width="5" style="--l:#fff"/>
+<use href="#fold" x="668" y="388" fill="#fcd34d" stroke="#f59e0b" stroke-width="2" transform="translate(668 388) scale(.9) translate(-668 -388)"/>
+<text class="b" x="682" y="508">PLAINTEXT NOTES AND</text><text class="b" x="682" y="536">WORKSPACES</text>
+
+<!-- Encrypted notes (device and transit) -->
+<use href="#doc" class="p" x="1057" y="288"/><use href="#fold" class="p" x="1166" y="301"/>
+<text class="b" x="1150" y="443" style="font-size:24px">ENCRYPTED NOTES</text><text class="b" x="1150" y="471" style="font-size:24px">AND WORKSPACES</text>
+<use href="#doc" class="p" x="1422" y="288"/><use href="#fold" class="p" x="1531" y="301"/>
+<text class="b" x="1530" y="443" style="font-size:24px">ENCRYPTED NOTES</text><text class="b" x="1530" y="471" style="font-size:24px">AND WORKSPACES</text>
+
+<!-- KEK generation -->
+<rect class="p" x="428" y="601" width="196" height="110" rx="18"/><text class="b" x="526" y="650">KEK</text><text class="b" x="526" y="678">GENERATION</text>
+<use href="#kek" x="716" y="637"/>
+<text x="771" y="748">Key Encryption</text><text x="771" y="776">Key (KEK)</text>
+<use href="#sh" x="939" y="655" transform="translate(0 0)"/>
+<use href="#box" x="1089" y="565"/><text class="b" x="1168" y="748">ENCRYPTED DEK</text><text x="1168" y="776" style="font-size:28px">(Wrapped container)</text>
+<use href="#box" x="1440" y="565"/><text class="b" x="1519" y="748">ENCRYPTED DEK</text><text x="1519" y="776" style="font-size:28px">(Wrapped container)</text>
+
+<!-- Spring Boot -->
+<polygon points="1917,428 1990,468 1990,545 1917,585 1844,545 1844,468" fill="#6db33f" stroke="#a3e07a" stroke-width="5"/>
+<path d="M1888 480A44 44 0 1 0 1946 480" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/><line x1="1917" y1="455" x2="1917" y2="510" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+
+<!-- Database -->
+<path d="M2168 370V620A175 62 0 0 0 2518 620V370A175 62 0 0 0 2168 370z" fill="#2590e6" stroke="#9fd0ff" stroke-width="4"/>
+<ellipse cx="2343" cy="370" rx="175" ry="62" fill="#2590e6" stroke="#9fd0ff" stroke-width="4"/>
+<text class="h" x="2343" y="382">DATABASE</text>
+<use href="#doc" class="p" x="2202" y="460" transform="translate(2202 460) scale(.5 .6) translate(-2202 -460)"/>
+<text class="b" x="2278" y="480" style="text-anchor:start;font-size:21px">ENCRYPTED NOTES</text><text class="b" x="2278" y="506" style="text-anchor:start;font-size:21px">AND</text><text class="b" x="2278" y="532" style="text-anchor:start;font-size:21px">WORKSPACES</text>
+<use href="#box" x="2190" y="557" transform="translate(2190 557) scale(.48) translate(-2190 -557)"/>
+<text class="b" x="2278" y="593" style="text-anchor:start;font-size:21px">ENCRYPTED</text><text class="b" x="2278" y="619" style="text-anchor:start;font-size:21px">DEK</text>
+
+<!-- Secondary device -->
+<text class="h" x="400" y="940" style="font-size:32px">USER DEVICE</text><text x="400" y="982" style="font-size:32px">(Secondary Device)</text>
+<use href="#usr" x="185" y="1003"/><text class="b" x="225" y="1133">USER</text>
+<rect x="354" y="1027" width="222" height="54" rx="4" fill="#0b1020" stroke="#fff" stroke-width="3"/><text x="406" y="1056">********</text>
+<text x="465" y="1112">Password</text><text x="465" y="1140">(e.g. "1234")</text>
+<rect class="p" x="678" y="1000" width="196" height="110" rx="18"/><text class="b" x="776" y="1048">KEK</text><text class="b" x="776" y="1076">DERIVATION</text>
+<use href="#kek" x="962" y="1030"/><text class="b" x="1009" y="1159">KEK</text>
+<use href="#box" x="1182" y="972"/><text class="b" x="1260" y="1155" style="font-size:26px">ENCRYPTED DEK</text><text x="1260" y="1183" style="font-size:26px">(Wrapped container)</text>
+<use href="#key" x="1490" y="1035" fill="#22d3ee"/><text class="b" x="1543" y="1155">RECOVERED</text><text class="b" x="1543" y="1183">DEK</text>
+<use href="#doc" class="p" x="1760" y="992"/><use href="#fold" class="p" x="1870" y="1006"/>
+<text class="b" x="1850" y="1155" style="font-size:24px">Decrypt Notes</text><text class="b" x="1850" y="1183" style="font-size:24px">and Workspaces</text>
+<use href="#doc" x="2140" y="996" fill="#0b1020" stroke="#fff" stroke-width="5" style="--l:#fff"/>
+<use href="#fold" x="2266" y="1000" fill="#fcd34d" stroke="#f59e0b" stroke-width="2"/>
+<text class="b" x="2300" y="1155" style="font-size:24px">PLAINTEXT NOTES AND</text><text class="b" x="2300" y="1183" style="font-size:24px">WORKSPACES</text><text class="i" x="2300" y="1212" style="font-size:23px">Readable and Usable Locally</text>
+
+<!-- Legend -->
+<text x="775" y="1320" style="text-anchor:start;font-size:28px"><tspan class="b">DEK:</tspan> Data Encryption Key</text>
+<text x="1240" y="1320" style="text-anchor:start;font-size:28px"><tspan class="b">KEK:</tspan> Key Encryption Key</text>
+<rect x="1730" y="1296" width="36" height="36" rx="6" fill="#1e6fb8" stroke="#7ab8ff" stroke-width="3"/><text x="1780" y="1320" style="text-anchor:start;font-size:28px">Encrypted</text>
+
+<!-- Animated arrows (original direction) -->
+<path class="a" d="M130 423H185"/>
+<path class="a" d="M316 323V246Q316 232 330 232H408"/>
+<path class="a" d="M638 231H700"/>
+<path class="a" d="M853 234H920Q940 234 940 254V288"/>
+<path class="a" d="M775 461H920Q940 461 940 441V408"/>
+<path class="a" d="M316 528V640Q316 656 332 656H408"/>
+<path class="a" d="M638 656H700"/>
+<path class="a" d="M825 655H888"/>
+<path class="a" d="M990 655H1055"/>
+<path class="a" d="M1270 360H1408"/>
+<path class="a" d="M1657 360H1895Q1915 360 1915 380V415"/>
+<path class="a" d="M1260 654H1418"/>
+<path class="a" d="M1624 673H1900Q1920 673 1920 653V602"/>
+<path class="a" d="M2018 498H2155"/>
+<path class="a" d="M2350 713V930Q2350 951 2330 951H688"/>
+<path class="a" d="M280 1051H333"/>
+<path class="a" d="M596 1054H660"/>
+<path class="a" d="M880 1054H944"/>
+<path class="a" d="M1096 1054H1158"/>
+<path class="a" d="M1354 1054H1462"/>
+<path class="a" d="M1618 1054H1740"/>
+<path class="a" d="M1988 1052H2110"/>
+</svg>
