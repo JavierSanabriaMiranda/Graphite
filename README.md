@@ -5,12 +5,22 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=JavierSanabriaMiranda_Graphite&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=JavierSanabriaMiranda_Graphite)
 
 <p align="center">
-  <img src="front/public/app_icon_rounded_square.png" height="200">
+  <img src="front/public/app_icon_rounded_square.png" height="300">
 </p>
 
 A privacy-first, local-first, and cross-platform note-taking application designed for absolute data ownership and seamless multi-device synchronization.
 
 *Graphite was developed as a Final Degree Project (TFG) for the Software Engineering Degree at the University of Oviedo.*
+
+---
+
+## 📹 Demo
+
+<p align="center">
+  <a href="https://youtu.be/J0tMNK_qG1c" target="_blank">
+    <img src="docs/Graphite Demo Cover.jpg" alt="Watch demo on YouTube" width="800">
+  </a>
+</p>
 
 ---
 
