@@ -1,3 +1,8 @@
+<p align="right">
+  <a href="README.md"><img src="https://img.shields.io/badge/English-0969da?style=for-the-badge" alt="English"></a>
+  <a href="README.es.md"><img src="https://img.shields.io/badge/Espa%C3%B1ol-30363d?style=for-the-badge" alt="Español"></a>
+</p>
+
 # Graphite
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=JavierSanabriaMiranda_Graphite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=JavierSanabriaMiranda_Graphite)
